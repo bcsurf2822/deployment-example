@@ -1,0 +1,1 @@
+currently the assistant does not remember uploading document from chat input, the comprehension on that document initially is reawlly good though , we need to make sure the document can optionally stay until the user decides to take it off

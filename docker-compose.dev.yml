@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  # Frontend service for development with hot reload
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+      target: development
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_PYDANTIC_AGENT_API_URL=${NEXT_PUBLIC_PYDANTIC_AGENT_API_URL}
+      - PYDANTIC_AGENT_API_URL=http://agent-api-dev:8001/api/pydantic-agent
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+      - NEXT_PUBLIC_ENABLE_STREAMING=${NEXT_PUBLIC_ENABLE_STREAMING}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - SUPABASE_CALLBACK_URL=${SUPABASE_CALLBACK_URL}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    restart: unless-stopped
+    depends_on:
+      - agent-api-dev
+
+  # Agent API service for development
+  agent-api-dev:
+    build:
+      context: ./agent_api
+      dockerfile: Dockerfile.simple
+    ports:
+      - "8001:8001"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+      - VISION_MODEL=${VISION_MODEL}
+      - BRAVE_API_KEY=${BRAVE_API_KEY}
+      - BRAVE_SEARCH_URL=${BRAVE_SEARCH_URL}
+      - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - MEM0_API_KEY=${MEM0_API_KEY}
+      - DEBUG_MODE=${DEBUG_MODE:-true}
+      - PYTHONPATH=/app
+    volumes:
+      - ./agent_api:/app
+      - agent_venv:/app/venv
+    restart: unless-stopped
+    command: ["uvicorn", "agent_api:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+
+  # Google Drive RAG Pipeline service
+  rag-google-drive-dev:
+    build:
+      context: ./rag_pipeline
+      dockerfile: Dockerfile
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - GOOGLE_DRIVE_CREDENTIALS_JSON=${GOOGLE_DRIVE_CREDENTIALS_JSON}
+      - RAG_WATCH_FOLDER_ID=${RAG_WATCH_FOLDER_ID}
+      - RUN_MODE=${RUN_MODE}
+      - RAG_PIPELINE_ID=google-drive-pipeline
+      - RAG_SERVICE=google_drive
+      - DEBUG_MODE=${DEBUG_MODE:-true}
+    volumes:
+      - ./rag_pipeline:/app
+      - ./test_files:/app/test_files
+      - rag_venv:/app/venv
+    restart: unless-stopped
+    profiles:
+      - with-rag
+
+  # Local Files RAG Pipeline service  
+  rag-local-files-dev:
+    build:
+      context: ./rag_pipeline
+      dockerfile: Dockerfile
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - RAG_WATCH_DIRECTORY=/app/Local_Files/data
+      - RUN_MODE=${RUN_MODE}
+      - RAG_PIPELINE_ID=local-files-pipeline
+      - RAG_SERVICE=local_files
+      - DEBUG_MODE=${DEBUG_MODE:-true}
+    volumes:
+      - ./rag_pipeline:/app
+      - ./test_files:/app/test_files
+      - ${RAG_LOCAL_DIRECTORY:-./test_files}:/app/Local_Files/data
+      - rag_venv:/app/venv
+    restart: unless-stopped
+    profiles:
+      - with-rag
+
+volumes:
+  agent_venv:
+  rag_venv:
+
+networks:
+  default:
+    driver: bridge

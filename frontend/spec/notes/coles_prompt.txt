@@ -1,0 +1,76 @@
+AI Agent Mastery Prompt for Our AI Agent Frontend
+
+
+Create a beautiful dark theme chat interface (dark blue and gray colors) for me to talk to my AI agent which is hosted with FastAPI. The URL for the agent is http://localhost:8001/api/pydantic-agent
+
+The request schema is set up like this:
+
+class AgentRequest(BaseModel): 
+    query: str 
+    user_id: str 
+    request_id: str 
+    session_id: str
+
+So you need to provide all of these in the POST request payload.
+
+query: The user's latest message to the agent 
+user_id: The user ID from Supabase
+request_id: A unique UUID for the request 
+session_id: The UUID of the conversation. For a new conversation, this can be an empty string
+
+The response from the AI agent is a StreamingResponse where the events will have one or more of the keys:
+
+“text”, “session_id”, “conversation_title”
+
+The “text” value will contain the AI agent response as it is streaming, so you have to stream that out in the UI in real time. “session_id” and “conversation_title” will be provided at the end if it is a brand new conversation so the frontend can be updated with the new session ID and conversation title.
+
+Supabase URL: [Your Supabase Public URL]
+Supabase Public key: [Your Supabase Public/Anon Key]
+
+Don’t ask me to configure Supabase, just use the above URL and public key in the code.
+
+The conversations table schema is:
+
+-- Conversations table
+CREATE TABLE conversations (
+    session_id VARCHAR PRIMARY KEY NOT NULL,
+    user_id UUID NOT NULL,
+    title VARCHAR,  -- Auto-generated from first message
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    last_message_at TIMESTAMPTZ DEFAULT NOW(),
+    is_archived BOOLEAN DEFAULT FALSE,
+    metadata JSONB DEFAULT '{}'::jsonb,
+   
+    UNIQUE(session_id),
+    FOREIGN KEY (user_id) REFERENCES user_profiles(id) ON DELETE CASCADE
+);
+
+The messages table schema is:
+
+-- Messages table with computed columns for session_id components
+CREATE TABLE messages (
+    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    computed_session_user_id UUID GENERATED ALWAYS AS (
+        CAST(SPLIT_PART(session_id, '~', 1) AS UUID)
+    ) STORED,
+    session_id VARCHAR NOT NULL,
+    message JSONB NOT NULL,
+    message_data TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+   
+    FOREIGN KEY (session_id) REFERENCES conversations(session_id)
+);
+
+Where the content in each message is message.content and the type is message.type (either ‘human’ or ‘ai’)
+
+I want these features for the chat:
+
+Loading indicator when getting response from the agent 
+Auto scroll to the bottom to reveal new messages 
+Conversation bar on the left side that is collapsible. Get all the conversations from the conversations table and then the messages from the messages table when a conversation is selected
+Handle markdown for the AI responses
+
+Also have the home page be Supabase authentication with email/password or Google auth.
+
+
+

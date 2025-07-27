@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # Frontend service using the existing Dockerfile
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      agent-api:
+        condition: service_healthy
+
+  # Agent API service using the full Dockerfile (with MCP server)
+  agent-api:
+    build:
+      context: ./agent_api
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"  # FastAPI service
+      - "3001:3001"  # MCP server
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - BRAVE_API_KEY=${BRAVE_API_KEY}
+      - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - DEBUG_MODE=${DEBUG_MODE:-false}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    volumes:
+      # Mount for persistent data if needed
+      - agent_data:/app/data
+
+  # Agent API service using the simple Dockerfile (without MCP complexity)
+  agent-api-simple:
+    build:
+      context: ./agent_api
+      dockerfile: Dockerfile.simple
+    ports:
+      - "8002:8001"  # Different port to avoid conflicts
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - BRAVE_API_KEY=${BRAVE_API_KEY}
+      - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - DEBUG_MODE=${DEBUG_MODE:-false}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    volumes:
+      - agent_data_simple:/app/data
+    profiles:
+      - simple  # This service only runs when 'simple' profile is specified
+
+volumes:
+  agent_data:
+  agent_data_simple:
+
+networks:
+  default:
+    driver: bridge

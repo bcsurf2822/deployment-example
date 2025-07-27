@@ -1,0 +1,43 @@
+# Development Dockerfile for Next.js with hot reload
+FROM node:20-slim AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install dependencies
+RUN npm ci --ignore-scripts && \
+    npm cache clean --force
+
+# Development stage
+FROM base AS development
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy source code
+COPY --chown=nextjs:nodejs . .
+
+# Create .next directory with proper permissions
+RUN mkdir -p .next && chown -R nextjs:nodejs .next
+
+# Switch to non-root user
+USER nextjs
+
+# Expose development port
+EXPOSE 3000
+
+# Set environment variable for Next.js
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Command for development with hot reload
+CMD ["npm", "run", "dev"]
