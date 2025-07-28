@@ -5,11 +5,12 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { login, signup, signInWithGoogle } from './actions'
 
-export default function LoginPage() {
+// Component that uses useSearchParams wrapped in Suspense
+function LoginForm() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -173,5 +174,33 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Loading component for Suspense fallback
+function LoginLoading() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-black via-purple-950 to-black flex items-center justify-center px-4">
+      <div className="relative w-full max-w-md">
+        <div className="bg-black/40 backdrop-blur-xl border border-yellow-400/20 rounded-2xl p-8 shadow-2xl">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-700 rounded mb-4"></div>
+            <div className="h-4 bg-gray-700 rounded mb-8"></div>
+            <div className="h-12 bg-gray-700 rounded mb-6"></div>
+            <div className="h-12 bg-gray-700 rounded mb-4"></div>
+            <div className="h-12 bg-gray-700 rounded"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Main component with Suspense wrapper
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginLoading />}>
+      <LoginForm />
+    </Suspense>
   )
 }
