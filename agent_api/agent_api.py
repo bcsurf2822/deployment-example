@@ -138,7 +138,6 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Security(secu
             print(f"[AGENT_API-VERIFY_TOKEN] No token provided in Authorization header")
             raise HTTPException(status_code=401, detail="No authorization token provided")
         
-        global http_client
         if not http_client:
             raise HTTPException(status_code=500, detail="HTTP client not initialized")
         
