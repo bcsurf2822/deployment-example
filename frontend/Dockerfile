@@ -1,4 +1,4 @@
-# Multi-stage build for Next.js static export with nginx
+# Multi-stage build for Next.js with Node.js runtime
 FROM node:20-slim AS base
 
 # Install dependencies only when needed
@@ -35,66 +35,40 @@ ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_AGENT_ENDPOINT=$NEXT_PUBLIC_AGENT_ENDPOINT
 ENV NEXT_PUBLIC_ENABLE_STREAMING=$NEXT_PUBLIC_ENABLE_STREAMING
 
-# Build the application for static export
+# Build the application
 RUN npm run build
 
-# Production image with nginx
-FROM nginx:1.25-alpine AS runner
+# Production image with Node.js runtime
+FROM base AS runner
+WORKDIR /app
 
 # Create a non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy the exported static files from builder stage
-COPY --from=builder --chown=nextjs:nodejs /app/out /usr/share/nginx/html
+# Copy built application from builder stage
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 
-# Create nginx configuration for Next.js static export
-RUN echo 'server { \
-    listen 80; \
-    server_name localhost; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    \
-    # Handle trailing slashes \
-    location ~ ^(.*)/$ { \
-        try_files $1/index.html $1.html $1/ =404; \
-    } \
-    \
-    # Handle files without extension \
-    location / { \
-        try_files $uri $uri.html $uri/ $uri/index.html =404; \
-    } \
-    \
-    # Security headers \
-    add_header X-Frame-Options "SAMEORIGIN" always; \
-    add_header X-Content-Type-Options "nosniff" always; \
-    add_header X-XSS-Protection "1; mode=block" always; \
-    \
-    # Gzip compression \
-    gzip on; \
-    gzip_vary on; \
-    gzip_min_length 1024; \
-    gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json; \
-    \
-    # Cache static assets \
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ { \
-        expires 1y; \
-        add_header Cache-Control "public, immutable"; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# Copy production dependencies
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
 
 # Add health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
+    CMD curl -f http://localhost:3000/api/health || curl -f http://localhost:3000/ || exit 1
 
 # Install curl for health checks
-RUN apk add --no-cache curl
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Switch to non-root user
 USER nextjs
 
 # Expose port
-EXPOSE 80
+EXPOSE 3000
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Set environment to production
+ENV NODE_ENV=production
+
+# Start Next.js application
+CMD ["npm", "start"]
