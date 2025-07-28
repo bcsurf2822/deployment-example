@@ -39,21 +39,21 @@ jobs:
         cd agent_api
         echo "Building Agent API container..."
         docker build --no-cache --tag agent-api:ci-test .
-        echo " Agent API container built successfully"
+        echo "✅ Agent API container built successfully"
         
     - name: Build RAG Pipeline container
       run: |
         cd rag_pipeline
         echo "Building RAG Pipeline container..."
         docker build --no-cache --tag rag-pipeline:ci-test .
-        echo " RAG Pipeline container built successfully"
+        echo "✅ RAG Pipeline container built successfully"
         
     - name: Build Frontend container
       run: |
         cd frontend
         echo "Building Frontend container..."
         docker build --no-cache --tag frontend:ci-test .
-        echo " Frontend container built successfully"
+        echo "✅ Frontend container built successfully"
         
     - name: Verify container images
       run: |
@@ -61,21 +61,21 @@ jobs:
         
         # Check that all images exist
         if ! docker image inspect agent-api:ci-test >/dev/null 2>&1; then
-          echo "L Agent API image not found!"
+          echo "❌ Agent API image not found!"
           exit 1
         fi
         
         if ! docker image inspect rag-pipeline:ci-test >/dev/null 2>&1; then
-          echo "L RAG Pipeline image not found!"
+          echo "❌ RAG Pipeline image not found!"
           exit 1
         fi
         
         if ! docker image inspect frontend:ci-test >/dev/null 2>&1; then
-          echo "L Frontend image not found!"
+          echo "❌ Frontend image not found!"
           exit 1
         fi
         
-        echo " All container images built and verified successfully"
+        echo "✅ All container images built and verified successfully"
         
         # Show image sizes for reference
         echo "Container image sizes:"

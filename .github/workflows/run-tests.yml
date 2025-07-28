@@ -42,30 +42,30 @@ jobs:
         
         # Python Linting
         if [ "${{ needs.python-lint.result }}" == "success" ]; then
-          echo " Python Linting: PASSED" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Python Linting: PASSED" >> $GITHUB_STEP_SUMMARY
         else
-          echo "L Python Linting: FAILED" >> $GITHUB_STEP_SUMMARY
+          echo "❌ Python Linting: FAILED" >> $GITHUB_STEP_SUMMARY
         fi
         
         # Frontend Linting
         if [ "${{ needs.frontend-lint.result }}" == "success" ]; then
-          echo " Frontend Linting: PASSED" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Frontend Linting: PASSED" >> $GITHUB_STEP_SUMMARY
         else
-          echo "L Frontend Linting: FAILED" >> $GITHUB_STEP_SUMMARY
+          echo "❌ Frontend Linting: FAILED" >> $GITHUB_STEP_SUMMARY
         fi
         
         # Security Analysis
         if [ "${{ needs.security-analysis.result }}" == "success" ]; then
-          echo " Security Analysis: PASSED" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Security Analysis: PASSED" >> $GITHUB_STEP_SUMMARY
         else
-          echo "L Security Analysis: FAILED" >> $GITHUB_STEP_SUMMARY
+          echo "❌ Security Analysis: FAILED" >> $GITHUB_STEP_SUMMARY
         fi
         
         # Docker Builds
         if [ "${{ needs.docker-builds.result }}" == "success" ]; then
-          echo " Docker Builds: PASSED" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Docker Builds: PASSED" >> $GITHUB_STEP_SUMMARY
         else
-          echo "L Docker Builds: FAILED" >> $GITHUB_STEP_SUMMARY
+          echo "❌ Docker Builds: FAILED" >> $GITHUB_STEP_SUMMARY
         fi
         
         echo "" >> $GITHUB_STEP_SUMMARY
@@ -75,9 +75,9 @@ jobs:
            [ "${{ needs.frontend-lint.result }}" == "success" ] && \
            [ "${{ needs.security-analysis.result }}" == "success" ] && \
            [ "${{ needs.docker-builds.result }}" == "success" ]; then
-          echo "<� **All tests passed successfully!**" >> $GITHUB_STEP_SUMMARY
+          echo "🎉 **All tests passed successfully!**" >> $GITHUB_STEP_SUMMARY
           exit 0
         else
-          echo "=� **Some tests failed. Please check the individual job results.**" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **Some tests failed. Please check the individual job results.**" >> $GITHUB_STEP_SUMMARY
           exit 1
         fi
