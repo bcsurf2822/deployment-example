@@ -152,7 +152,7 @@ export default function ChatLayout() {
                   )
                 );
               }
-            } catch (parseError) {
+            } catch {
               console.warn(
                 "[ChatLayout-handleSendMessage] Could not parse line as JSON:",
                 line

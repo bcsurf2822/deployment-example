@@ -52,7 +52,12 @@ jobs:
       run: |
         cd frontend
         echo "Building Frontend container..."
-        docker build --no-cache --tag frontend:ci-test .
+        docker build --no-cache \
+          --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ env.NEXT_PUBLIC_SUPABASE_URL }} \
+          --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }} \
+          --build-arg NEXT_PUBLIC_AGENT_ENDPOINT=${{ env.NEXT_PUBLIC_AGENT_ENDPOINT }} \
+          --build-arg NEXT_PUBLIC_ENABLE_STREAMING=${{ env.NEXT_PUBLIC_ENABLE_STREAMING }} \
+          --tag frontend:ci-test .
         echo "✅ Frontend container built successfully"
         
     - name: Verify container images
