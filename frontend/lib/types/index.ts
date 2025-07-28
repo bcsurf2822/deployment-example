@@ -63,11 +63,11 @@ export interface FormField {
   label: string;
   placeholder?: string;
   required?: boolean;
-  validation?: (value: any) => string | null;
+  validation?: (value: string | number | boolean | File | null) => string | null;
 }
 
 export interface FormState {
-  values: Record<string, any>;
+  values: Record<string, string | number | boolean | File | null>;
   errors: Record<string, string>;
   isSubmitting: boolean;
   isValid: boolean;
@@ -94,5 +94,5 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   timestamp: string;
   isLoading?: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
