@@ -123,7 +123,7 @@ class LocalFilesWatcher:
         """Generate a unique ID for a file based on its path."""
         # Use a hash of the absolute path as the file ID
         abs_path = os.path.abspath(file_path)
-        return hashlib.md5(abs_path.encode()).hexdigest()
+        return hashlib.md5(abs_path.encode(), usedforsecurity=False).hexdigest()
     
     def get_file_mime_type(self, file_path: str) -> str:
         """Get the MIME type of a file."""

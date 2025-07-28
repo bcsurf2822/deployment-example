@@ -1,14 +1,19 @@
-## We need no matter our data source, we need to be able to process the text and chunk it into smaller pieces
+"""Text processing utilities for RAG pipeline.
 
-import os
-import io
+This module provides functions to process, chunk, and extract text from various
+file formats, as well as create embeddings for text chunks.
+"""
+
 import csv
+import io
+import os
 import tempfile
-from typing import List, Dict, Any
-import pypdf
-from openai import OpenAI
-from dotenv import load_dotenv
 from pathlib import Path
+from typing import Any, Dict, List
+
+from dotenv import load_dotenv
+from openai import OpenAI
+import pypdf
 
 # Load environment variables from the rag_pipeline .env file
 # Get the path to the rag_pipeline directory
@@ -82,7 +87,8 @@ def extract_text_from_pdf(file_content: bytes) -> str:
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
 
-def extract_text_from_file(file_content: bytes, mime_type: str, file_name: str, config: Dict[str, Any] = None) -> str:
+def extract_text_from_file(file_content: bytes, mime_type: str, 
+                          file_name: str, config: Dict[str, Any] = None) -> str:
     """
     Extract text from a file based on its MIME type.
     
