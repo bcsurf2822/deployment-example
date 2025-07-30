@@ -42,29 +42,50 @@ def validate_environment():
     if not os.path.exists(".env"):
         print("Warning: .env file not found. Using default values.")
 
-def deploy_stack(mode, with_rag, action="up", project_name="pydantic-agent"):
-    """Deploy or stop the agent stack based on mode."""
+def deploy_stack(mode=None, deployment_type=None, with_rag=False, action="up", project_name="pydantic-agent"):
+    """Deploy or stop the agent stack based on mode or deployment type."""
     
     # Build base command
     cmd = ["docker", "compose", "-p", project_name]
     
-    # Add appropriate compose files based on mode
-    if mode == "dev":
-        if not os.path.exists("docker-compose.dev.yml"):
-            print("Error: docker-compose.dev.yml not found for development mode")
-            sys.exit(1)
-        cmd.extend(["-f", "docker-compose.dev.yml"])
-        print("Development mode: Using docker-compose.dev.yml")
-        
-    elif mode == "prod":
-        if not os.path.exists("docker-compose.yml"):
-            print("Error: docker-compose.yml not found for production mode")
-            sys.exit(1)
+    # Handle deployment type (new cloud deployment)
+    if deployment_type:
         cmd.extend(["-f", "docker-compose.yml"])
-        print("Production mode: Using docker-compose.yml")
+        
+        if deployment_type == "cloud":
+            if not os.path.exists("docker-compose.caddy.yml"):
+                print("Error: docker-compose.caddy.yml not found for cloud deployment")
+                sys.exit(1)
+            cmd.extend(["-f", "docker-compose.caddy.yml"])
+            print("Cloud deployment: Including Caddy service")
+        elif deployment_type == "local":
+            print("Local deployment: Using base docker-compose.yml")
+        else:
+            print(f"Error: Invalid deployment type '{deployment_type}'")
+            sys.exit(1)
+    
+    # Handle legacy mode-based deployment
+    elif mode:
+        if mode == "dev":
+            if not os.path.exists("docker-compose.dev.yml"):
+                print("Error: docker-compose.dev.yml not found for development mode")
+                sys.exit(1)
+            cmd.extend(["-f", "docker-compose.dev.yml"])
+            print("Development mode: Using docker-compose.dev.yml")
+            
+        elif mode == "prod":
+            if not os.path.exists("docker-compose.yml"):
+                print("Error: docker-compose.yml not found for production mode")
+                sys.exit(1)
+            cmd.extend(["-f", "docker-compose.yml"])
+            print("Production mode: Using docker-compose.yml")
+        
+        else:
+            print(f"Error: Invalid mode '{mode}'")
+            sys.exit(1)
     
     else:
-        print(f"Error: Invalid mode '{mode}'")
+        print("Error: Either --mode or --type must be specified")
         sys.exit(1)
     
     # Add action (up/down)
@@ -95,9 +116,27 @@ def deploy_stack(mode, with_rag, action="up", project_name="pydantic-agent"):
     run_command(cmd)
     
     if action == "up":
-        print(f"\n✅ {mode.title()} deployment completed successfully!")
+        deployment_name = deployment_type or mode
+        print(f"\n✅ {deployment_name.title()} deployment completed successfully!")
         
-        if mode == "dev":
+        if deployment_type == "cloud":
+            print("\n📝 Cloud Deployment Notes:")
+            print("- Standalone deployment with integrated Caddy reverse proxy")
+            print("- Configure AGENT_API_HOSTNAME and FRONTEND_HOSTNAME in .env")
+            print("- Caddy will automatically provision SSL certificates")
+            print("- Services accessible via configured hostnames")
+            print("\n🔍 View logs: python deploy.py --type cloud --logs")
+            print("📊 Check status: python deploy.py --type cloud --ps")
+            
+        elif deployment_type == "local":
+            print("\n📝 Local Deployment Notes:")
+            print("- Frontend: http://localhost:3000")
+            print("- Agent API: http://localhost:8001")
+            print("- Using base docker-compose.yml configuration")
+            print("\n🔍 View logs: python deploy.py --type local --logs")
+            print("📊 Check status: python deploy.py --type local --ps")
+            
+        elif mode == "dev":
             print("\n📝 Development Deployment Notes:")
             print("- Frontend: http://localhost:3000")
             print("- Agent API: http://localhost:8001")
@@ -106,6 +145,8 @@ def deploy_stack(mode, with_rag, action="up", project_name="pydantic-agent"):
             if with_rag:
                 print("- RAG pipeline monitoring Google Drive and local directory")
                 print("- Configure watch paths in .env file")
+            print(f"\n🔍 View logs: python deploy.py --mode {mode} --logs")
+            print(f"📊 Check status: python deploy.py --mode {mode} --ps")
             
         elif mode == "prod":
             print("\n📝 Production Deployment Notes:")
@@ -115,12 +156,12 @@ def deploy_stack(mode, with_rag, action="up", project_name="pydantic-agent"):
             print("- No source code mounting")
             if with_rag:
                 print("- RAG pipeline running in production mode")
-        
-        print(f"\n🔍 View logs: python deploy.py --mode {mode} --logs")
-        print(f"📊 Check status: python deploy.py --mode {mode} --ps")
+            print(f"\n🔍 View logs: python deploy.py --mode {mode} --logs")
+            print(f"📊 Check status: python deploy.py --mode {mode} --ps")
             
     elif action == "down":
-        print(f"\n✅ {mode.title()} deployment stopped successfully!")
+        deployment_name = deployment_type or mode
+        print(f"\n✅ {deployment_name.title()} deployment stopped successfully!")
 
 def check_docker():
     """Check if Docker and Docker Compose are installed."""
@@ -147,25 +188,42 @@ Examples:
   # Production deployment  
   python deploy.py --mode prod
   
+  # Cloud deployment (standalone with Caddy)
+  python deploy.py --type cloud
+  
+  # Local deployment (without Caddy)
+  python deploy.py --type local
+  
   # Stop development deployment
   python deploy.py --down --mode dev
   
-  # Stop development deployment with RAG
-  python deploy.py --down --mode dev --with-rag
+  # Stop cloud deployment
+  python deploy.py --down --type cloud
   
-  # View logs
+  # View logs (mode-based)
   python deploy.py --mode dev --logs
+  
+  # View logs (type-based)
+  python deploy.py --type cloud --logs
   
   # Check status
   python deploy.py --mode dev --ps
         """
     )
     
-    parser.add_argument(
+    # Create mutually exclusive group for mode vs type
+    deployment_group = parser.add_mutually_exclusive_group(required=True)
+    
+    deployment_group.add_argument(
         '--mode', 
         choices=['dev', 'prod'], 
-        required=True,
         help='Deployment mode: dev (development) or prod (production)'
+    )
+    
+    deployment_group.add_argument(
+        '--type',
+        choices=['local', 'cloud'],
+        help='Deployment type: local (without Caddy) or cloud (with Caddy reverse proxy)'
     )
     
     parser.add_argument(
@@ -217,7 +275,13 @@ Examples:
         action = "up"
     
     # Deploy
-    deploy_stack(args.mode, args.with_rag, action, args.project)
+    deploy_stack(
+        mode=args.mode,
+        deployment_type=getattr(args, 'type', None),
+        with_rag=args.with_rag,
+        action=action,
+        project_name=args.project
+    )
 
 if __name__ == "__main__":
     main()

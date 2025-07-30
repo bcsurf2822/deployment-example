@@ -71,6 +71,56 @@ services:
     profiles:
       - simple  # This service only runs when 'simple' profile is specified
 
+  # Google Drive RAG Pipeline service
+  rag-google-drive:
+    build:
+      context: ./rag_pipeline
+      dockerfile: Dockerfile
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - GOOGLE_DRIVE_CREDENTIALS_JSON=${GOOGLE_DRIVE_CREDENTIALS_JSON}
+      - RAG_WATCH_FOLDER_ID=${RAG_WATCH_FOLDER_ID}
+      - RUN_MODE=${RUN_MODE}
+      - RAG_PIPELINE_ID=google-drive-pipeline
+      - RAG_SERVICE=google_drive
+      - DEBUG_MODE=${DEBUG_MODE:-false}
+    volumes:
+      - ./test_files:/app/test_files
+    restart: unless-stopped
+    profiles:
+      - with-rag
+
+  # Local Files RAG Pipeline service  
+  rag-local-files:
+    build:
+      context: ./rag_pipeline
+      dockerfile: Dockerfile
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - RAG_WATCH_DIRECTORY=/app/Local_Files/data
+      - RUN_MODE=${RUN_MODE}
+      - RAG_PIPELINE_ID=local-files-pipeline
+      - RAG_SERVICE=local_files
+      - DEBUG_MODE=${DEBUG_MODE:-false}
+    volumes:
+      - ./test_files:/app/test_files
+      - ${RAG_LOCAL_DIRECTORY:-./test_files}:/app/Local_Files/data
+    restart: unless-stopped
+    profiles:
+      - with-rag
+
 volumes:
   agent_data:
   agent_data_simple:

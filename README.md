@@ -471,13 +471,142 @@ python deploy.py --mode dev --ps
 curl http://localhost:8001/health
 ```
 
+## Launch an Docker Ubuntu Instance on Digital Ocean
+
+# DigitalOcean Docker Deployment Guide
+
+This guide walks you through setting up a secure DigitalOcean droplet and deploying your AI agent Docker Compose stack (frontend, RAG pipeline, and agent API).
+
+## Prerequisites
+
+- A DigitalOcean account with billing information
+- Access to the private GitHub repository `dynamous-community/ai-agent-mastery`
+- A new Supabase project and new API keys for services like your LLMs is recommended for production
+
+### Generate SSH Key Pair or use existing
+
+Generate an SSH key pair:
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "any key name"
+# Press Enter to accept default file location (~/.ssh/id_rsa)
+# Enter a passphrase for added security (optional but recommended)
+```
+
+This creates two files (id_rsa is the default name, you can change this too):
+
+- `~/.ssh/id_rsa` (private key - keep this secure!)
+- `~/.ssh/id_rsa.pub` (public key - this gets uploaded to DigitalOcean)
+
+View your public key with:
+
+```bash
+cat ~/.ssh/id_rsa.pub
+```
+
+## Step 1: Create Droplet
+
+1. Click **Create** in the top right → **Droplet**
+2. Configure your droplet:
+   - Choose your preferred region
+   - Select **Docker Ubuntu** from the Marketplace for the image
+   - Set up SSH key authentication (upload your public key)
+   - Give your droplet a hostname
+   - Click **Create Droplet**
+
+## Step 2: Initial Server Connection and Security Setup
+
+### Connect to Your Server
+
+```bash
+ssh root@[digitalocean-ip] -i [path-to-your-private-key]
+# Example: ssh root@192.168.1.100 -i C:\Users\colem\.ssh\dynamous-key
+```
+
+### Configure Basic Firewall
+
+Allow HTTP, HTTPS, and SSH traffic through the firewall:
+
+```bash
+ufw enable
+ufw allow 80 && ufw allow 443 && ufw allow 22
+ufw reload
+```
+
+## Step 3: Create Non-Root User and Configure Sudo Access
+
+Following security best practices, we'll create a regular user account instead of using root for daily operations.
+
+### Create New User
+
+```bash
+adduser <username>
+# Follow prompts to set password and user information
+```
+
+### Grant Sudo Privileges
+
+```bash
+usermod -aG sudo <username>
+```
+
+### Switch to New User
+
+```bash
+su - <username>
+```
+
+## Step 4: Set Up SSH Key Authentication for New User
+
+This step ensures you can log in as your new user using SSH keys, which is more secure than password authentication.
+
+### Create SSH Directory and Set Permissions
+
+```bash
+mkdir .ssh
+chmod 700 .ssh
+```
+
+### Add Your Public Key
+
+```bash
+nano .ssh/authorized_keys
+# Paste your public key from the .pub file created on your computer
+# Save with Ctrl+X, then Y, then Enter
+```
+
+### Secure the authorized_keys File
+
+```bash
+chmod 600 .ssh/authorized_keys
+```
+
+## Step 5: Disable Root Login (Security Hardening)
+
+This step prevents direct root access via SSH, forcing all users to log in with their own accounts and use `sudo` for administrative tasks.
+
+### Edit SSH Configuration
+
+```bash
+sudo nano /etc/ssh/sshd_config
+# Find the line: PermitRootLogin yes
+# Change it to: PermitRootLogin no
 ### Common Issues
 
 1. **RAG Permission Errors**: Ensure service role key is set and paths are correct
 2. **Frontend API Connection**: Verify `PYDANTIC_AGENT_API_URL` environment variable
 3. **Google Drive Auth**: Check service account credentials and folder permissions
 
-## 🚦 Production Deployment
+## Deploy Commands
+
+  ### Cloud deployment WITH RAG services
+  python deploy.py --type cloud --with-rag
+
+  ### Cloud deployment WITHOUT RAG (just frontend + API + Caddy)
+  python deploy.py --type cloud
+
+  ### Stop cloud deployment with RAG
+  python deploy.py --down --type cloud --with-rag
 
 ### Security Checklist
 
@@ -516,3 +645,4 @@ curl http://localhost:8001/health
 
 This project is licensed under the MIT License. See LICENSE file for details.
 # deployment-example
+```
