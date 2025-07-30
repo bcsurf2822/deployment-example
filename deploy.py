@@ -95,22 +95,26 @@ def deploy_stack(mode=None, deployment_type=None, with_rag=False, action="up", p
             cmd.extend(["--profile", "with-rag"])
             print("Including RAG pipeline services")
         cmd.extend(["up", "-d", "--build"])
-        print(f"Starting {mode} deployment with project name '{project_name}' (rebuilding containers)...")
+        deployment_name = deployment_type or mode
+        print(f"Starting {deployment_name} deployment with project name '{project_name}' (rebuilding containers)...")
     elif action == "down":
         if with_rag:
             # Profile must come before 'down' command
             cmd.extend(["--profile", "with-rag"])
             print("Including RAG pipeline services for shutdown")
         cmd.extend(["down"])
-        print(f"Stopping {mode} deployment with project name '{project_name}'...")
+        deployment_name = deployment_type or mode
+        print(f"Stopping {deployment_name} deployment with project name '{project_name}'...")
     elif action == "logs":
         if with_rag:
             cmd.extend(["--profile", "with-rag"])
         cmd.extend(["logs", "-f"])
-        print(f"Showing logs for {mode} deployment...")
+        deployment_name = deployment_type or mode
+        print(f"Showing logs for {deployment_name} deployment...")
     elif action == "ps":
         cmd.extend(["ps"])
-        print(f"Showing status for {mode} deployment...")
+        deployment_name = deployment_type or mode
+        print(f"Showing status for {deployment_name} deployment...")
     
     # Execute command
     run_command(cmd)

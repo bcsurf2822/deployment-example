@@ -6,11 +6,23 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+        - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        - NEXT_PUBLIC_AGENT_ENDPOINT=${NEXT_PUBLIC_AGENT_ENDPOINT}
+        - NEXT_PUBLIC_ENABLE_STREAMING=${NEXT_PUBLIC_ENABLE_STREAMING}
+    environment:
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_PYDANTIC_AGENT_API_URL=${NEXT_PUBLIC_PYDANTIC_AGENT_API_URL}
+      - PYDANTIC_AGENT_API_URL=http://agent-api:8001/api/pydantic-agent
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+      - NEXT_PUBLIC_ENABLE_STREAMING=${NEXT_PUBLIC_ENABLE_STREAMING}
     ports:
-      - "3000:80"
+      - "3000:3000"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3
