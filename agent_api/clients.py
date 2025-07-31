@@ -114,7 +114,7 @@ def get_supabase_client() -> Client:
     Returns:
         Supabase client instance
     """
-    url = settings.supabase_url.get_secret_value()
+    url = settings.supabase_url
     key = settings.supabase_key.get_secret_value()
     print(f"[SUPABASE-CLIENT] Attempting to connect with URL: {url[:30]}..." if url else "[SUPABASE-CLIENT] URL is empty!")
     print(f"[SUPABASE-CLIENT] Key present: {'Yes' if key else 'No'} (length: {len(key) if key else 0})")

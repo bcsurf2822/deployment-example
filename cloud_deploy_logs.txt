@@ -1,3 +1,18 @@
+[+] Running 12/12
+ ✔ rag-google-drive                             Built                                                                                                                                                           0.0s
+ ✔ rag-local-files                              Built                                                                                                                                                           0.0s
+ ✔ agent-api                                    Built                                                                                                                                                           0.0s
+ ✔ frontend                                     Built                                                                                                                                                           0.0s
+ ✔ Volume "pydantic-agent_caddy_data"           Created                                                                                                                                                         0.0s
+ ✔ Volume "pydantic-agent_caddy_config"         Created                                                                                                                                                         0.0s
+ ✔ Volume "pydantic-agent_agent_data"           Created                                                                                                                                                         0.0s
+ ✔ Container pydantic-agent-rag-google-drive-1  Started                                                                                                                                                         0.4s
+ ✔ Container pydantic-agent-rag-local-files-1   Started                                                                                                                                                         0.4s
+ ✘ Container pydantic-agent-agent-api-1         Error                                                                                                                                                          13.5s
+ ✔ Container pydantic-agent-frontend-1          Created                                                                                                                                                         0.0s
+ ✔ Container deployment-example-caddy           Created                                                                                                                                                         0.0s
+dependency failed to start: container pydantic-agent-agent-api-1 is unhealthy
+Command failed with exit code 1
 agentadmin@cloud-ai-example:~/deployment-example$ python3 deploy.py --type cloud --logs
 Cloud deployment: Including Caddy service
 Showing logs for cloud deployment...
@@ -13,20 +28,17 @@ agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
 agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
 agent-api-1  |     supabase = get_supabase_client()
 agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 111, in get_supabase_client
-agent-api-1  |     return create_client(
-agent-api-1  |            ^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 369, in create_client
-agent-api-1  |     return SyncClient.create(
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 101, in create
-agent-api-1  |     client = cls(supabase_url, supabase_key, options)
-agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 59, in __init__
-agent-api-1  |     raise SupabaseException("Invalid URL")
-agent-api-1  | supabase._sync.client.SupabaseException: Invalid URL
+agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
+agent-api-1  |     url = settings.supabase_url.get_secret_value()
+agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
 agent-api-1  |
 agent-api-1  | ERROR:    Application startup failed. Exiting.
+agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
+agent-api-1  | [SETTINGS-INIT] Environment variables:
+agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
+agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
+agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
 agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
 agent-api-1  | INFO:     Started server process [1]
 agent-api-1  | INFO:     Waiting for application startup.
@@ -39,20 +51,17 @@ agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
 agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
 agent-api-1  |     supabase = get_supabase_client()
 agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 111, in get_supabase_client
-agent-api-1  |     return create_client(
-agent-api-1  |            ^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 369, in create_client
-agent-api-1  |     return SyncClient.create(
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 101, in create
-agent-api-1  |     client = cls(supabase_url, supabase_key, options)
-agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 59, in __init__
-agent-api-1  |     raise SupabaseException("Invalid URL")
-agent-api-1  | supabase._sync.client.SupabaseException: Invalid URL
+agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
+agent-api-1  |     url = settings.supabase_url.get_secret_value()
+agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
 agent-api-1  |
 agent-api-1  | ERROR:    Application startup failed. Exiting.
+agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
+agent-api-1  | [SETTINGS-INIT] Environment variables:
+agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
+agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
+agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
 agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
 agent-api-1  | INFO:     Started server process [1]
 agent-api-1  | INFO:     Waiting for application startup.
@@ -65,20 +74,17 @@ agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
 agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
 agent-api-1  |     supabase = get_supabase_client()
 agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 111, in get_supabase_client
-agent-api-1  |     return create_client(
-agent-api-1  |            ^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 369, in create_client
-agent-api-1  |     return SyncClient.create(
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 101, in create
-agent-api-1  |     client = cls(supabase_url, supabase_key, options)
-agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 59, in __init__
-agent-api-1  |     raise SupabaseException("Invalid URL")
-agent-api-1  | supabase._sync.client.SupabaseException: Invalid URL
+agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
+agent-api-1  |     url = settings.supabase_url.get_secret_value()
+agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
 agent-api-1  |
 agent-api-1  | ERROR:    Application startup failed. Exiting.
+agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
+agent-api-1  | [SETTINGS-INIT] Environment variables:
+agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
+agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
+agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
 agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
 agent-api-1  | INFO:     Started server process [1]
 agent-api-1  | INFO:     Waiting for application startup.
@@ -91,20 +97,17 @@ agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
 agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
 agent-api-1  |     supabase = get_supabase_client()
 agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 111, in get_supabase_client
-agent-api-1  |     return create_client(
-agent-api-1  |            ^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 369, in create_client
-agent-api-1  |     return SyncClient.create(
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 101, in create
-agent-api-1  |     client = cls(supabase_url, supabase_key, options)
-agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 59, in __init__
-agent-api-1  |     raise SupabaseException("Invalid URL")
-agent-api-1  | supabase._sync.client.SupabaseException: Invalid URL
+agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
+agent-api-1  |     url = settings.supabase_url.get_secret_value()
+agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
 agent-api-1  |
 agent-api-1  | ERROR:    Application startup failed. Exiting.
+agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
+agent-api-1  | [SETTINGS-INIT] Environment variables:
+agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
+agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
+agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
 agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
 agent-api-1  | INFO:     Started server process [1]
 agent-api-1  | INFO:     Waiting for application startup.
@@ -117,20 +120,17 @@ agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
 agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
 agent-api-1  |     supabase = get_supabase_client()
 agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 111, in get_supabase_client
-agent-api-1  |     return create_client(
-agent-api-1  |            ^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 369, in create_client
-agent-api-1  |     return SyncClient.create(
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 101, in create
-agent-api-1  |     client = cls(supabase_url, supabase_key, options)
-agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 59, in __init__
-agent-api-1  |     raise SupabaseException("Invalid URL")
-agent-api-1  | supabase._sync.client.SupabaseException: Invalid URL
+agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
+agent-api-1  |     url = settings.supabase_url.get_secret_value()
+agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
 agent-api-1  |
 agent-api-1  | ERROR:    Application startup failed. Exiting.
+agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
+agent-api-1  | [SETTINGS-INIT] Environment variables:
+agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
+agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
+agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
 agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
 agent-api-1  | INFO:     Started server process [1]
 agent-api-1  | INFO:     Waiting for application startup.
@@ -143,20 +143,17 @@ agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
 agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
 agent-api-1  |     supabase = get_supabase_client()
 agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 111, in get_supabase_client
-agent-api-1  |     return create_client(
-agent-api-1  |            ^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 369, in create_client
-agent-api-1  |     return SyncClient.create(
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 101, in create
-agent-api-1  |     client = cls(supabase_url, supabase_key, options)
-agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 59, in __init__
-agent-api-1  |     raise SupabaseException("Invalid URL")
-agent-api-1  | supabase._sync.client.SupabaseException: Invalid URL
+agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
+agent-api-1  |     url = settings.supabase_url.get_secret_value()
+agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
 agent-api-1  |
 agent-api-1  | ERROR:    Application startup failed. Exiting.
+agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
+agent-api-1  | [SETTINGS-INIT] Environment variables:
+agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
+agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
+agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
 agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
 agent-api-1  | INFO:     Started server process [1]
 agent-api-1  | INFO:     Waiting for application startup.
@@ -169,21 +166,19 @@ agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
 agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
 agent-api-1  |     supabase = get_supabase_client()
 agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 111, in get_supabase_client
-agent-api-1  |     return create_client(
-agent-api-1  |            ^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 369, in create_client
-agent-api-1  |     return SyncClient.create(
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 101, in create
-agent-api-1  |     client = cls(supabase_url, supabase_key, options)
-agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 59, in __init__
-agent-api-1  |     raise SupabaseException("Invalid URL")
-agent-api-1  | supabase._sync.client.SupabaseException: Invalid URL
+agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
+agent-api-1  |     url = settings.supabase_url.get_secret_value()
+agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
 agent-api-1  |
 agent-api-1  | ERROR:    Application startup failed. Exiting.
+agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
+agent-api-1  | [SETTINGS-INIT] Environment variables:
+agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
+agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
+agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
 agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
+agent-api-1 exited with code 3
 agent-api-1  | INFO:     Started server process [1]
 agent-api-1  | INFO:     Waiting for application startup.
 agent-api-1  | ERROR:    Traceback (most recent call last):
@@ -195,97 +190,16 @@ agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
 agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
 agent-api-1  |     supabase = get_supabase_client()
 agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 111, in get_supabase_client
-agent-api-1  |     return create_client(
-agent-api-1  |            ^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 369, in create_client
-agent-api-1  |     return SyncClient.create(
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 101, in create
-agent-api-1  |     client = cls(supabase_url, supabase_key, options)
-agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 59, in __init__
-agent-api-1  |     raise SupabaseException("Invalid URL")
-agent-api-1  | supabase._sync.client.SupabaseException: Invalid URL
+agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
+agent-api-1  |     url = settings.supabase_url.get_secret_value()
+agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
 agent-api-1  |
 agent-api-1  | ERROR:    Application startup failed. Exiting.
+agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
+agent-api-1  | [SETTINGS-INIT] Environment variables:
+agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
+agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
+agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
 agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agent-api-1  | INFO:     Started server process [1]
-agent-api-1  | INFO:     Waiting for application startup.
-agent-api-1  | ERROR:    Traceback (most recent call last):
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-agent-api-1  |     async with self.lifespan_context(app) as maybe_state:
-agent-api-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-agent-api-1  |     return await anext(self.gen)
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
-agent-api-1  |     supabase = get_supabase_client()
-agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 111, in get_supabase_client
-agent-api-1  |     return create_client(
-agent-api-1  |            ^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 369, in create_client
-agent-api-1  |     return SyncClient.create(
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 101, in create
-agent-api-1  |     client = cls(supabase_url, supabase_key, options)
-agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 59, in __init__
-agent-api-1  |     raise SupabaseException("Invalid URL")
-agent-api-1  | supabase._sync.client.SupabaseException: Invalid URL
-agent-api-1  |
-agent-api-1  | ERROR:    Application startup failed. Exiting.
-agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agent-api-1  | INFO:     Started server process [1]
-agent-api-1  | INFO:     Waiting for application startup.
-agent-api-1  | ERROR:    Traceback (most recent call last):
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-agent-api-1  |     async with self.lifespan_context(app) as maybe_state:
-agent-api-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-agent-api-1  |     return await anext(self.gen)
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
-agent-api-1  |     supabase = get_supabase_client()
-agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 111, in get_supabase_client
-agent-api-1  |     return create_client(
-agent-api-1  |            ^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 369, in create_client
-agent-api-1  |     return SyncClient.create(
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 101, in create
-agent-api-1  |     client = cls(supabase_url, supabase_key, options)
-agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 59, in __init__
-agent-api-1  |     raise SupabaseException("Invalid URL")
-agent-api-1  | supabase._sync.client.SupabaseException: Invalid URL
-agent-api-1  |
-agent-api-1  | ERROR:    Application startup failed. Exiting.
-agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agent-api-1  | INFO:     Started server process [1]
-agent-api-1  | INFO:     Waiting for application startup.
-agent-api-1  | ERROR:    Traceback (most recent call last):
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-agent-api-1  |     async with self.lifespan_context(app) as maybe_state:
-agent-api-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-agent-api-1  |     return await anext(self.gen)
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
-agent-api-1  |     supabase = get_supabase_client()
-agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 111, in get_supabase_client
-agent-api-1  |     return create_client(
-agent-api-1  |            ^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 369, in create_client
-agent-api-1  |     return SyncClient.create(
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 101, in create
-agent-api-1  |     client = cls(supabase_url, supabase_key, options)
-agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py", line 59, in __init__
-agent-api-1  |     raise SupabaseException("Invalid URL")
-agent-api-1  | supabase._sync.client.SupabaseException: Invalid URL
-agent-api-1  |
-agent-api-1  | ERROR:    Application startup failed. Exiting.
-agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agentadmin@cloud-ai-example:~/deployment-example$
+agent-api-1 exited with code 3
