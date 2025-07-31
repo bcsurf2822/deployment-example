@@ -1,205 +1,82 @@
-[+] Running 12/12
- ✔ rag-google-drive                             Built                                                                                                                                                           0.0s
- ✔ rag-local-files                              Built                                                                                                                                                           0.0s
- ✔ agent-api                                    Built                                                                                                                                                           0.0s
- ✔ frontend                                     Built                                                                                                                                                           0.0s
- ✔ Volume "pydantic-agent_caddy_data"           Created                                                                                                                                                         0.0s
- ✔ Volume "pydantic-agent_caddy_config"         Created                                                                                                                                                         0.0s
- ✔ Volume "pydantic-agent_agent_data"           Created                                                                                                                                                         0.0s
- ✔ Container pydantic-agent-rag-google-drive-1  Started                                                                                                                                                         0.4s
- ✔ Container pydantic-agent-rag-local-files-1   Started                                                                                                                                                         0.4s
- ✘ Container pydantic-agent-agent-api-1         Error                                                                                                                                                          13.5s
- ✔ Container pydantic-agent-frontend-1          Created                                                                                                                                                         0.0s
- ✔ Container deployment-example-caddy           Created                                                                                                                                                         0.0s
-dependency failed to start: container pydantic-agent-agent-api-1 is unhealthy
-Command failed with exit code 1
-agentadmin@cloud-ai-example:~/deployment-example$ python3 deploy.py --type cloud --logs
-Cloud deployment: Including Caddy service
-Showing logs for cloud deployment...
-Running: docker compose -p pydantic-agent -f docker-compose.yml -f docker-compose.caddy.yml logs -f
-agent-api-1  | INFO:     Started server process [1]
-agent-api-1  | INFO:     Waiting for application startup.
-agent-api-1  | ERROR:    Traceback (most recent call last):
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-agent-api-1  |     async with self.lifespan_context(app) as maybe_state:
-agent-api-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-agent-api-1  |     return await anext(self.gen)
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
-agent-api-1  |     supabase = get_supabase_client()
-agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
-agent-api-1  |     url = settings.supabase_url.get_secret_value()
-agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
-agent-api-1  |
-agent-api-1  | ERROR:    Application startup failed. Exiting.
-agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
-agent-api-1  | [SETTINGS-INIT] Environment variables:
-agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
-agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
-agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
-agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agent-api-1  | INFO:     Started server process [1]
-agent-api-1  | INFO:     Waiting for application startup.
-agent-api-1  | ERROR:    Traceback (most recent call last):
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-agent-api-1  |     async with self.lifespan_context(app) as maybe_state:
-agent-api-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-agent-api-1  |     return await anext(self.gen)
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
-agent-api-1  |     supabase = get_supabase_client()
-agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
-agent-api-1  |     url = settings.supabase_url.get_secret_value()
-agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
-agent-api-1  |
-agent-api-1  | ERROR:    Application startup failed. Exiting.
-agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
-agent-api-1  | [SETTINGS-INIT] Environment variables:
-agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
-agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
-agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
-agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agent-api-1  | INFO:     Started server process [1]
-agent-api-1  | INFO:     Waiting for application startup.
-agent-api-1  | ERROR:    Traceback (most recent call last):
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-agent-api-1  |     async with self.lifespan_context(app) as maybe_state:
-agent-api-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-agent-api-1  |     return await anext(self.gen)
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
-agent-api-1  |     supabase = get_supabase_client()
-agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
-agent-api-1  |     url = settings.supabase_url.get_secret_value()
-agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
-agent-api-1  |
-agent-api-1  | ERROR:    Application startup failed. Exiting.
-agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
-agent-api-1  | [SETTINGS-INIT] Environment variables:
-agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
-agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
-agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
-agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agent-api-1  | INFO:     Started server process [1]
-agent-api-1  | INFO:     Waiting for application startup.
-agent-api-1  | ERROR:    Traceback (most recent call last):
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-agent-api-1  |     async with self.lifespan_context(app) as maybe_state:
-agent-api-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-agent-api-1  |     return await anext(self.gen)
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
-agent-api-1  |     supabase = get_supabase_client()
-agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
-agent-api-1  |     url = settings.supabase_url.get_secret_value()
-agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
-agent-api-1  |
-agent-api-1  | ERROR:    Application startup failed. Exiting.
-agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
-agent-api-1  | [SETTINGS-INIT] Environment variables:
-agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
-agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
-agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
-agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agent-api-1  | INFO:     Started server process [1]
-agent-api-1  | INFO:     Waiting for application startup.
-agent-api-1  | ERROR:    Traceback (most recent call last):
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-agent-api-1  |     async with self.lifespan_context(app) as maybe_state:
-agent-api-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-agent-api-1  |     return await anext(self.gen)
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
-agent-api-1  |     supabase = get_supabase_client()
-agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
-agent-api-1  |     url = settings.supabase_url.get_secret_value()
-agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
-agent-api-1  |
-agent-api-1  | ERROR:    Application startup failed. Exiting.
-agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
-agent-api-1  | [SETTINGS-INIT] Environment variables:
-agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
-agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
-agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
-agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agent-api-1  | INFO:     Started server process [1]
-agent-api-1  | INFO:     Waiting for application startup.
-agent-api-1  | ERROR:    Traceback (most recent call last):
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-agent-api-1  |     async with self.lifespan_context(app) as maybe_state:
-agent-api-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-agent-api-1  |     return await anext(self.gen)
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
-agent-api-1  |     supabase = get_supabase_client()
-agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
-agent-api-1  |     url = settings.supabase_url.get_secret_value()
-agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
-agent-api-1  |
-agent-api-1  | ERROR:    Application startup failed. Exiting.
-agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
-agent-api-1  | [SETTINGS-INIT] Environment variables:
-agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
-agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
-agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
-agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agent-api-1  | INFO:     Started server process [1]
-agent-api-1  | INFO:     Waiting for application startup.
-agent-api-1  | ERROR:    Traceback (most recent call last):
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-agent-api-1  |     async with self.lifespan_context(app) as maybe_state:
-agent-api-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-agent-api-1  |     return await anext(self.gen)
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
-agent-api-1  |     supabase = get_supabase_client()
-agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
-agent-api-1  |     url = settings.supabase_url.get_secret_value()
-agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
-agent-api-1  |
-agent-api-1  | ERROR:    Application startup failed. Exiting.
-agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
-agent-api-1  | [SETTINGS-INIT] Environment variables:
-agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
-agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
-agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
-agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agent-api-1 exited with code 3
-agent-api-1  | INFO:     Started server process [1]
-agent-api-1  | INFO:     Waiting for application startup.
-agent-api-1  | ERROR:    Traceback (most recent call last):
-agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 694, in lifespan
-agent-api-1  |     async with self.lifespan_context(app) as maybe_state:
-agent-api-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
-agent-api-1  |     return await anext(self.gen)
-agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/agent_api.py", line 66, in lifespan
-agent-api-1  |     supabase = get_supabase_client()
-agent-api-1  |                ^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  |   File "/app/clients.py", line 117, in get_supabase_client
-agent-api-1  |     url = settings.supabase_url.get_secret_value()
-agent-api-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-agent-api-1  | AttributeError: 'str' object has no attribute 'get_secret_value'
-agent-api-1  |
-agent-api-1  | ERROR:    Application startup failed. Exiting.
-agent-api-1  | [SETTINGS-INIT] Creating Settings instance...
-agent-api-1  | [SETTINGS-INIT] Environment variables:
-agent-api-1  | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
-agent-api-1  | [SETTINGS-INIT] SUPABASE_KEY: SET
-agent-api-1  | [SETTINGS-INIT] DATABASE_URL: SET
-agent-api-1  | [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-agent-api-1 exited with code 3
+deployment-example-caddy  | {"level":"info","ts":1753959161.721279,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959161.7216752,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959161.7238872,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959161.7242851,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959162.4222116,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959162.4299223,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959162.430488,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959162.430662,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959163.1501012,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959163.1509356,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959163.1520743,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959163.1523242,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959163.9830072,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959163.983209,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959163.9836035,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959163.9837205,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959165.1019855,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959165.1025927,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959165.102828,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959165.1032052,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959166.9581058,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959166.9585187,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959166.9588988,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959166.9590375,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959170.4039361,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+frontend-1                |
+frontend-1                | > pydantic-demo@0.1.0 start
+frontend-1                | > next start
+frontend-1                |
+frontend-1                |    ▲ Next.js 15.4.2
+frontend-1                |    - Local:        http://localhost:3000
+frontend-1                |    - Network:      http://172.18.0.5:3000
+frontend-1                |
+frontend-1                |  ✓ Starting...
+frontend-1                |  ✓ Ready in 725ms
+deployment-example-caddy  | {"level":"info","ts":1753959170.4044914,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959170.4050524,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959170.405372,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959177.135873,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959177.1362648,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959177.1367202,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959177.1369781,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959190.1934144,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959190.193592,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959190.194008,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959190.1942425,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959216.0367281,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959216.0372458,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959216.0373785,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959216.0376437,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959267.5253844,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959267.5258832,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959267.526009,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959267.5264313,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959327.8261504,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959327.8266475,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959327.8270473,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959327.8272903,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959388.069331,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959388.0695212,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959388.0695958,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959388.0697951,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy  | {"level":"info","ts":1753959448.3258984,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
+deployment-example-caddy  | {"level":"info","ts":1753959448.3270664,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
+deployment-example-caddy  | {"level":"info","ts":1753959448.3275344,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+deployment-example-caddy  | {"level":"info","ts":1753959448.328043,"msg":"maxprocs: No GOMAXPROCS change to reset"}
+deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
+deployment-example-caddy exited with code 1
+agent-api-1               | INFO:     127.0.0.1:54530 - "GET /health HTTP/1.1" 200 OK
