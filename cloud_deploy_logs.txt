@@ -1,0 +1,70 @@
+ exited with code 1
+agent-api-1  | Traceback (most recent call last):
+agent-api-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+agent-api-1  |     sys.exit(main())
+agent-api-1  |              ^^^^^^
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1442, in __call__
+agent-api-1  |     return self.main(*args, **kwargs)
+agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1363, in main
+agent-api-1  |     rv = self.invoke(ctx)
+agent-api-1  |          ^^^^^^^^^^^^^^^^
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1226, in invoke
+agent-api-1  |     return ctx.invoke(self.callback, **ctx.params)
+agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 794, in invoke
+agent-api-1  |     return callback(*args, **kwargs)
+agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+agent-api-1  |     run(
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+agent-api-1  |     server.run()
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 67, in run
+agent-api-1  |     return asyncio.run(self.serve(sockets=sockets))
+agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+agent-api-1  |     return runner.run(main)
+agent-api-1  |            ^^^^^^^^^^^^^^^^
+agent-api-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+agent-api-1  |     return self._loop.run_until_complete(task)
+agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 71, in serve
+agent-api-1  |     await self._serve(sockets)
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 78, in _serve
+agent-api-1  |     config.load()
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 436, in load
+agent-api-1  |     self.loaded_app = import_from_string(self.app)
+agent-api-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+agent-api-1  |     module = importlib.import_module(module_str)
+agent-api-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+agent-api-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+agent-api-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+agent-api-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+agent-api-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+agent-api-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+agent-api-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+agent-api-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+agent-api-1  |   File "/app/agent_api.py", line 22, in <module>
+agent-api-1  |     from agent import agent, search
+agent-api-1  |   File "/app/agent.py", line 15, in <module>
+agent-api-1  |     from clients import settings, setup_openai_env
+agent-api-1  |   File "/app/clients.py", line 101, in <module>
+agent-api-1  |     settings = Settings()
+agent-api-1  |                ^^^^^^^^^^
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/pydantic_settings/main.py", line 188, in __init__
+agent-api-1  |     super().__init__(
+agent-api-1  |   File "/usr/local/lib/python3.11/site-packages/pydantic/main.py", line 253, in __init__
+agent-api-1  |     validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+agent-api-1  |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-1  | pydantic_core._pydantic_core.ValidationError: 2 validation errors for Settings
+agent-api-1  | SUPABASE_KEY
+agent-api-1  |   Field required [type=missing, input_value={'OPENAI_API_KEY': 'sk-pr..., 'DEBUG_MODE': 'false'}, input_type=dict]
+agent-api-1  |     For further information visit https://errors.pydantic.dev/2.11/v/missing
+agent-api-1  | DATABASE_URL
+agent-api-1  |   Field required [type=missing, input_value={'OPENAI_API_KEY': 'sk-pr..., 'DEBUG_MODE': 'false'}, input_type=dict]
+agent-api-1  |     For further information visit https://errors.pydantic.dev/2.11/v/missing
+agent-api-1 exited with code 1
