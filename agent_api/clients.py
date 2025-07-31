@@ -98,6 +98,12 @@ class Settings(BaseSettings):
 
 
 # Create a singleton instance
+print("[SETTINGS-INIT] Creating Settings instance...")
+print(f"[SETTINGS-INIT] Environment variables:")
+import os
+print(f"[SETTINGS-INIT] SUPABASE_URL: {os.environ.get('SUPABASE_URL', 'NOT SET')}")
+print(f"[SETTINGS-INIT] SUPABASE_KEY: {'SET' if os.environ.get('SUPABASE_KEY') else 'NOT SET'}")
+print(f"[SETTINGS-INIT] DATABASE_URL: {'SET' if os.environ.get('DATABASE_URL') else 'NOT SET'}")
 settings = Settings()
 
 
@@ -108,10 +114,11 @@ def get_supabase_client() -> Client:
     Returns:
         Supabase client instance
     """
-    return create_client(
-        settings.supabase_url,
-        settings.supabase_key.get_secret_value()
-    )
+    url = settings.supabase_url.get_secret_value()
+    key = settings.supabase_key.get_secret_value()
+    print(f"[SUPABASE-CLIENT] Attempting to connect with URL: {url[:30]}..." if url else "[SUPABASE-CLIENT] URL is empty!")
+    print(f"[SUPABASE-CLIENT] Key present: {'Yes' if key else 'No'} (length: {len(key) if key else 0})")
+    return create_client(url, key)
 
 
 def get_openai_client() -> AsyncOpenAI:
