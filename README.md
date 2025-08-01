@@ -600,13 +600,22 @@ sudo nano /etc/ssh/sshd_config
 ## Deploy Commands
 
   ### Cloud deployment WITH RAG services
-  python deploy.py --type cloud --with-rag
+  python3 deploy.py --type cloud --with-rag
 
   ### Cloud deployment WITHOUT RAG (just frontend + API + Caddy)
-  python deploy.py --type cloud
+  python3 deploy.py --type cloud
 
   ### Stop cloud deployment with RAG
-  python deploy.py --down --type cloud --with-rag
+  python3 deploy.py --down --type cloud --with-rag
+
+  ### Stop Everything
+  # 1. Stop everything
+  docker-compose down
+  docker stop $(docker ps -aq)
+
+
+  # 3. Start services with the Caddy configuration
+  docker compose -f docker compose.yml -f docker-compose.caddy.yml up -d
 
 ### Security Checklist
 

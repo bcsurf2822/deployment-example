@@ -1,82 +1,93 @@
-deployment-example-caddy  | {"level":"info","ts":1753959161.721279,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959161.7216752,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959161.7238872,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959161.7242851,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959162.4222116,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959162.4299223,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959162.430488,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959162.430662,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959163.1501012,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959163.1509356,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959163.1520743,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959163.1523242,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959163.9830072,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959163.983209,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959163.9836035,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959163.9837205,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959165.1019855,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959165.1025927,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959165.102828,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959165.1032052,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959166.9581058,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959166.9585187,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959166.9588988,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959166.9590375,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959170.4039361,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-frontend-1                |
-frontend-1                | > pydantic-demo@0.1.0 start
-frontend-1                | > next start
-frontend-1                |
-frontend-1                |    ▲ Next.js 15.4.2
-frontend-1                |    - Local:        http://localhost:3000
-frontend-1                |    - Network:      http://172.18.0.5:3000
-frontend-1                |
-frontend-1                |  ✓ Starting...
-frontend-1                |  ✓ Ready in 725ms
-deployment-example-caddy  | {"level":"info","ts":1753959170.4044914,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959170.4050524,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959170.405372,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959177.135873,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959177.1362648,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959177.1367202,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959177.1369781,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959190.1934144,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959190.193592,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959190.194008,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959190.1942425,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959216.0367281,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959216.0372458,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959216.0373785,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959216.0376437,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959267.5253844,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959267.5258832,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959267.526009,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959267.5264313,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959327.8261504,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959327.8266475,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959327.8270473,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959327.8272903,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959388.069331,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959388.0695212,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959388.0695958,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959388.0697951,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy  | {"level":"info","ts":1753959448.3258984,"msg":"maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined"}
-deployment-example-caddy  | {"level":"info","ts":1753959448.3270664,"msg":"GOMEMLIMIT is updated","package":"github.com/KimMachineGun/automemlimit/memlimit","GOMEMLIMIT":3691653120,"previous":9223372036854775807}
-deployment-example-caddy  | {"level":"info","ts":1753959448.3275344,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
-deployment-example-caddy  | {"level":"info","ts":1753959448.328043,"msg":"maxprocs: No GOMAXPROCS change to reset"}
-deployment-example-caddy  | Error: adapting config using caddyfile: server block without any key is global configuration, and if used, it must be first
-deployment-example-caddy exited with code 1
-agent-api-1               | INFO:     127.0.0.1:54530 - "GET /health HTTP/1.1" 200 OK
+docker -ps 
+CONTAINER ID   IMAGE                             COMMAND                  CREATED         STATUS                          PORTS                                         NAMES
+3edcc163729c   caddy:2-alpine                    "caddy run --config …"   5 minutes ago   Restarting (1) 25 seconds ago                                                 deployment-example-caddy
+d9dc3e1c022a   pydantic-agent-frontend           "docker-entrypoint.s…"   5 minutes ago   Up 5 minutes (healthy)          0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp   pydantic-agent-frontend-1
+642aeed53845   pydantic-agent-rag-local-files    "/app/entrypoint.sh"     5 minutes ago   Up 5 minutes (healthy)                                                        pydantic-agent-rag-local-files-1
+496e951b396a   pydantic-agent-rag-google-drive   "/app/entrypoint.sh"     5 minutes ago   Restarting (2) 13 seconds ago                                                 pydantic-agent-rag-google-drive-1
+a9a2cd53c81c   pydantic-agent-agent-api          "uvicorn agent_api:a…"   5 minutes ago   Up 5 minutes (healthy)          0.0.0.0:8001->8001/tcp, [::]:8001->8001/tcp   pydantic-agent-agent-api-1
+
+
+  2. Check if Caddy is running and 
+  listening on ports:
+  docker-compose logs caddy
+  netstat -tlnp | grep -E ':80|:443'
+
+  agentadmin@cloud-ai-example:~/deployment-example$ docker compose logs caddy
+no such service: caddy
+agentadmin@cloud-ai-example:~/deployment-example$ docker compose logs deployment-example-caddy
+no such service: deployment-example-caddy
+agentadmin@cloud-ai-example:~/deployment-example$ netstat -tlnp | grep -E ':80|:443'
+Command 'netstat' not found, but can be installed with:
+sudo apt install net-tools
+agentadmin@cloud-ai-example:~/deployment-example$
+
+
+
+sudo ufw STATUS
+
+Status: active
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     LIMIT       Anywhere
+2375/tcp                   ALLOW       Anywhere
+2376/tcp                   ALLOW       Anywhere
+80                         ALLOW       Anywhere
+443                        ALLOW       Anywhere
+22                         ALLOW       Anywhere
+80/tcp                     ALLOW       Anywhere
+443/tcp                    ALLOW       Anywhere
+22/tcp (v6)                LIMIT       Anywhere (v6)
+2375/tcp (v6)              ALLOW       Anywhere (v6)
+2376/tcp (v6)              ALLOW       Anywhere (v6)
+80 (v6)                    ALLOW       Anywhere (v6)
+443 (v6)                   ALLOW       Anywhere (v6)
+22 (v6)                    ALLOW       Anywhere (v6)
+80/tcp (v6)                ALLOW       Anywhere (v6)
+443/tcp (v6)               ALLOW       Anywhere (v6)
+
+
+  sudo ufw allow 80
+  sudo ufw allow 443
+
+  agentadmin@cloud-ai-example:~/deployment-example$ sudo ufw allow 80
+Skipping adding existing rule
+Skipping adding existing rule (v6)
+agentadmin@cloud-ai-example:~/deployment-example$ sudo ufw allow 443
+Skipping adding existing rule
+Skipping adding existing rule (v6)
+
+
+sudo iptables
+
+agentadmin@cloud-ai-example:~/deployment-example$ sudo iptables -L -n | grep -E '80|443'
+ACCEPT     tcp  --  0.0.0.0/0            172.18.0.2           tcp dpt:8001
+ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:80
+ACCEPT     udp  --  0.0.0.0/0            0.0.0.0/0            udp dpt:80
+ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:443
+ACCEPT     udp  --  0.0.0.0/0            0.0.0.0/0            udp dpt:443
+ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:80
+ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:443
+agentadmin@cloud-ai-example:~/deployment-example$
+
+
+  docker-compose up -d
+
+
+  [+] Running 5/6
+ ✔ agent-api                                 Built                                                                                                                                                                    0.0s
+ ✔ frontend                                  Built                                                                                                                                                                    0.0s
+ ✔ Network deployment-example_default        Created                                                                                                                                                                  0.0s
+ ✔ Volume "deployment-example_agent_data"    Created                                                                                                                                                                  0.0s
+ ⠸ Container deployment-example-agent-api-1  Starting                                                                                                                                                                 0.3s
+ ✔ Container deployment-example-frontend-1   Created                                                                                                                                                                  0.0s
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint deployment-example-agent-api-1 (5142fbb3ba97b97c4da8a932064ab8f9fbcdc0900395e79da46d3094d3576980): Bind for 0.0.0.0:8001 failed: port is already allocated
+
+
+  5. Verify Caddy can access the internet
+   for Let's Encrypt:
+  docker-compose exec caddy ping
+  google.com
+
+  agentadmin@cloud-ai-example:~/deployment-example$ docker compose exec caddy ping google.com
+service "caddy" is not running
