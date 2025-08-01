@@ -610,9 +610,13 @@ sudo nano /etc/ssh/sshd_config
 
   ### Stop Everything
   # 1. Stop everything
-  docker-compose down
+  docker compose down
   docker stop $(docker ps -aq)
 
+AGENT_API_HOSTNAME=agent.benjamincorbettnj.dev \
+FRONTEND_HOSTNAME=chat.benjamincorbettnj.dev \
+LETSENCRYPT_EMAIL=ben.corbett@benjamincorbettnj.dev \
+docker compose -f docker-compose.yml -f docker-compose.caddy.yml up -d
 
   # 3. Start services with the Caddy configuration
   docker compose -f docker compose.yml -f docker-compose.caddy.yml up -d
