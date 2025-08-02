@@ -59,21 +59,33 @@ export default function ChatLayout() {
     setIsLoading(true);
     setError(null);
 
-    console.log("[ChatLayout-handleSendMessage] Sending message with files:", files?.length || 0);
+    console.log("[ChatLayout-handleSendMessage] Starting request");
+    console.log("[ChatLayout-handleSendMessage] User ID:", user.id);
+    console.log("[ChatLayout-handleSendMessage] Session ID:", sessionId);
+    console.log("[ChatLayout-handleSendMessage] Query:", userMessage.message.content);
+    console.log("[ChatLayout-handleSendMessage] Files count:", files?.length || 0);
+
+    const requestBody = {
+      query: userMessage.message.content,
+      user_id: user.id,
+      session_id: sessionId,
+      files: files,
+    };
+
+    console.log("[ChatLayout-handleSendMessage] Request body:", JSON.stringify(requestBody, null, 2));
 
     try {
+      console.log("[ChatLayout-handleSendMessage] Making fetch request to /api/chat");
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          query: userMessage.message.content,
-          user_id: user.id,
-          session_id: sessionId,
-          files: files,
-        }),
+        body: JSON.stringify(requestBody),
       });
+
+      console.log("[ChatLayout-handleSendMessage] Response status:", response.status);
+      console.log("[ChatLayout-handleSendMessage] Response headers:", Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         const errorData = await response.json();

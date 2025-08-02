@@ -3,18 +3,24 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
+    console.log("[API-CHAT] Starting chat request");
     const supabase = await createClient();
 
     // Get the authenticated user
     const {
       data: { user },
+      error: userError
     } = await supabase.auth.getUser();
 
+    console.log("[API-CHAT] Auth user result:", { user: user?.id, error: userError });
+
     if (!user) {
+      console.log("[API-CHAT] No authenticated user found");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
+    console.log("[API-CHAT] Request body:", body);
     const { query, session_id, files } = body;
 
     if (!query || !session_id) {
@@ -74,6 +80,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log("[API-CHAT] Token prefix:", session.access_token.substring(0, 20) + "...");
+    console.log("[API-CHAT] User ID from session:", user.id);
 
     // Forward the request to the Pydantic agent API
     // Use internal Docker service name if available, otherwise fallback to public URL
@@ -95,6 +102,10 @@ export async function POST(request: NextRequest) {
     };
 
     console.log("[API-CHAT] Sending request to:", apiUrl);
+    console.log("[API-CHAT] Headers:", {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.access_token.substring(0, 20)}...`,
+    });
     console.log("[API-CHAT] Payload:", payload);
 
     const response = await fetch(apiUrl, {
