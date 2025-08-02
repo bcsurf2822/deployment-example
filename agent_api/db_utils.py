@@ -49,7 +49,6 @@ async def convert_history_to_pydantic_format(conversation_history):
         elif msg.get("message") and msg["message"].get("type") == "human":
             try:
                 # Create a user message in the format expected by Pydantic AI
-                from pydantic_ai.messages import UserMessage
                 user_message = {
                     "parts": [{"content": msg["message"]["content"], "part_kind": "user-prompt"}],
                     "instructions": None,

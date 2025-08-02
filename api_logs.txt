@@ -1,19 +1,19 @@
-INFO:     Started server process [1]
-INFO:     Waiting for application startup.
-INFO:mem0.vector_stores.supabase:Creating new collection: mem0_memories
-INFO:mem0.vector_stores.supabase:Successfully created collection mem0_memories with dimension 1536
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-[SETTINGS-INIT] Creating Settings instance...
-[SETTINGS-INIT] Environment variables:
-[SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
-[SETTINGS-INIT] SUPABASE_ANON_KEY: SET
-[SETTINGS-INIT] SUPABASE_SERVICE_ROLE_KEY: SET
-[SETTINGS-INIT] DATABASE_URL: SET
-[AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-[SUPABASE-CLIENT] Creating service_role client with URL: https://twmblugjwlcndyjozuwd.s...
-[SUPABASE-CLIENT] Key present: Yes (length: 219)
-INFO:     127.0.0.1:58264 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:38482 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58980 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33762 - "GET /health HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/auth/v1/user "HTTP/1.1 200 OK"
+/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py:303: DeprecationWarning: The 'timeout' parameter is deprecated. Please configure it in the http client instead.
+  return SyncPostgrestClient(
+/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py:303: DeprecationWarning: The 'verify' parameter is deprecated. Please configure it in the http client instead.
+  return SyncPostgrestClient(
+INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/user_profiles?select=%2A&id=eq.b1394eef-5195-4aa5-887c-483ecc68b082 "HTTP/2 200 OK"
+INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/requests?select=%2A&user_id=eq.b1394eef-5195-4aa5-887c-483ecc68b082&timestamp=gte.2025-08-02+18%3A00%3A02 "HTTP/2 200 OK"
+INFO:httpx:HTTP Request: POST https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/messages "HTTP/2 201 Created"
+INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/messages?select=%2A&session_id=eq.b1394eef-5195-4aa5-887c-483ecc68b082~73h6tgmygx&order=created_at.desc&limit=10 "HTTP/2 200 OK"
+INFO:httpx:HTTP Request: POST https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/requests "HTTP/2 201 Created"
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 400 Bad Request"
+INFO:httpx:HTTP Request: POST https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/messages "HTTP/2 201 Created"
+[SUPABASE-CLIENT] Created authenticated client for user
+[DB_UTILS-CONVERT_HISTORY] Error creating user message: cannot import name 'UserMessage' from 'pydantic_ai.messages' (/usr/local/lib/python3.11/site-packages/pydantic_ai/messages.py)
+[AGENT_API-MEMORY_SEARCH] Searching memories for user_id: b1394eef-5195-4aa5-887c-483ecc68b082
+[DB_UTILS-STORE_REQUEST] Stored request with UUID: e4dba0de-4566-4895-9542-a3d4176493ad (original ID: req_1754157662235_ge858am)
+Error in pydantic_agent: Error code: 400 - {'error': {'message': 'This model does not support specifying dimensions.', 'type': 'invalid_request_error', 'param': None, 'code': None}}
+INFO:     172.18.0.5:45596 - "POST /api/pydantic-agent HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:42790 - "GET /health HTTP/1.1" 200 OK
