@@ -35,7 +35,7 @@ services:
       context: ./agent_api
       dockerfile: Dockerfile.simple
     ports:
-      - "8001:8001"  # FastAPI service
+      - "8001:8001" # FastAPI service
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_BASE_URL=${OPENAI_BASE_URL}
@@ -44,6 +44,7 @@ services:
       - BRAVE_API_KEY=${BRAVE_API_KEY}
       - BRAVE_SEARCH_URL=${BRAVE_SEARCH_URL}
       - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
@@ -68,7 +69,7 @@ services:
       context: ./agent_api
       dockerfile: Dockerfile.simple
     ports:
-      - "8002:8001"  # Different port to avoid conflicts
+      - "8002:8001" # Different port to avoid conflicts
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_BASE_URL=${OPENAI_BASE_URL}
@@ -95,7 +96,7 @@ services:
     volumes:
       - agent_data_simple:/app/data
     profiles:
-      - simple  # This service only runs when 'simple' profile is specified
+      - simple # This service only runs when 'simple' profile is specified
 
   # Google Drive RAG Pipeline service
   rag-google-drive:
@@ -122,7 +123,7 @@ services:
     profiles:
       - with-rag
 
-  # Local Files RAG Pipeline service  
+  # Local Files RAG Pipeline service
   rag-local-files:
     build:
       context: ./rag_pipeline
