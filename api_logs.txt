@@ -7,24 +7,13 @@ INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
 [SETTINGS-INIT] Creating Settings instance...
 [SETTINGS-INIT] Environment variables:
 [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
-[SETTINGS-INIT] SUPABASE_KEY: SET
+[SETTINGS-INIT] SUPABASE_ANON_KEY: SET
+[SETTINGS-INIT] SUPABASE_SERVICE_ROLE_KEY: SET
 [SETTINGS-INIT] DATABASE_URL: SET
 [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
-[SUPABASE-CLIENT] Attempting to connect with URL: https://twmblugjwlcndyjozuwd.s...
-[SUPABASE-CLIENT] Key present: Yes (length: 46)
-INFO:     127.0.0.1:43392 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57534 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:46718 - "GET /health HTTP/1.1" 200 OK
-INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/auth/v1/user "HTTP/1.1 200 OK"
-/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py:303: DeprecationWarning: The 'timeout' parameter is deprecated. Please configure it in the http client instead.
-  return SyncPostgrestClient(
-/usr/local/lib/python3.11/site-packages/supabase/_sync/client.py:303: DeprecationWarning: The 'verify' parameter is deprecated. Please configure it in the http client instead.
-  return SyncPostgrestClient(
-INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/requests?select=%2A&user_id=eq.0f1bc3c4-e9aa-4202-bc82-e7183f6a1e32&timestamp=gte.2025-08-02+16%3A50%3A03 "HTTP/2 200 OK"
-INFO:httpx:HTTP Request: POST https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/messages "HTTP/2 401 Unauthorized"
-INFO:httpx:HTTP Request: POST https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/messages "HTTP/2 401 Unauthorized"
-INFO:httpx:HTTP Request: POST https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/requests "HTTP/2 401 Unauthorized"
-Error in pydantic_agent: 500: Error storing message: {'message': 'new row violates row-level security policy for table "messages"', 'code': '42501', 'hint': None, 'details': None}
-[AGENT_API-ERROR_STORAGE] Failed to store error message: 500: Error storing message: {'message': 'new row violates row-level security policy for table "messages"', 'code': '42501', 'hint': None, 'details': None}
-[DB_UTILS-STORE_REQUEST] Error storing request: {'message': 'new row violates row-level security policy for table "requests"', 'code': '42501', 'hint': None, 'details': None}
-INFO:     172.18.0.5:34682 - "POST /api/pydantic-agent HTTP/1.1" 500 Internal Server Error
+[SUPABASE-CLIENT] Creating service_role client with URL: https://twmblugjwlcndyjozuwd.s...
+[SUPABASE-CLIENT] Key present: Yes (length: 219)
+INFO:     127.0.0.1:58264 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38482 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58980 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33762 - "GET /health HTTP/1.1" 200 OK

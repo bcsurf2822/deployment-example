@@ -214,17 +214,39 @@ async def pydantic_agent(request: AgentRequest, auth_result: tuple[Dict[str, Any
         # Create authenticated Supabase client for this user
         auth_supabase = get_authenticated_supabase_client(access_token)
         
-        # Check Rate Limit using authenticated client
-        rate_limit_ok = await check_rate_limit(auth_supabase, request.user_id)
+        # Ensure user profile exists (for users created before the trigger)
+        try:
+            # Check if user profile exists using service role client (bypasses RLS)
+            profile_response = supabase.table("user_profiles").select("*").eq("id", request.user_id).execute()
+            
+            if not profile_response.data:
+                # Create user profile if it doesn't exist (using service role to bypass RLS)
+                print(f"[AGENT_API-USER_PROFILE] Creating profile for user {request.user_id}")
+                supabase.table("user_profiles").insert({
+                    "id": request.user_id,
+                    "email": user.get("email", ""),
+                    "full_name": user.get("user_metadata", {}).get("full_name", None)
+                }).execute()
+                print(f"[AGENT_API-USER_PROFILE] Profile created successfully")
+        except Exception as profile_error:
+            print(f"[AGENT_API-USER_PROFILE] Error ensuring user profile: {str(profile_error)}")
+            # This is critical - if we can't ensure profile exists, conversation creation will fail
+            raise HTTPException(
+                status_code=500, 
+                detail=f"Failed to ensure user profile exists: {str(profile_error)}"
+            )
+        
+        # Check Rate Limit using service role client (needs to read requests table)
+        rate_limit_ok = await check_rate_limit(supabase, request.user_id)
         if not rate_limit_ok:
             return StreamingResponse(
                 stream_error_response("Rate limit exceeded. Please try again later.", request.request_id),
                 media_type="text/plain",
             )
 
-        # start request tracking
+        # start request tracking (use service role client to bypass RLS for logging)
         request_tracking_task = asyncio.create_task(
-            store_request(auth_supabase, request.request_id, request.user_id, request.query)
+            store_request(supabase, request.request_id, request.user_id, request.query)
         )
 
         
