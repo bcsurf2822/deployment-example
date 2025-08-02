@@ -75,7 +75,7 @@ class Settings(BaseSettings):
         description="OpenAI model to use"
     )
     embedding_model: str = Field(
-        default="text-embedding-ada-002",
+        ...,
         alias="EMBEDDING_MODEL",
         description="OpenAI embedding model to use"
     )
@@ -110,7 +110,9 @@ print(f"[SETTINGS-INIT] SUPABASE_URL: {os.environ.get('SUPABASE_URL', 'NOT SET')
 print(f"[SETTINGS-INIT] SUPABASE_ANON_KEY: {'SET' if os.environ.get('SUPABASE_ANON_KEY') else 'NOT SET'}")
 print(f"[SETTINGS-INIT] SUPABASE_SERVICE_ROLE_KEY: {'SET' if os.environ.get('SUPABASE_SERVICE_ROLE_KEY') else 'NOT SET'}")
 print(f"[SETTINGS-INIT] DATABASE_URL: {'SET' if os.environ.get('DATABASE_URL') else 'NOT SET'}")
+print(f"[SETTINGS-INIT] EMBEDDING_MODEL env: {os.environ.get('EMBEDDING_MODEL', 'NOT SET')}")
 settings = Settings()
+print(f"[SETTINGS-INIT] Loaded embedding model: {settings.embedding_model}")
 
 
 def get_supabase_client(use_service_role: bool = True) -> Client:
@@ -227,6 +229,11 @@ def get_mem0_config():
     embedding_api_key = os.getenv("EMBEDDING_API_KEY")
     embedding_model = os.getenv("EMBEDDING_MODEL")
 
+    final_embedding_model = embedding_model or settings.embedding_model
+    print(f"[MEM0-CONFIG] Using embedding model: {final_embedding_model}")
+    print(f"[MEM0-CONFIG] Settings embedding model: {settings.embedding_model}")
+    print(f"[MEM0-CONFIG] Environment EMBEDDING_MODEL: {embedding_model}")
+
     config = {
     "llm": {
         "provider": "openai",
@@ -239,7 +246,7 @@ def get_mem0_config():
     "embedder": {
         "provider": "openai",
         "config": {
-            "model": embedding_model or settings.embedding_model,
+            "model": final_embedding_model,
         }
     },
     "vector_store": {
@@ -253,6 +260,7 @@ def get_mem0_config():
     }
 }
     
+    print(f"[MEM0-CONFIG] Final config embedder: {config['embedder']}")
     return config
 
 

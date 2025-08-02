@@ -1,5 +1,4 @@
-📊 Check status: python deploy.py --type cloud --ps
-agentadmin@cloud-ai-example:~/deployment-example$ docker logs pydantic-agent-agent-api-1 -f
+Error response from daemon: No such container: pydantic-agent-caddy-1
 INFO:     Started server process [1]
 INFO:     Waiting for application startup.
 INFO:mem0.vector_stores.supabase:Creating new collection: mem0_memories
@@ -15,22 +14,63 @@ INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
 [AGENT-INIT] MCP server not reachable at http://localhost:3001/sse, continuing without code execution
 [SUPABASE-CLIENT] Creating service_role client with URL: https://twmblugjwlcndyjozuwd.s...
 [SUPABASE-CLIENT] Key present: Yes (length: 219)
-INFO:     127.0.0.1:48630 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:36422 - "GET /health HTTP/1.1" 200 OK
+
+INFO:     127.0.0.1:55316 - "GET /health HTTP/1.1" 200 OK
+> pydantic-demo@0.1.0 start
+INFO:     127.0.0.1:46316 - "GET /health HTTP/1.1" 200 OK
+> next start
+
+   ▲ Next.js 15.4.2
+   - Local:        http://localhost:3000
+   - Network:      http://172.18.0.5:3000
+
+ ✓ Starting...
+ ✓ Ready in 468ms
+Login successful: ben.corbett.44@icloud.com
+INFO:     127.0.0.1:43372 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41824 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42348 - "GET /health HTTP/1.1" 200 OK
+[API-CHAT] Starting chat request
+[API-CHAT] Auth user result: { user: 'b1394eef-5195-4aa5-887c-483ecc68b082', error: null }
+[API-CHAT] Request body: {
+  query: 'hello',
+  user_id: 'b1394eef-5195-4aa5-887c-483ecc68b082',
+  session_id: 'b1394eef-5195-4aa5-887c-483ecc68b082~8emt1er458'
+}
+[API-CHAT] Conversation created: b1394eef-5195-4aa5-887c-483ecc68b082~8emt1er458
+[API-CHAT] Token prefix: eyJhbGciOiJIUzI1NiIs...
+[API-CHAT] User ID from session: b1394eef-5195-4aa5-887c-483ecc68b082
+[API-CHAT] Sending request to: http://agent-api:8001/api/pydantic-agent
+[API-CHAT] Headers: {
+  'Content-Type': 'application/json',
+  Authorization: 'Bearer eyJhbGciOiJIUzI1NiIs...'
+}
+[API-CHAT] Payload: {
+  query: 'hello',
+  user_id: 'b1394eef-5195-4aa5-887c-483ecc68b082',
+  request_id: 'req_1754161439490_fo4lc1q',
+  session_id: 'b1394eef-5195-4aa5-887c-483ecc68b082~8emt1er458'
+}
 INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/auth/v1/user "HTTP/1.1 200 OK"
 /usr/local/lib/python3.11/site-packages/supabase/_sync/client.py:303: DeprecationWarning: The 'timeout' parameter is deprecated. Please configure it in the http client instead.
   return SyncPostgrestClient(
 /usr/local/lib/python3.11/site-packages/supabase/_sync/client.py:303: DeprecationWarning: The 'verify' parameter is deprecated. Please configure it in the http client instead.
   return SyncPostgrestClient(
 INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/user_profiles?select=%2A&id=eq.b1394eef-5195-4aa5-887c-483ecc68b082 "HTTP/2 200 OK"
-INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/requests?select=%2A&user_id=eq.b1394eef-5195-4aa5-887c-483ecc68b082&timestamp=gte.2025-08-02+18%3A07%3A48 "HTTP/2 200 OK"
+INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/requests?select=%2A&user_id=eq.b1394eef-5195-4aa5-887c-483ecc68b082&timestamp=gte.2025-08-02+19%3A02%3A59 "HTTP/2 200 OK"
 INFO:httpx:HTTP Request: POST https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/messages "HTTP/2 201 Created"
-INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/messages?select=%2A&session_id=eq.b1394eef-5195-4aa5-887c-483ecc68b082~pwnergknwj&order=created_at.desc&limit=10 "HTTP/2 200 OK"
+INFO:httpx:HTTP Request: GET https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/messages?select=%2A&session_id=eq.b1394eef-5195-4aa5-887c-483ecc68b082~8emt1er458&order=created_at.desc&limit=10 "HTTP/2 200 OK"
 INFO:httpx:HTTP Request: POST https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/requests "HTTP/2 201 Created"
-INFO:httpx:HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 400 Bad Request"
-INFO:httpx:HTTP Request: POST https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/messages "HTTP/2 201 Created"
 [SUPABASE-CLIENT] Created authenticated client for user
 [AGENT_API-MEMORY_SEARCH] Searching memories for user_id: b1394eef-5195-4aa5-887c-483ecc68b082
-[DB_UTILS-STORE_REQUEST] Stored request with UUID: cf92643a-a433-46fa-b3f2-2a4ff2c895dc (original ID: req_1754158127745_7013tft)
+[DB_UTILS-STORE_REQUEST] Stored request with UUID: 2a42a367-8c50-4fd0-a12b-d8bd2492487e (original ID: req_1754161439490_fo4lc1q)
+INFO:     127.0.0.1:60740 - "GET /health HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 400 Bad Request"
+INFO:httpx:HTTP Request: POST https://twmblugjwlcndyjozuwd.supabase.co/rest/v1/messages "HTTP/2 201 Created"
 Error in pydantic_agent: Error code: 400 - {'error': {'message': 'This model does not support specifying dimensions.', 'type': 'invalid_request_error', 'param': None, 'code': None}}
-INFO:     172.18.0.5:53558 - "POST /api/pydantic-agent HTTP/1.1" 500 Internal Server Error
+INFO:     172.18.0.5:50396 - "POST /api/pydantic-agent HTTP/1.1" 500 Internal Server Error
+[API-CHAT] Response status: 500
+[API-CHAT] Error response: {"text": "I apologize, I'm having trouble processing your request. Please try again later.", "error": true, "request_id": "req_1754161439490_fo4lc1q", "complete": true}
+
+INFO:     127.0.0.1:42326 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44804 - "GET /health HTTP/1.1" 200 OK

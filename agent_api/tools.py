@@ -122,13 +122,22 @@ async def get_embedding(text: str, embedding_client: AsyncOpenAI, embedding_mode
     Get embedding vector from OpenAI.
     """
     try:
+        logger.info(f"[TOOLS-get_embedding] Using model: {embedding_model}")
+        logger.info(f"[TOOLS-get_embedding] Text length: {len(text)}")
+        logger.info(f"[TOOLS-get_embedding] OpenAI client base_url: {embedding_client.base_url}")
+        logger.info(f"[TOOLS-get_embedding] Making embeddings request...")
+        
         response = await embedding_client.embeddings.create(
             model=embedding_model,
             input=text,
         )
+        
+        logger.info(f"[TOOLS-get_embedding] Success! Embedding dimensions: {len(response.data[0].embedding)}")
         return response.data[0].embedding
     except Exception as e:
         logger.error(f"[TOOLS-get_embedding] Error: {e}")
+        logger.error(f"[TOOLS-get_embedding] Error type: {type(e)}")
+        logger.error(f"[TOOLS-get_embedding] Model used: {embedding_model}")
         return [0] * 1536
 
 
@@ -136,7 +145,7 @@ async def retrieve_relevant_documents(
     supabase: Client,
     embedding_client: AsyncOpenAI,
     user_query: str,
-    embedding_model: str = "text-embedding-ada-002",
+    embedding_model: str,
     top_k: int = 4
 ) -> str:
     """
