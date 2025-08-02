@@ -16,6 +16,9 @@ services:
       - PYDANTIC_AGENT_API_URL=http://agent-api:8001/api/pydantic-agent
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
       - NEXT_PUBLIC_ENABLE_STREAMING=${NEXT_PUBLIC_ENABLE_STREAMING}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - SUPABASE_CALLBACK_URL=${SUPABASE_CALLBACK_URL}
     ports:
       - "3000:3000"
     restart: unless-stopped
@@ -44,13 +47,11 @@ services:
       - BRAVE_API_KEY=${BRAVE_API_KEY}
       - BRAVE_SEARCH_URL=${BRAVE_SEARCH_URL}
       - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
       - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
       - DATABASE_URL=${DATABASE_URL}
       - MEM0_API_KEY=${MEM0_API_KEY}
-      - DEBUG_MODE=${DEBUG_MODE:-false}
+      - DEBUG_MODE=${DEBUG_MODE:-true}
       - PYTHONPATH=/app
     restart: unless-stopped
     healthcheck:
@@ -79,12 +80,10 @@ services:
       - BRAVE_SEARCH_URL=${BRAVE_SEARCH_URL}
       - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
       - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
       - DATABASE_URL=${DATABASE_URL}
       - MEM0_API_KEY=${MEM0_API_KEY}
-      - DEBUG_MODE=${DEBUG_MODE:-false}
+      - DEBUG_MODE=${DEBUG_MODE:-true}
       - PYTHONPATH=/app
     restart: unless-stopped
     healthcheck:
@@ -116,7 +115,7 @@ services:
       - RUN_MODE=${RUN_MODE}
       - RAG_PIPELINE_ID=google-drive-pipeline
       - RAG_SERVICE=google_drive
-      - DEBUG_MODE=${DEBUG_MODE:-false}
+      - DEBUG_MODE=${DEBUG_MODE:-true}
     volumes:
       - ./test_files:/app/test_files
     restart: unless-stopped
@@ -140,7 +139,7 @@ services:
       - RUN_MODE=${RUN_MODE}
       - RAG_PIPELINE_ID=local-files-pipeline
       - RAG_SERVICE=local_files
-      - DEBUG_MODE=${DEBUG_MODE:-false}
+      - DEBUG_MODE=${DEBUG_MODE:-true}
     volumes:
       - ./test_files:/app/test_files
       - ${RAG_LOCAL_DIRECTORY:-./test_files}:/app/Local_Files/data
