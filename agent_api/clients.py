@@ -38,9 +38,14 @@ class Settings(BaseSettings):
         alias="SUPABASE_URL",
         description="Supabase project URL"
     )
-    supabase_key: SecretStr = Field(
+    supabase_anon_key: SecretStr = Field(
         ...,
-        alias="SUPABASE_KEY",
+        alias="SUPABASE_ANON_KEY",
+        description="Supabase anonymous/public key"
+    )
+    supabase_service_role_key: SecretStr = Field(
+        ...,
+        alias="SUPABASE_SERVICE_ROLE_KEY",
         description="Supabase service role key"
     )
     
@@ -102,23 +107,52 @@ print("[SETTINGS-INIT] Creating Settings instance...")
 print(f"[SETTINGS-INIT] Environment variables:")
 import os
 print(f"[SETTINGS-INIT] SUPABASE_URL: {os.environ.get('SUPABASE_URL', 'NOT SET')}")
-print(f"[SETTINGS-INIT] SUPABASE_KEY: {'SET' if os.environ.get('SUPABASE_KEY') else 'NOT SET'}")
+print(f"[SETTINGS-INIT] SUPABASE_ANON_KEY: {'SET' if os.environ.get('SUPABASE_ANON_KEY') else 'NOT SET'}")
+print(f"[SETTINGS-INIT] SUPABASE_SERVICE_ROLE_KEY: {'SET' if os.environ.get('SUPABASE_SERVICE_ROLE_KEY') else 'NOT SET'}")
 print(f"[SETTINGS-INIT] DATABASE_URL: {'SET' if os.environ.get('DATABASE_URL') else 'NOT SET'}")
 settings = Settings()
 
 
-def get_supabase_client() -> Client:
+def get_supabase_client(use_service_role: bool = True) -> Client:
     """
     Create and return a Supabase client.
+    
+    Args:
+        use_service_role: If True, uses service role key (bypasses RLS).
+                         If False, uses anon key (respects RLS).
     
     Returns:
         Supabase client instance
     """
     url = settings.supabase_url
-    key = settings.supabase_key.get_secret_value()
-    print(f"[SUPABASE-CLIENT] Attempting to connect with URL: {url[:30]}..." if url else "[SUPABASE-CLIENT] URL is empty!")
+    key = settings.supabase_service_role_key.get_secret_value() if use_service_role else settings.supabase_anon_key.get_secret_value()
+    key_type = "service_role" if use_service_role else "anon"
+    print(f"[SUPABASE-CLIENT] Creating {key_type} client with URL: {url[:30]}..." if url else "[SUPABASE-CLIENT] URL is empty!")
     print(f"[SUPABASE-CLIENT] Key present: {'Yes' if key else 'No'} (length: {len(key) if key else 0})")
     return create_client(url, key)
+
+
+def get_authenticated_supabase_client(access_token: str) -> Client:
+    """
+    Create a Supabase client with a user's access token for proper RLS.
+    
+    Args:
+        access_token: The user's JWT access token
+    
+    Returns:
+        Authenticated Supabase client instance
+    """
+    url = settings.supabase_url
+    key = settings.supabase_anon_key.get_secret_value()
+    
+    # Create a new client instance
+    client = create_client(url, key)
+    
+    # Set the auth header on the postgrest client
+    client.postgrest.auth(access_token)
+    
+    print(f"[SUPABASE-CLIENT] Created authenticated client for user")
+    return client
 
 
 def get_openai_client() -> AsyncOpenAI:

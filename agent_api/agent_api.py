@@ -20,7 +20,7 @@ load_dotenv(override=True)
 
 # Now import from local modules
 from agent import agent, search
-from clients import settings, get_supabase_client, get_openai_client, get_mem0_client_async
+from clients import settings, get_supabase_client, get_openai_client, get_mem0_client_async, get_authenticated_supabase_client
 from dependencies import AgentDependencies
 
 # Import Pydantic AI types
@@ -119,13 +119,13 @@ async def stream_error_response(error_message: str, request_id: str):
     yield json.dumps(error_data).encode('utf-8') + b'\n'
 
 # Verify token function
-async def verify_token(credentials: HTTPAuthorizationCredentials = Security(security)) -> Dict[str, Any]:
+async def verify_token(credentials: HTTPAuthorizationCredentials = Security(security)) -> tuple[Dict[str, Any], str]:
     """
-    Verify the JWT token from Supabase / Return User information
+    Verify the JWT token from Supabase / Return User information and token
 
     Args: credentials: The HTTP Authorization Credentials containing the bearer token
 
-    Returns: Dict[str, Any] - The user information from Supabase
+    Returns: tuple[Dict[str, Any], str] - The user information from Supabase and the token
 
     Raises: HTTPException(401) - If the token is invalid or cannot be verified
     """
@@ -164,7 +164,7 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Security(secu
         
         # Parse the response JSON
         user_data = response.json()
-        return user_data
+        return user_data, token
     except Exception as e:
         print(f"[AGENT_API-VERIFY_TOKEN] Error verifying token: {str(e)}")
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -201,15 +201,21 @@ async def health_check():
 
 # Routes  | Adds mems makes request record, get res from agent , and makes titles all in parallel making it very efficient
 @app.post("/api/pydantic-agent")
-async def pydantic_agent(request: AgentRequest, user: Dict[str, Any] = Depends(verify_token)):
+async def pydantic_agent(request: AgentRequest, auth_result: tuple[Dict[str, Any], str] = Depends(verify_token)):
+    # Extract user and token from auth result
+    user, access_token = auth_result
+    
     # Verify user ID in the request matches the user ID from the token
     # Once you have the user ID you can secure in so many different ways such as token limits tracking tokens etc
     if request.user_id != user.get("id"):
         raise HTTPException(status_code=403, detail="Unauthorized, User ID does not match the authenticated user")
     
     try:
-        # Check Rate Limit
-        rate_limit_ok = await check_rate_limit(supabase, request.user_id)
+        # Create authenticated Supabase client for this user
+        auth_supabase = get_authenticated_supabase_client(access_token)
+        
+        # Check Rate Limit using authenticated client
+        rate_limit_ok = await check_rate_limit(auth_supabase, request.user_id)
         if not rate_limit_ok:
             return StreamingResponse(
                 stream_error_response("Rate limit exceeded. Please try again later.", request.request_id),
@@ -218,7 +224,7 @@ async def pydantic_agent(request: AgentRequest, user: Dict[str, Any] = Depends(v
 
         # start request tracking
         request_tracking_task = asyncio.create_task(
-            store_request(supabase, request.request_id, request.user_id, request.query)
+            store_request(auth_supabase, request.request_id, request.user_id, request.query)
         )
 
         
@@ -231,7 +237,7 @@ async def pydantic_agent(request: AgentRequest, user: Dict[str, Any] = Depends(v
             import uuid
             session_id = str(uuid.uuid4())
             # create a new conversation record
-            conversation_record = await create_conversation(supabase, request.user_id, session_id)
+            conversation_record = await create_conversation(auth_supabase, request.user_id, session_id)
 
 
         # Store users query immediately with any file attachments
@@ -246,10 +252,10 @@ async def pydantic_agent(request: AgentRequest, user: Dict[str, Any] = Depends(v
                 } for file in request.files]
 
         # Store users query right away
-        await store_message(supabase, session_id=session_id, message_type="human", content=request.query, files=file_attachments)
+        await store_message(auth_supabase, session_id=session_id, message_type="human", content=request.query, files=file_attachments)
 
         # Fetch Conversation History from DB 
-        conversation_history = await fetch_conversation_history(supabase, session_id)
+        conversation_history = await fetch_conversation_history(auth_supabase, session_id)
 
         # Convert conversation history into framework format (Pydantic Here)
         pydantic_messages = await convert_history_to_pydantic_format(conversation_history)
@@ -261,7 +267,7 @@ async def pydantic_agent(request: AgentRequest, user: Dict[str, Any] = Depends(v
         memories_str = "\n".join(f"- {entry['memory']}" for entry in relevant_memories.get('results', []))
 
         # Check if we should generate or update the conversation title
-        should_generate_title, title_reason = await should_generate_or_update_title(supabase, session_id, request.query)
+        should_generate_title, title_reason = await should_generate_or_update_title(auth_supabase, session_id, request.query)
         print(f"[AGENT_API-TITLE_DECISION] {title_reason}")
         
         # Start smart title generation in parallel if needed
@@ -270,7 +276,7 @@ async def pydantic_agent(request: AgentRequest, user: Dict[str, Any] = Depends(v
             async def generate_smart_title():
                 try:
                     # Get full conversation history for context
-                    full_history = await fetch_conversation_history(supabase, session_id, limit=20)
+                    full_history = await fetch_conversation_history(auth_supabase, session_id, limit=20)
                     conversation_summary = await generate_conversation_summary(full_history)
                     
                     # Create a more contextual prompt for title generation
@@ -356,7 +362,7 @@ async def pydantic_agent(request: AgentRequest, user: Dict[str, Any] = Depends(v
             message_data =  run.result.new_messages_json()
             
             # Store agent response
-            await store_message(supabase, session_id=session_id, message_type="ai", content=full_response, message_data=message_data, data={"request_id": request.request_id})
+            await store_message(auth_supabase, session_id=session_id, message_type="ai", content=full_response, message_data=message_data, data={"request_id": request.request_id})
 
 
             # Wait for title gen to compelete if it's running
@@ -366,7 +372,7 @@ async def pydantic_agent(request: AgentRequest, user: Dict[str, Any] = Depends(v
 
             # Update conversation title in database
             if conversation_title:
-                await update_conversation_title(supabase, session_id, conversation_title)
+                await update_conversation_title(auth_supabase, session_id, conversation_title)
 
             # Send the final title in the last chunk
 
@@ -400,7 +406,7 @@ async def pydantic_agent(request: AgentRequest, user: Dict[str, Any] = Depends(v
         if request.session_id:
             try:
                 await store_message(
-                    supabase, 
+                    auth_supabase, 
                     session_id=request.session_id, 
                     message_type="ai", 
                     content="I apologize, I'm having trouble processing your request. Please try again later.", 
