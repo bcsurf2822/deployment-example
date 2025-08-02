@@ -58,7 +58,7 @@ dev: env
 
 # Production environment
 prod: env
-	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+	docker-compose -f docker-compose.yml up -d
 
 # Simple deployment (without MCP server)
 simple: env
@@ -147,7 +147,7 @@ dev-down:
 	docker-compose -f docker-compose.dev.yml down
 
 prod-logs:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.yml logs -f
+	docker-compose -f docker-compose.yml logs -f
 
 prod-down:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+	docker-compose -f docker-compose.yml down

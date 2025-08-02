@@ -47,6 +47,16 @@ This repository implements a production-ready AI agent system with the following
 - OpenAI API key
 - Brave Search API key (optional)
 
+### Cloud Deployment Quick Start
+
+For production deployment with SSL certificates:
+
+1. **Setup DNS**: Point `agent.yourdomain.com` and `chat.yourdomain.com` to your server
+2. **Configure .env**: Add `AGENT_API_HOSTNAME`, `FRONTEND_HOSTNAME`, and `LETSENCRYPT_EMAIL`
+3. **Deploy**: Run `python3 deploy.py --type cloud --with-rag`
+
+See [Cloud Deployment Guide](#-cloud-deployment-guide) for detailed instructions.
+
 ### 1. Environment Setup
 
 Copy and configure environment variables:
@@ -254,11 +264,6 @@ python deploy.py --mode prod --with-rag
 - API: http://localhost:8001
 - Simple API: http://localhost:8002
 
-### `docker-compose.prod.yml` - Production Alternative
-
-**Purpose**: Alternative production configuration
-
-**Note**: Currently mirrors the main production setup. Can be customized for different production environments (staging, etc.).
 
 ## 📁 Service Details
 
@@ -597,29 +602,109 @@ sudo nano /etc/ssh/sshd_config
 2. **Frontend API Connection**: Verify `PYDANTIC_AGENT_API_URL` environment variable
 3. **Google Drive Auth**: Check service account credentials and folder permissions
 
-## Deploy Commands
+## 🚀 Cloud Deployment Guide
 
-  ### Cloud deployment WITH RAG services
-  python3 deploy.py --type cloud --with-rag
+### Prerequisites for Cloud Deployment
 
-  ### Cloud deployment WITHOUT RAG (just frontend + API + Caddy)
-  python3 deploy.py --type cloud
+1. **Domain with DNS control** (e.g., yourdomain.com)
+2. **Server with public IP** (e.g., DigitalOcean droplet at 174.138.67.192)
+3. **Ports 80 and 443 open** on your server firewall
 
-  ### Stop cloud deployment with RAG
-  python3 deploy.py --down --type cloud --with-rag
+### Step 1: Configure DNS Records
 
-  ### Stop Everything
-  # 1. Stop everything
-  docker compose down
-  docker stop $(docker ps -aq)
+Add two A records pointing to your server IP:
 
-AGENT_API_HOSTNAME=agent.benjamincorbettnj.dev \
-FRONTEND_HOSTNAME=chat.benjamincorbettnj.dev \
-LETSENCRYPT_EMAIL=ben.corbett@benjamincorbettnj.dev \
-docker compose -f docker-compose.yml -f docker-compose.caddy.yml up -d
+| Type | Name  | Value (Your Server IP) | TTL |
+|------|-------|------------------------|-----|
+| A    | agent | 174.138.67.192        | 60  |
+| A    | chat  | 174.138.67.192        | 60  |
 
-  # 3. Start services with the Caddy configuration
-  docker compose -f docker compose.yml -f docker-compose.caddy.yml up -d
+This creates:
+- `agent.yourdomain.com` → Your API endpoint
+- `chat.yourdomain.com` → Your web interface
+
+### Step 2: Configure Environment Variables
+
+Add these to your `.env` file on the server:
+
+```bash
+# Caddy Configuration (REQUIRED for cloud deployment)
+AGENT_API_HOSTNAME=agent.yourdomain.com
+FRONTEND_HOSTNAME=chat.yourdomain.com
+LETSENCRYPT_EMAIL=your-email@example.com
+```
+
+### Step 3: Deploy with One Command
+
+```bash
+# Cloud deployment WITH RAG services
+python3 deploy.py --type cloud --with-rag
+
+# Cloud deployment WITHOUT RAG (just frontend + API + Caddy)
+python3 deploy.py --type cloud
+```
+
+That's it! Caddy will automatically:
+- Request SSL certificates from Let's Encrypt
+- Configure HTTPS for both subdomains
+- Proxy requests to your services
+
+### Verify Deployment
+
+```bash
+# Check all services are running
+docker ps
+
+# Check Caddy logs for SSL certificate status
+docker logs deployment-example-caddy
+
+# Test your endpoints
+curl https://chat.yourdomain.com
+curl https://agent.yourdomain.com/health
+```
+
+### Stop Cloud Deployment
+
+```bash
+# Stop cloud deployment with RAG
+python3 deploy.py --down --type cloud --with-rag
+
+# Stop cloud deployment without RAG
+python3 deploy.py --down --type cloud
+```
+
+### Troubleshooting Cloud Deployment
+
+**Connection Refused Error:**
+```bash
+# 1. Check if Caddy is running
+docker ps | grep caddy
+
+# 2. If Caddy is restarting, check logs
+docker logs deployment-example-caddy
+
+# 3. If port conflict, find what's using it
+sudo lsof -i :80
+sudo lsof -i :443
+```
+
+**DNS Not Resolving:**
+```bash
+# Verify DNS records
+dig A chat.yourdomain.com
+dig A agent.yourdomain.com
+# Both should return your server IP
+```
+
+**Clean Restart (if issues persist):**
+```bash
+# 1. Stop everything
+docker stop $(docker ps -aq)
+docker rm $(docker ps -aq)
+
+# 2. Deploy fresh
+python3 deploy.py --type cloud --with-rag
+```
 
 ### Security Checklist
 
