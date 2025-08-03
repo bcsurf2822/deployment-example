@@ -132,9 +132,19 @@ class GoogleDriveWatcher:
                 creds = ServiceAccountCredentials.from_service_account_info(
                     service_account_info, scopes=SCOPES)
                 print("Using service account authentication for Google Drive")
+                
+                # Test the credentials by trying to build the service
+                test_service = build('drive', 'v3', credentials=creds)
+                # Make a simple API call to validate credentials
+                test_service.about().get(fields='user').execute()
+                print("Service account credentials validated successfully")
+                
             except (json.JSONDecodeError, ValueError) as e:
-                print(f"Error parsing service account credentials: {e}")
-                print("Falling back to OAuth2 authentication")
+                print(f"Error parsing service account credentials from GOOGLE_DRIVE_CREDENTIALS_JSON: {e}")
+                raise RuntimeError(f"Invalid service account credentials in environment variable: {e}")
+            except Exception as e:
+                print(f"Error validating service account credentials: {e}")
+                raise RuntimeError(f"Service account authentication failed: {e}")
         
         # Priority 2: Check for existing OAuth2 token (backward compatibility)
         if not creds and os.path.exists(self.token_path):
@@ -155,8 +165,13 @@ class GoogleDriveWatcher:
                     print("OAuth2 token refresh failed, re-authenticating...")
                     creds = self._oauth2_authenticate()
             else:
-                print("No valid credentials found, starting OAuth2 authentication...")
-                creds = self._oauth2_authenticate()
+                # Only attempt OAuth2 if no service account was provided
+                if not service_account_json:
+                    print("No service account credentials found, starting OAuth2 authentication...")
+                    creds = self._oauth2_authenticate()
+                else:
+                    # Service account was provided but failed - don't fall back to OAuth2
+                    raise RuntimeError("Service account authentication failed and no OAuth2 fallback available in containerized environment")
         
         # Build the Drive API service
         self.service = build('drive', 'v3', credentials=creds)

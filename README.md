@@ -118,6 +118,15 @@ python deploy.py --mode prod
 python deploy.py --mode prod --with-rag
 ```
 
+### Log Commands
+
+```bash
+docker logs pydantic-agent-frontend-1 -f &
+  docker logs pydantic-agent-agent-api-1 -f &
+  docker logs pydantic-agent-caddy-1 -f &
+  wait
+```
+
 ### Management Commands
 
 ```bash
@@ -263,7 +272,6 @@ python deploy.py --mode prod --with-rag
 - Frontend: http://localhost:3000 (via Nginx)
 - API: http://localhost:8001
 - Simple API: http://localhost:8002
-
 
 ## 📁 Service Details
 
@@ -592,7 +600,7 @@ This step prevents direct root access via SSH, forcing all users to log in with 
 
 ### Edit SSH Configuration
 
-```bash
+````bash
 sudo nano /etc/ssh/sshd_config
 # Find the line: PermitRootLogin yes
 # Change it to: PermitRootLogin no
@@ -632,7 +640,7 @@ Add these to your `.env` file on the server:
 AGENT_API_HOSTNAME=agent.yourdomain.com
 FRONTEND_HOSTNAME=chat.yourdomain.com
 LETSENCRYPT_EMAIL=your-email@example.com
-```
+````
 
 ### Step 3: Deploy with One Command
 
@@ -645,6 +653,7 @@ python3 deploy.py --type cloud
 ```
 
 That's it! Caddy will automatically:
+
 - Request SSL certificates from Let's Encrypt
 - Configure HTTPS for both subdomains
 - Proxy requests to your services
@@ -676,6 +685,7 @@ python3 deploy.py --down --type cloud
 ### Troubleshooting Cloud Deployment
 
 **Connection Refused Error:**
+
 ```bash
 # 1. Check if Caddy is running
 docker ps | grep caddy
@@ -689,6 +699,7 @@ sudo lsof -i :443
 ```
 
 **DNS Not Resolving:**
+
 ```bash
 # Verify DNS records
 dig A chat.yourdomain.com
@@ -696,7 +707,15 @@ dig A agent.yourdomain.com
 # Both should return your server IP
 ```
 
+## RAG Monitoring
+
+````bash
+ docker logs pydantic-agent-rag-google-drive-1 -f &
+  docker logs pydantic-agent-rag-local-files-1 -f &
+  wait
+
 **Clean Restart (if issues persist):**
+
 ```bash
 # 1. Stop everything
 docker stop $(docker ps -aq)
@@ -704,7 +723,7 @@ docker rm $(docker ps -aq)
 
 # 2. Deploy fresh
 python3 deploy.py --type cloud --with-rag
-```
+````
 
 ### Security Checklist
 
@@ -742,5 +761,9 @@ python3 deploy.py --type cloud --with-rag
 ## 📄 License
 
 This project is licensed under the MIT License. See LICENSE file for details.
+
 # deployment-example
+
+```
+
 ```
