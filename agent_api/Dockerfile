@@ -8,12 +8,11 @@ RUN apt-get update && \
         curl \
         unzip \
         supervisor && \
-    # Install Deno
-    curl -fsSL https://deno.land/install.sh | sh && \
-    mv /root/.deno/bin/deno /usr/local/bin/deno && \
+    # Install Deno with explicit environment variable
+    curl -fsSL https://deno.land/install.sh | DENO_INSTALL=/usr/local sh && \
     # Clean up
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /root/.deno
+    rm -rf /var/lib/apt/lists/*
 
 # Create non-root user (Best Practice #2)
 RUN useradd -m -u 1000 appuser
