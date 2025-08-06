@@ -273,7 +273,24 @@ export default function ChatLayout() {
             </p>
             <p>
               <span className="text-yellow-400">Session ID:</span>{" "}
-              {sessionId || "Generating..."}
+              {sessionId ? (
+                <>
+                  {sessionId}
+                  {/* Langfuse link - uses NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT env var */}
+                  {typeof window !== 'undefined' && process.env.NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT && (
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT}/sessions/${sessionId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 text-blue-400 hover:text-blue-300 underline text-xs"
+                    >
+                      View in Langfuse →
+                    </a>
+                  )}
+                </>
+              ) : (
+                "Generating..."
+              )}
             </p>
             <p>
               <span className="text-yellow-400">Messages:</span>{" "}

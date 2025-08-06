@@ -219,8 +219,6 @@ python deploy.py --mode dev --logs
 # Stop everything when done
 python deploy.py --down --mode dev --with-rag
 
-# Production deployment
-python deploy.py --mode prod --with-rag
 ```
 
 ## 🐳 Docker Compose Files
@@ -438,6 +436,208 @@ Each RAG service has its own `config.json`:
 }
 ```
 
+## 🚀 CI/CD Pipeline
+
+### GitHub Actions Workflows
+
+The project includes comprehensive CI/CD automation with GitHub Actions. All workflows are located in `.github/workflows/`:
+
+#### Core Workflows
+
+| Workflow | File | Purpose | Triggers |
+|----------|------|---------|----------|
+| **Main CI/CD Pipeline** | `main-deploy.yml` | Orchestrates testing and deployment to production | Push to `main` branch |
+| **Run All Tests** | `run-tests.yml` | Coordinates all test suites in parallel | PR, push to `main`, manual |
+| **Deploy to Digital Ocean** | `deploy-to-digital-ocean.yml` | Handles production deployment via SSH | Called by main-deploy.yml |
+
+#### Test Workflows
+
+| Workflow | File | Purpose | Test Coverage |
+|----------|------|---------|---------------|
+| **Python Linting** | `python-lint.yml` | Validates Python code quality | agent_api/, rag_pipeline/ |
+| **Frontend Linting** | `frontend-lint.yml` | Validates TypeScript/React code | frontend/ |
+| **Security Analysis** | `security-analysis.yml` | Scans for security vulnerabilities | Python dependencies |
+| **Docker Builds** | `docker-builds.yml` | Verifies all containers build successfully | All Dockerfiles |
+
+### Workflow Execution Flow
+
+```mermaid
+graph TD
+    A[Push to main] --> B[main-deploy.yml]
+    B --> C[run-tests.yml]
+    C --> D[Python Lint]
+    C --> E[Frontend Lint]
+    C --> F[Security Analysis]
+    D --> G[Docker Builds]
+    E --> G
+    G --> H{All Tests Pass?}
+    H -->|Yes| I[deploy-to-digital-ocean.yml]
+    H -->|No| J[Deployment Blocked]
+    I --> K[Production Deployed]
+```
+
+### GitHub Actions SSH Key Setup Guide
+
+To enable automated deployments to your Digital Ocean server, you need to configure SSH keys properly.
+
+#### Step 1: Generate SSH Key
+
+Generate a new SSH key **without** a passphrase for GitHub Actions:
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "github-actions-deploy" -f ~/.ssh/github_deploy_key
+```
+
+When prompted for a passphrase, press Enter twice to skip (required for automated deployments).
+
+#### Step 2: Install Key on Your Server
+
+SSH into your server and add the public key:
+
+```bash
+# Connect to your server
+ssh your-username@your-server-ip
+
+# Add the public key to authorized_keys
+nano ~/.ssh/authorized_keys
+# Paste the content from ~/.ssh/github_deploy_key.pub
+# Save with Ctrl+X, then Y, then Enter
+
+# Set proper permissions
+chmod 600 ~/.ssh/authorized_keys
+```
+
+#### Step 3: Test the Key
+
+From your local machine, verify the key works:
+
+```bash
+ssh -i ~/.ssh/github_deploy_key your-username@your-server-ip "echo 'SSH key works!'"
+```
+
+#### Step 4: Add Key to GitHub Secrets
+
+1. Get the private key content:
+```bash
+cat ~/.ssh/github_deploy_key
+```
+
+2. Copy the **entire content** including:
+   - `-----BEGIN OPENSSH PRIVATE KEY-----`
+   - All the key data
+   - `-----END OPENSSH PRIVATE KEY-----`
+
+3. Add to GitHub repository secrets:
+   - Go to Settings → Secrets and variables → Actions
+   - Click "New repository secret"
+   - Add the following secrets:
+
+| Secret Name | Value |
+|-------------|-------|
+| `DIGITALOCEAN_SSH_KEY` | Your private key content |
+| `DIGITALOCEAN_HOST` | Your server IP (e.g., 192.168.1.100) |
+| `DIGITALOCEAN_USERNAME` | Your server username |
+| `DEPLOYMENT_PATH` | Path to project on server (e.g., /home/user/deployment-example) |
+
+### Setting Up Development-Staging-Production Environments (Optional)
+
+For teams wanting separate environments, you can configure multiple deployment targets:
+
+#### 1. Create Environment-Specific Workflows
+
+Create `deploy-staging.yml` and `deploy-production.yml`:
+
+```yaml
+# .github/workflows/deploy-staging.yml
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ staging ]
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy-to-digital-ocean.yml
+    secrets:
+      DIGITALOCEAN_HOST: ${{ secrets.STAGING_HOST }}
+      DIGITALOCEAN_SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+      DIGITALOCEAN_USERNAME: ${{ secrets.STAGING_USERNAME }}
+      DEPLOYMENT_PATH: ${{ secrets.STAGING_PATH }}
+```
+
+#### 2. Configure GitHub Environments
+
+1. Go to Settings → Environments
+2. Create environments: `development`, `staging`, `production`
+3. For each environment, configure:
+   - **Protection rules** (e.g., require approval for production)
+   - **Environment secrets** (specific to each environment)
+   - **Deployment branches** (which branches can deploy)
+
+#### 3. Update Main Workflow for Environments
+
+```yaml
+# .github/workflows/main-deploy.yml
+jobs:
+  deploy-staging:
+    if: github.ref == 'refs/heads/staging'
+    environment: staging
+    uses: ./.github/workflows/deploy-to-digital-ocean.yml
+    
+  deploy-production:
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    needs: [test]  # Only after tests pass
+    uses: ./.github/workflows/deploy-to-digital-ocean.yml
+```
+
+#### 4. Environment-Specific Configuration
+
+Structure your servers and branches:
+
+| Environment | Branch | Server | URL |
+|-------------|--------|--------|-----|
+| Development | `develop` | Local/Docker | http://localhost:3000 |
+| Staging | `staging` | staging-server.com | https://staging.yourdomain.com |
+| Production | `main` | prod-server.com | https://yourdomain.com |
+
+#### 5. Deployment Flow
+
+```bash
+# Development work
+git checkout -b feature/new-feature
+# Make changes and test locally
+git push origin feature/new-feature
+
+# Deploy to staging
+git checkout staging
+git merge feature/new-feature
+git push origin staging  # Auto-deploys to staging
+
+# Deploy to production (after staging validation)
+git checkout main
+git merge staging
+git push origin main  # Auto-deploys to production after tests
+```
+
+### Monitoring CI/CD
+
+- **GitHub Actions tab**: View running workflows and logs
+- **Deployment status**: Check the Actions tab for deployment history
+- **Failed deployments**: Workflows will show red X with detailed logs
+- **Successful deployments**: Green checkmark with deployment details
+
+### Troubleshooting CI/CD
+
+Common issues and solutions:
+
+| Issue | Solution |
+|-------|----------|
+| SSH connection fails | Verify SSH key format and server connectivity |
+| Tests fail locally but pass in CI | Check environment variables and dependencies |
+| Docker build fails | Clear cache with `--no-cache` flag |
+| Deployment hangs | Check server resources and Docker daemon status |
+
 ## 🧪 Testing
 
 ### Python Services
@@ -459,6 +659,61 @@ cd frontend
 npm run lint
 npm run type-check
 ```
+
+## 🔍 Agent Observability
+
+### Langfuse Integration
+
+For comprehensive observability of your Pydantic AI agent, you can integrate Langfuse for monitoring, debugging, and analytics. Langfuse provides:
+
+- **Request/Response Tracking**: Monitor all agent interactions and API calls
+- **Performance Metrics**: Track latency, token usage, and costs
+- **Error Monitoring**: Identify and debug failures in production
+- **User Analytics**: Understand usage patterns and user behavior
+- **Model Comparison**: A/B test different models and prompts
+
+#### Setup Guide
+
+1. **Create Langfuse Account**: Sign up at [langfuse.com](https://langfuse.com)
+
+2. **Install Langfuse SDK**:
+```bash
+cd agent_api
+pip install langfuse
+```
+
+3. **Configure Environment Variables**:
+```bash
+# Add to your .env file
+LANGFUSE_PUBLIC_KEY=your_public_key
+LANGFUSE_SECRET_KEY=your_secret_key
+LANGFUSE_HOST=https://cloud.langfuse.com  # or your self-hosted instance
+```
+
+4. **Integrate with Pydantic AI**: Follow the official integration guide at [langfuse.com/integrations/frameworks/pydantic-ai](https://langfuse.com/integrations/frameworks/pydantic-ai)
+
+#### Key Features for Pydantic AI
+
+- **Automatic Instrumentation**: Minimal code changes required
+- **Structured Logging**: Captures agent tools, responses, and decision chains
+- **Cost Tracking**: Monitor OpenAI API usage and costs per request
+- **Debugging Tools**: Replay conversations and inspect agent reasoning
+- **Custom Events**: Track business-specific metrics and KPIs
+
+#### Example Integration
+
+```python
+from langfuse.decorators import observe
+from pydantic_ai import Agent
+
+@observe()
+async def run_agent_with_observability(prompt: str):
+    agent = Agent(...)
+    result = await agent.run(prompt)
+    return result
+```
+
+For detailed setup instructions and advanced features, visit the [Pydantic AI Langfuse Integration Guide](https://langfuse.com/integrations/frameworks/pydantic-ai).
 
 ## 📊 Monitoring & Debugging
 

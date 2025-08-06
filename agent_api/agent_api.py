@@ -5,8 +5,9 @@ import asyncio
 import base64
 from datetime import datetime, timezone
 from pathlib import Path
+from turtle import tracer
 from dotenv import load_dotenv
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, nullcontext
 from typing import Optional, Dict, Any, List
 from fastapi import FastAPI, HTTPException, Depends, Security
 from fastapi.responses import StreamingResponse, JSONResponse
@@ -45,6 +46,9 @@ from db_utils import (
     generate_conversation_summary
 )
 
+# Import Langfuse configuration
+from configure_langfuse import configure_langfuse
+
 
 # We now define clients as None
 embeddings_client = None
@@ -52,6 +56,7 @@ supabase = None
 http_client = None
 title_agent = None
 mem0_client = None
+tracer = None
 
 # Define the lifespan context manager (Best practice)
 # Fast API we have concept of lifespan to create clients 
@@ -59,7 +64,10 @@ mem0_client = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global embeddings_client, supabase, http_client, title_agent, mem0_client
+    global embeddings_client, supabase, http_client, title_agent, mem0_client, tracer
+    
+    # Configure Langfuse (returns None if not configured)
+    tracer = configure_langfuse()
 
     # Startup: Initialize clients
     embeddings_client = get_openai_client()
@@ -363,6 +371,15 @@ async def pydantic_agent(request: AgentRequest, auth_result: tuple[Dict[str, Any
                 user_message = [request.query] + binary_contents
             else:
                 user_message = request.query
+                
+            # Start the Langfuse trace
+            span_context = tracer.start_as_current_span("Pydantic-Ai-Trace") if tracer else nullcontext()
+            
+            with span_context as span:
+                # Set session attributes for langfuse
+                span.set_attribute("langfuse.user.id", request.user_id)
+                span.set_attribute("langfuse.session.id", request.session_id)
+                span.set_attribute("langfuse.value", request.query)
 
             # Run Agent with user prompt and the chat history this is the same as streamlit where we can see the agent thinking and typing out its response in rewal time (Cannot do this in N8N)
             async with agent.iter(user_message, deps=agent_deps, message_history=pydantic_messages) as run:
@@ -379,6 +396,10 @@ async def pydantic_agent(request: AgentRequest, auth_result: tuple[Dict[str, Any
                                     delta = event.delta.content_delta
                                     yield json.dumps({"text": full_response}).encode('utf-8') + b'\n'
                                     full_response += delta
+                                    
+                # Set the output value after completion if tracing
+                if tracer and span:
+                    span.set_attribute("output.value", full_response)
 
             # After streaming is complete store the full response in the database
             message_data =  run.result.new_messages_json()

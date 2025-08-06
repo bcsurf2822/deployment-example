@@ -63,12 +63,14 @@ except Exception as e:
     toolsets = []
     print(f"[AGENT-INIT] Failed to initialize MCP server: {e}, continuing without code execution")
 
+# Instrument the agent to get more detailed logs - Langfuse we want to use logfire under the hood from Pydantic AI
 agent = Agent(
     model=f"openai:{settings.openai_model}",
     system_prompt=SYSTEM_PROMPT,
     deps_type=AgentDependencies,  # Specify the dependency type
     # Can hook into more MCP servers here
-    toolsets=toolsets
+    toolsets=toolsets,
+    instrument=True
 )
 
 # ============Agent Tools==========
