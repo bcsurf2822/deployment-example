@@ -12,15 +12,6 @@ on:
       DEPLOYMENT_PATH:
         required: true
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Deployment environment'
-        required: true
-        default: 'production'
-        type: choice
-        options:
-          - production
-          - staging
 
 env:
   DEPLOYMENT_TIMEOUT: 600  # 10 minutes
@@ -29,7 +20,6 @@ jobs:
   deploy:
     name: Deploy to Digital Ocean
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment || 'production' }}
     
     steps:
     - name: Checkout code
@@ -160,7 +150,7 @@ jobs:
           echo "✅ Deployment completed successfully"
           echo "Commit: ${{ github.sha }}"
           echo "Deployed by: ${{ github.actor }}"
-          echo "Environment: ${{ inputs.environment || 'production' }}"
+          echo "Branch: main"
         else
           echo "❌ Deployment failed"
           echo "Check the logs for more information"

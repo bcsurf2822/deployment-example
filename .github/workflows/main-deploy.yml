@@ -1,0 +1,23 @@
+name: Main CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  # Run tests first
+  test:
+    uses: ./.github/workflows/run-tests.yml
+    secrets: inherit
+
+  # Deploy to Digital Ocean only if tests pass
+  deploy:
+    needs: test
+    if: success()
+    uses: ./.github/workflows/deploy-to-digital-ocean.yml
+    secrets:
+      DIGITALOCEAN_HOST: ${{ secrets.DIGITALOCEAN_HOST }}
+      DIGITALOCEAN_SSH_KEY: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
+      DIGITALOCEAN_USERNAME: ${{ secrets.DIGITALOCEAN_USERNAME }}
+      DEPLOYMENT_PATH: ${{ secrets.DEPLOYMENT_PATH }}
