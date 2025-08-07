@@ -1,20 +1,8 @@
-from opentelemetry import trace
 from dotenv import load_dotenv
-import nest_asyncio
-import logfire
-import base64
+from langfuse import Langfuse
 import os
 
 load_dotenv()
-
-def scrubbing_callback(match: logfire.ScrubMatch):
-    """Preserve the Langfuse session ID."""
-    if (
-        match.path == ("attributes", "langfuse.session.id")
-        and match.pattern_match.group(0) == "session"
-    ):
-        # Return the original value to prevent redaction.
-        return match.value
 
 # Configure Langfuse for agent observability
 def configure_langfuse():
@@ -22,7 +10,7 @@ def configure_langfuse():
     Configure Langfuse for agent observability and tracing.
     
     Returns:
-        trace.Tracer or None: A tracer instance if Langfuse is configured, None otherwise
+        Langfuse or None: A Langfuse client instance if configured, None otherwise
     """
     LANGFUSE_PUBLIC_KEY = os.getenv("LANGFUSE_PUBLIC_KEY")
     LANGFUSE_SECRET_KEY = os.getenv("LANGFUSE_SECRET_KEY")
@@ -33,19 +21,15 @@ def configure_langfuse():
         print("Langfuse credentials not found. Tracing disabled.")
         return None
     
-    LANGFUSE_AUTH = base64.b64encode(f"{LANGFUSE_PUBLIC_KEY}:{LANGFUSE_SECRET_KEY}".encode()).decode()
-
-# Open telementry is a standard for observability
-
-    os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"] = f"{LANGFUSE_HOST}/api/public/otel"
-    os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = f"Authorization=Basic {LANGFUSE_AUTH}"
-
-    # Configure Logfire to work with Langfuse
-    nest_asyncio.apply()
-    logfire.configure(
-        service_name='pydantic_ai_agent',
-        send_to_logfire=False,
-        scrubbing=logfire.ScrubbingOptions(callback=scrubbing_callback)
-    )
-
-    return trace.get_tracer("pydantic_ai_agent")
+    # Initialize Langfuse client
+    try:
+        langfuse_client = Langfuse(
+            public_key=LANGFUSE_PUBLIC_KEY,
+            secret_key=LANGFUSE_SECRET_KEY,
+            host=LANGFUSE_HOST
+        )
+        print(f"Langfuse configured successfully with host: {LANGFUSE_HOST}")
+        return langfuse_client
+    except Exception as e:
+        print(f"Failed to configure Langfuse: {e}")
+        return None

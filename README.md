@@ -271,6 +271,45 @@ python deploy.py --down --mode dev --with-rag
 - API: http://localhost:8001
 - Simple API: http://localhost:8002
 
+### 🧹 Complete Docker Cleanup
+
+When you need to completely reset your Docker environment and rebuild everything from scratch:
+
+#### Method 1: Using Deploy Script (Recommended)
+
+```bash
+# Stop and remove all containers, networks, and volumes for the project
+python deploy.py --down --mode dev --with-rag
+
+# Remove all Docker images related to the project
+docker images | grep pydantic-agent | awk '{print $3}' | xargs docker rmi -f
+
+# Remove any dangling images and build cache
+docker system prune -a --volumes -f
+
+# Clear Docker build cache completely
+docker builder prune -a -f
+
+# Now rebuild everything from scratch
+python deploy.py --mode dev --with-rag
+```
+
+#### Method 2: Manual Docker Compose Approach
+
+```bash
+# Stop all containers
+docker compose -p pydantic-agent -f docker-compose.dev.yml down -v
+
+# Remove all project images
+docker rmi pydantic-agent-frontend-dev:latest pydantic-agent-agent-api-dev:latest pydantic-agent-rag-google-drive-dev:latest pydantic-agent-rag-local-files-dev:latest -f
+
+# Clean everything
+docker system prune -a --volumes -f
+
+# Rebuild
+docker compose -p pydantic-agent -f docker-compose.dev.yml up --build
+```
+
 ## 📁 Service Details
 
 ### Frontend Service (`frontend/`)
@@ -444,20 +483,20 @@ The project includes comprehensive CI/CD automation with GitHub Actions. All wor
 
 #### Core Workflows
 
-| Workflow | File | Purpose | Triggers |
-|----------|------|---------|----------|
-| **Main CI/CD Pipeline** | `main-deploy.yml` | Orchestrates testing and deployment to production | Push to `main` branch |
-| **Run All Tests** | `run-tests.yml` | Coordinates all test suites in parallel | PR, push to `main`, manual |
-| **Deploy to Digital Ocean** | `deploy-to-digital-ocean.yml` | Handles production deployment via SSH | Called by main-deploy.yml |
+| Workflow                    | File                          | Purpose                                           | Triggers                   |
+| --------------------------- | ----------------------------- | ------------------------------------------------- | -------------------------- |
+| **Main CI/CD Pipeline**     | `main-deploy.yml`             | Orchestrates testing and deployment to production | Push to `main` branch      |
+| **Run All Tests**           | `run-tests.yml`               | Coordinates all test suites in parallel           | PR, push to `main`, manual |
+| **Deploy to Digital Ocean** | `deploy-to-digital-ocean.yml` | Handles production deployment via SSH             | Called by main-deploy.yml  |
 
 #### Test Workflows
 
-| Workflow | File | Purpose | Test Coverage |
-|----------|------|---------|---------------|
-| **Python Linting** | `python-lint.yml` | Validates Python code quality | agent_api/, rag_pipeline/ |
-| **Frontend Linting** | `frontend-lint.yml` | Validates TypeScript/React code | frontend/ |
-| **Security Analysis** | `security-analysis.yml` | Scans for security vulnerabilities | Python dependencies |
-| **Docker Builds** | `docker-builds.yml` | Verifies all containers build successfully | All Dockerfiles |
+| Workflow              | File                    | Purpose                                    | Test Coverage             |
+| --------------------- | ----------------------- | ------------------------------------------ | ------------------------- |
+| **Python Linting**    | `python-lint.yml`       | Validates Python code quality              | agent_api/, rag_pipeline/ |
+| **Frontend Linting**  | `frontend-lint.yml`     | Validates TypeScript/React code            | frontend/                 |
+| **Security Analysis** | `security-analysis.yml` | Scans for security vulnerabilities         | Python dependencies       |
+| **Docker Builds**     | `docker-builds.yml`     | Verifies all containers build successfully | All Dockerfiles           |
 
 ### Workflow Execution Flow
 
@@ -518,11 +557,13 @@ ssh -i ~/.ssh/github_deploy_key your-username@your-server-ip "echo 'SSH key work
 #### Step 4: Add Key to GitHub Secrets
 
 1. Get the private key content:
+
 ```bash
 cat ~/.ssh/github_deploy_key
 ```
 
 2. Copy the **entire content** including:
+
    - `-----BEGIN OPENSSH PRIVATE KEY-----`
    - All the key data
    - `-----END OPENSSH PRIVATE KEY-----`
@@ -532,12 +573,12 @@ cat ~/.ssh/github_deploy_key
    - Click "New repository secret"
    - Add the following secrets:
 
-| Secret Name | Value |
-|-------------|-------|
-| `DIGITALOCEAN_SSH_KEY` | Your private key content |
-| `DIGITALOCEAN_HOST` | Your server IP (e.g., 192.168.1.100) |
-| `DIGITALOCEAN_USERNAME` | Your server username |
-| `DEPLOYMENT_PATH` | Path to project on server (e.g., /home/user/deployment-example) |
+| Secret Name             | Value                                                           |
+| ----------------------- | --------------------------------------------------------------- |
+| `DIGITALOCEAN_SSH_KEY`  | Your private key content                                        |
+| `DIGITALOCEAN_HOST`     | Your server IP (e.g., 192.168.1.100)                            |
+| `DIGITALOCEAN_USERNAME` | Your server username                                            |
+| `DEPLOYMENT_PATH`       | Path to project on server (e.g., /home/user/deployment-example) |
 
 ### Setting Up Development-Staging-Production Environments (Optional)
 
@@ -553,7 +594,7 @@ name: Deploy to Staging
 
 on:
   push:
-    branches: [ staging ]
+    branches: [staging]
 
 jobs:
   deploy:
@@ -583,11 +624,11 @@ jobs:
     if: github.ref == 'refs/heads/staging'
     environment: staging
     uses: ./.github/workflows/deploy-to-digital-ocean.yml
-    
+
   deploy-production:
     if: github.ref == 'refs/heads/main'
     environment: production
-    needs: [test]  # Only after tests pass
+    needs: [test] # Only after tests pass
     uses: ./.github/workflows/deploy-to-digital-ocean.yml
 ```
 
@@ -595,11 +636,11 @@ jobs:
 
 Structure your servers and branches:
 
-| Environment | Branch | Server | URL |
-|-------------|--------|--------|-----|
-| Development | `develop` | Local/Docker | http://localhost:3000 |
-| Staging | `staging` | staging-server.com | https://staging.yourdomain.com |
-| Production | `main` | prod-server.com | https://yourdomain.com |
+| Environment | Branch    | Server             | URL                            |
+| ----------- | --------- | ------------------ | ------------------------------ |
+| Development | `develop` | Local/Docker       | http://localhost:3000          |
+| Staging     | `staging` | staging-server.com | https://staging.yourdomain.com |
+| Production  | `main`    | prod-server.com    | https://yourdomain.com         |
 
 #### 5. Deployment Flow
 
@@ -631,12 +672,12 @@ git push origin main  # Auto-deploys to production after tests
 
 Common issues and solutions:
 
-| Issue | Solution |
-|-------|----------|
-| SSH connection fails | Verify SSH key format and server connectivity |
-| Tests fail locally but pass in CI | Check environment variables and dependencies |
-| Docker build fails | Clear cache with `--no-cache` flag |
-| Deployment hangs | Check server resources and Docker daemon status |
+| Issue                             | Solution                                        |
+| --------------------------------- | ----------------------------------------------- |
+| SSH connection fails              | Verify SSH key format and server connectivity   |
+| Tests fail locally but pass in CI | Check environment variables and dependencies    |
+| Docker build fails                | Clear cache with `--no-cache` flag              |
+| Deployment hangs                  | Check server resources and Docker daemon status |
 
 ## 🧪 Testing
 
@@ -677,12 +718,14 @@ For comprehensive observability of your Pydantic AI agent, you can integrate Lan
 1. **Create Langfuse Account**: Sign up at [langfuse.com](https://langfuse.com)
 
 2. **Install Langfuse SDK**:
+
 ```bash
 cd agent_api
 pip install langfuse
 ```
 
 3. **Configure Environment Variables**:
+
 ```bash
 # Add to your .env file
 LANGFUSE_PUBLIC_KEY=your_public_key
