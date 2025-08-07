@@ -5,7 +5,6 @@ import asyncio
 import base64
 from datetime import datetime, timezone
 from pathlib import Path
-from turtle import tracer
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager, nullcontext
 from typing import Optional, Dict, Any, List
@@ -377,9 +376,10 @@ async def pydantic_agent(request: AgentRequest, auth_result: tuple[Dict[str, Any
             
             with span_context as span:
                 # Set session attributes for langfuse
-                span.set_attribute("langfuse.user.id", request.user_id)
-                span.set_attribute("langfuse.session.id", request.session_id)
-                span.set_attribute("langfuse.value", request.query)
+                if span:
+                    span.set_attribute("langfuse.user.id", request.user_id)
+                    span.set_attribute("langfuse.session.id", request.session_id)
+                    span.set_attribute("langfuse.value", request.query)
 
             # Run Agent with user prompt and the chat history this is the same as streamlit where we can see the agent thinking and typing out its response in rewal time (Cannot do this in N8N)
             async with agent.iter(user_message, deps=agent_deps, message_history=pydantic_messages) as run:

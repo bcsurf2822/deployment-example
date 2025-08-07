@@ -1,0 +1,137 @@
+| INFO:     172.19.0.5:49864 - "POST /api/pydantic-agent HTTP/1.1" 200 OK
+frontend-dev-1   | [API-CHAT] Response status: 200
+agent-api-dev-1  | ERROR:    Exception in ASGI application
+agent-api-dev-1  |   + Exception Group Traceback (most recent call last):
+agent-api-dev-1  |   |   File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 77, in collapse_excgroups
+agent-api-dev-1  |   |     yield
+agent-api-dev-1  |   |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 271, in __call__
+agent-api-dev-1  |   |     async with anyio.create_task_group() as task_group:
+agent-api-dev-1  |   |   File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+agent-api-dev-1  |   |     raise BaseExceptionGroup(
+agent-api-dev-1  |   | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+agent-api-dev-1  |   +-+---------------- 1 ----------------
+agent-api-dev-1  |     | Traceback (most recent call last):
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+agent-api-dev-1  |     |     result = await app(  # type: ignore[func-returns-value]
+agent-api-dev-1  |     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+agent-api-dev-1  |     |     return await self.app(scope, receive, send)
+agent-api-dev-1  |     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+agent-api-dev-1  |     |     await super().__call__(scope, receive, send)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/applications.py", line 113, in __call__
+agent-api-dev-1  |     |     await self.middleware_stack(scope, receive, send)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
+agent-api-dev-1  |     |     raise exc
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
+agent-api-dev-1  |     |     await self.app(scope, receive, _send)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 85, in __call__
+agent-api-dev-1  |     |     await self.app(scope, receive, send)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+agent-api-dev-1  |     |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+agent-api-dev-1  |     |     raise exc
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+agent-api-dev-1  |     |     await app(scope, receive, sender)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 716, in __call__
+agent-api-dev-1  |     |     await self.middleware_stack(scope, receive, send)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 736, in app
+agent-api-dev-1  |     |     await route.handle(scope, receive, send)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 290, in handle
+agent-api-dev-1  |     |     await self.app(scope, receive, send)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 78, in app
+agent-api-dev-1  |     |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+agent-api-dev-1  |     |     raise exc
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+agent-api-dev-1  |     |     await app(scope, receive, sender)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 76, in app
+agent-api-dev-1  |     |     await response(scope, receive, send)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 270, in __call__
+agent-api-dev-1  |     |     with collapse_excgroups():
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+agent-api-dev-1  |     |     self.gen.throw(typ, value, traceback)
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 83, in collapse_excgroups
+agent-api-dev-1  |     |     raise exc
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 274, in wrap
+agent-api-dev-1  |     |     await func()
+agent-api-dev-1  |     |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 254, in stream_response
+agent-api-dev-1  |     |     async for chunk in self.body_iterator:
+agent-api-dev-1  |     |   File "/app/agent_api.py", line 379, in stream_response
+agent-api-dev-1  |     |     span.set_attribute("langfuse.user.id", request.user_id)
+agent-api-dev-1  |     |     ^^^^^^^^^^^^^^^^^^
+agent-api-dev-1  |     | AttributeError: 'NoneType' object has no attribute 'set_attribute'
+agent-api-dev-1  |     +------------------------------------
+agent-api-dev-1  | 
+agent-api-dev-1  | During handling of the above exception, another exception occurred:
+agent-api-dev-1  | 
+agent-api-dev-1  | Traceback (most recent call last):
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+agent-api-dev-1  |     result = await app(  # type: ignore[func-returns-value]
+agent-api-dev-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+agent-api-dev-1  |     return await self.app(scope, receive, send)
+agent-api-dev-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+agent-api-dev-1  |     await super().__call__(scope, receive, send)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/applications.py", line 113, in __call__
+agent-api-dev-1  |     await self.middleware_stack(scope, receive, send)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
+agent-api-dev-1  |     raise exc
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
+agent-api-dev-1  |     await self.app(scope, receive, _send)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 85, in __call__
+agent-api-dev-1  |     await self.app(scope, receive, send)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+agent-api-dev-1  |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+agent-api-dev-1  |     raise exc
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+agent-api-dev-1  |     await app(scope, receive, sender)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 716, in __call__
+agent-api-dev-1  |     await self.middleware_stack(scope, receive, send)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 736, in app
+agent-api-dev-1  |     await route.handle(scope, receive, send)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 290, in handle
+agent-api-dev-1  |     await self.app(scope, receive, send)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 78, in app
+agent-api-dev-1  |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+agent-api-dev-1  |     raise exc
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+agent-api-dev-1  |     await app(scope, receive, sender)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 76, in app
+agent-api-dev-1  |     await response(scope, receive, send)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 270, in __call__
+agent-api-dev-1  |     with collapse_excgroups():
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+agent-api-dev-1  |     self.gen.throw(typ, value, traceback)
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 83, in collapse_excgroups
+agent-api-dev-1  |     raise exc
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 274, in wrap
+agent-api-dev-1  |     await func()
+agent-api-dev-1  |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 254, in stream_response
+agent-api-dev-1  |     async for chunk in self.body_iterator:
+agent-api-dev-1  |   File "/app/agent_api.py", line 379, in stream_response
+agent-api-dev-1  |     span.set_attribute("langfuse.user.id", request.user_id)
+agent-api-dev-1  |     ^^^^^^^^^^^^^^^^^^
+agent-api-dev-1  | AttributeError: 'NoneType' object has no attribute 'set_attribute'
+frontend-dev-1   | [Error: failed to pipe response] {
+frontend-dev-1   |   [cause]: [TypeError: terminated] {
+frontend-dev-1   |     [cause]: [Error [SocketError]: other side closed] {
+frontend-dev-1   |       code: 'UND_ERR_SOCKET',
+frontend-dev-1   |       socket: {
+frontend-dev-1   |         localAddress: '172.19.0.5',
+frontend-dev-1   |         localPort: 49864,
+frontend-dev-1   |         remoteAddress: '172.19.0.2',
+frontend-dev-1   |         remotePort: 8001,
+frontend-dev-1   |         remoteFamily: 'IPv4',
+frontend-dev-1   |         timeout: undefined,
+frontend-dev-1   |         bytesWritten: 1314,
+frontend-dev-1   |         bytesRead: 142
+frontend-dev-1   |       }
+frontend-dev-1   |     }
+frontend-dev-1   |   }
+frontend-dev-1   | }
+frontend-dev-1   |  POST /api/chat 500 in 4585ms
+agent-api-dev-1  | INFO:     127.0.0.1:41056 - "GET /health HTTP/1.1" 200 OK
