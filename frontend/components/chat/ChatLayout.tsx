@@ -6,6 +6,8 @@ import { Message, FileAttachment } from "@/lib/types/database";
 import { createClient } from "@/lib/supabase/client";
 import MessageContainer from "./MessageContainer";
 import ChatInput from "./ChatInput";
+import ConversationsSidebar from "./ConversationsSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function ChatLayout() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -200,12 +202,39 @@ export default function ChatLayout() {
   const handleClearChat = () => {
     setMessages([]);
     setError(null);
+    // Generate new session ID for fresh conversation
+    if (user) {
+      const randomSuffix = Math.random().toString(36).substring(2, 12);
+      const newSessionId = `${user.id}~${randomSuffix}`;
+      setSessionId(newSessionId);
+    }
+  };
+
+  const handleNewConversation = () => {
+    handleClearChat();
+  };
+
+  const handleSelectConversation = (selectedSessionId: string) => {
+    setSessionId(selectedSessionId);
+    setMessages([]);
+    setError(null);
+    // TODO: Load messages for selected conversation from database
+    console.log("[ChatLayout-handleSelectConversation] Selected session:", selectedSessionId);
   };
 
   return (
-    <div className="min-h-screen ">
-      {/* Chat Container */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <SidebarProvider>
+      <div className="flex min-h-screen bg-background">
+        <ConversationsSidebar 
+          user={user}
+          currentSessionId={sessionId}
+          onNewConversation={handleNewConversation}
+          onSelectConversation={handleSelectConversation}
+        />
+        
+        <div className="flex-1 flex flex-col">
+          {/* Chat Container */}
+          <div className="flex-1 px-4 sm:px-6 lg:px-8 py-8">
         {/* Chat Header */}
         <div className="mb-6 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">AI Chat Assistant</h1>
@@ -216,70 +245,72 @@ export default function ChatLayout() {
             Clear Chat
           </button>
         </div>
-        <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
-          {/* Messages Area */}
-          <MessageContainer
-            messages={messages}
-            isLoading={isLoading}
-            user={user}
-            sessionId={sessionId}
-          />
+            <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
+              {/* Messages Area */}
+              <MessageContainer
+                messages={messages}
+                isLoading={isLoading}
+                user={user}
+                sessionId={sessionId}
+              />
 
-          {/* Input Area */}
-          <ChatInput
-            onSendMessage={handleSendMessage}
-            isLoading={isLoading}
-            error={error}
-            user={user}
-            sessionId={sessionId}
-          />
-        </div>
+              {/* Input Area */}
+              <ChatInput
+                onSendMessage={handleSendMessage}
+                isLoading={isLoading}
+                error={error}
+                user={user}
+                sessionId={sessionId}
+              />
+            </div>
 
-        {/* Debug Info */}
-        <div className="mt-6 bg-gray-100 border border-gray-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-2">
-            Debug Information
-          </h3>
-          <div className="text-xs text-gray-600 space-y-1">
-            <p>
-              <span className="font-medium">API URL:</span> /api/chat
-            </p>
-            <p>
-              <span className="font-medium">User ID:</span>{" "}
-              {user?.id || "Loading..."}
-            </p>
-            <p>
-              <span className="font-medium">Session ID:</span>{" "}
-              {sessionId ? (
-                <>
-                  {sessionId}
-                  {/* Langfuse link - uses NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT env var */}
-                  {typeof window !== 'undefined' && process.env.NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT && (
-                    <a
-                      href={`${process.env.NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT}/sessions/${sessionId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ml-2 text-blue-400 hover:text-blue-300 underline text-xs"
-                    >
-                      View in Langfuse →
-                    </a>
+            {/* Debug Info */}
+            <div className="mt-6 bg-gray-100 border border-gray-200 rounded-lg p-4">
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                Debug Information
+              </h3>
+              <div className="text-xs text-gray-600 space-y-1">
+                <p>
+                  <span className="font-medium">API URL:</span> /api/chat
+                </p>
+                <p>
+                  <span className="font-medium">User ID:</span>{" "}
+                  {user?.id || "Loading..."}
+                </p>
+                <p>
+                  <span className="font-medium">Session ID:</span>{" "}
+                  {sessionId ? (
+                    <>
+                      {sessionId}
+                      {/* Langfuse link - uses NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT env var */}
+                      {typeof window !== 'undefined' && process.env.NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT && (
+                        <a
+                          href={`${process.env.NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT}/sessions/${sessionId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-2 text-blue-400 hover:text-blue-300 underline text-xs"
+                        >
+                          View in Langfuse →
+                        </a>
+                      )}
+                    </>
+                  ) : (
+                    "Generating..."
                   )}
-                </>
-              ) : (
-                "Generating..."
-              )}
-            </p>
-            <p>
-              <span className="font-medium">Messages:</span>{" "}
-              {messages.length}
-            </p>
-            <p>
-              <span className="font-medium">Status:</span>{" "}
-              {isLoading ? "Loading..." : "Ready"}
-            </p>
+                </p>
+                <p>
+                  <span className="font-medium">Messages:</span>{" "}
+                  {messages.length}
+                </p>
+                <p>
+                  <span className="font-medium">Status:</span>{" "}
+                  {isLoading ? "Loading..." : "Ready"}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
