@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { Message, FileAttachment } from "@/lib/types/database";
 import { createClient } from "@/lib/supabase/client";
@@ -12,32 +11,31 @@ export default function ChatLayout() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
   const [sessionId, setSessionId] = useState<string>("");
-  const router = useRouter();
   const supabase = createClient();
-
-  // Get user and create session ID
+  
+  // Import user from auth context
+  const [user, setUser] = useState<User | null>(null);
+  
+  // Get user from auth and create session ID
   useEffect(() => {
     const getUser = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/auth/login");
-        return;
+      
+      if (user) {
+        setUser(user);
+        // Generate session_id in format: {user_id}~{random_string} to match existing conversations
+        const randomSuffix = Math.random().toString(36).substring(2, 12);
+        const sessionId = `${user.id}~${randomSuffix}`;
+        setSessionId(sessionId);
+        console.log("[ChatLayout-getUser] Session ID generated:", sessionId);
       }
-
-      setUser(user);
-      // Generate session_id in format: {user_id}~{random_string} to match existing conversations
-      const randomSuffix = Math.random().toString(36).substring(2, 12);
-      const sessionId = `${user.id}~${randomSuffix}`;
-      setSessionId(sessionId);
-      console.log("[ChatLayout-getUser] Session ID generated:", sessionId);
     };
 
     getUser();
-  }, [supabase, router]);
+  }, [supabase]);
 
   const handleSendMessage = async (input: string, files?: FileAttachment[]) => {
     if ((!input.trim() && (!files || files.length === 0)) || !user || !sessionId) return;
@@ -205,41 +203,20 @@ export default function ChatLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-purple-950 to-black text-white">
-      {/* Background Effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl"></div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="relative border-b border-yellow-400/20 backdrop-blur-xl bg-black/20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => router.push("/")}
-                className="text-yellow-400 hover:text-yellow-300 transition-colors"
-              >
-                � Back to Dashboard
-              </button>
-              <h1 className="text-xl font-bold text-yellow-400">Chat Test</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={handleClearChat}
-                className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-300 px-4 py-2 rounded-lg transition-all duration-300"
-              >
-                Clear Chat
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+    <div className="min-h-screen ">
       {/* Chat Container */}
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-black/40 backdrop-blur-xl border border-yellow-400/20 rounded-2xl overflow-hidden">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Chat Header */}
+        <div className="mb-6 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">AI Chat Assistant</h1>
+          <button
+            onClick={handleClearChat}
+            className="bg-red-400 hover:bg-red-500 text-white px-4 py-2 rounded-lg transition-colors font-medium"
+          >
+            Clear Chat
+          </button>
+        </div>
+        <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
           {/* Messages Area */}
           <MessageContainer
             messages={messages}
@@ -259,20 +236,20 @@ export default function ChatLayout() {
         </div>
 
         {/* Debug Info */}
-        <div className="mt-6 bg-black/20 backdrop-blur-xl border border-gray-600/20 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-300 mb-2">
+        <div className="mt-6 bg-gray-100 border border-gray-200 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">
             Debug Information
           </h3>
-          <div className="text-xs text-gray-400 space-y-1">
+          <div className="text-xs text-gray-600 space-y-1">
             <p>
-              <span className="text-yellow-400">API URL:</span> /api/chat
+              <span className="font-medium">API URL:</span> /api/chat
             </p>
             <p>
-              <span className="text-yellow-400">User ID:</span>{" "}
+              <span className="font-medium">User ID:</span>{" "}
               {user?.id || "Loading..."}
             </p>
             <p>
-              <span className="text-yellow-400">Session ID:</span>{" "}
+              <span className="font-medium">Session ID:</span>{" "}
               {sessionId ? (
                 <>
                   {sessionId}
@@ -293,11 +270,11 @@ export default function ChatLayout() {
               )}
             </p>
             <p>
-              <span className="text-yellow-400">Messages:</span>{" "}
+              <span className="font-medium">Messages:</span>{" "}
               {messages.length}
             </p>
             <p>
-              <span className="text-yellow-400">Status:</span>{" "}
+              <span className="font-medium">Status:</span>{" "}
               {isLoading ? "Loading..." : "Ready"}
             </p>
           </div>

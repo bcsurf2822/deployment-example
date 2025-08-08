@@ -99,21 +99,21 @@ export default function ChatInput({
   };
 
   return (
-    <div className="border-t border-yellow-400/20 p-4">
+    <div className="border-t border-gray-200 bg-white p-4">
       {/* File attachments display */}
       {attachedFiles.length > 0 && (
         <div className="mb-3 flex flex-wrap gap-2">
           {attachedFiles.map((file, index) => (
-            <div key={index} className="flex items-center bg-gray-700/80 border border-gray-600 rounded-full px-3 py-2 space-x-2">
-              <div className="w-4 h-4 text-gray-300">
+            <div key={index} className="flex items-center bg-gray-100 border border-gray-300 rounded-full px-3 py-2 space-x-2">
+              <div className="w-4 h-4 text-gray-600">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <span className="text-white text-sm font-medium truncate max-w-32">{file.fileName}</span>
+              <span className="text-gray-700 text-sm font-medium truncate max-w-32">{file.fileName}</span>
               <button
                 onClick={() => removeFile(index)}
-                className="text-gray-400 hover:text-white transition-colors p-0.5"
+                className="text-gray-500 hover:text-gray-700 transition-colors p-0.5"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -132,14 +132,14 @@ export default function ChatInput({
           onKeyDown={handleKeyDown}
           placeholder={user ? "Type your message..." : "Loading user..."}
           disabled={isLoading || !user || !sessionId}
-          className="flex-1 px-4 py-3 bg-black/40 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400/50 transition-all duration-300 disabled:opacity-50"
+          className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-200 disabled:bg-gray-50 disabled:text-gray-500"
         />
         
         {/* File attachment button */}
         <button
           onClick={handleFileSelect}
           disabled={isLoading || !user || !sessionId || attachedFiles.length >= MAX_FILES}
-          className="px-3 py-3 bg-black/40 border border-gray-600 rounded-lg text-gray-400 hover:text-yellow-400 hover:border-yellow-400 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3 py-3 bg-white border border-gray-300 rounded-lg text-gray-600 hover:text-blue-600 hover:border-blue-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           title={attachedFiles.length >= MAX_FILES ? `Maximum ${MAX_FILES} files allowed` : "Attach files"}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,7 +150,7 @@ export default function ChatInput({
         <button
           onClick={handleSubmit}
           disabled={isLoading || (!input.trim() && attachedFiles.length === 0) || !user || !sessionId}
-          className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-black font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg shadow-yellow-400/25"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           Send
         </button>
@@ -168,13 +168,13 @@ export default function ChatInput({
 
       {/* File validation error */}
       {fileError && (
-        <div className="mt-3 bg-red-500/20 border border-red-500/40 text-red-300 px-4 py-2 rounded-lg text-sm">
+        <div className="mt-3 bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm">
           {fileError}
         </div>
       )}
 
       {error && (
-        <div className="mt-3 bg-red-500/20 border border-red-500/40 text-red-300 px-4 py-2 rounded-lg text-sm">
+        <div className="mt-3 bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm">
           {error}
         </div>
       )}
