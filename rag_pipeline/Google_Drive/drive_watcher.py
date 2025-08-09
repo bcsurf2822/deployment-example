@@ -15,7 +15,6 @@ import os
 import io
 from pathlib import Path
 
-# Lot of Google Drive Boilerplate code here
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.text_processor import extract_text_from_file, chunk_text, create_embeddings
@@ -125,25 +124,62 @@ class GoogleDriveWatcher:
         
         # Priority 1: Check for service account credentials in environment variable
         service_account_json = os.getenv('GOOGLE_DRIVE_CREDENTIALS_JSON')
+        print(f"[DRIVE_WATCHER-AUTHENTICATE] GOOGLE_DRIVE_CREDENTIALS_JSON environment variable: {service_account_json}")
+        
         if service_account_json:
-            try:
-                # Parse the service account credentials from environment variable
-                service_account_info = json.loads(service_account_json)
-                creds = ServiceAccountCredentials.from_service_account_info(
-                    service_account_info, scopes=SCOPES)
-                print("Using service account authentication for Google Drive")
+            print(f"[DRIVE_WATCHER-AUTHENTICATE] Found service account JSON path: {service_account_json}")
+            
+            # Check if it's a file path or JSON content
+            if service_account_json.startswith('{'):
+                # It's JSON content directly
+                print("[DRIVE_WATCHER-AUTHENTICATE] Environment variable contains JSON content directly")
+                try:
+                    service_account_info = json.loads(service_account_json)
+                    print(f"[DRIVE_WATCHER-AUTHENTICATE] Parsed JSON keys: {list(service_account_info.keys())}")
+                    print(f"[DRIVE_WATCHER-AUTHENTICATE] Service account email: {service_account_info.get('client_email', 'NOT_FOUND')}")
+                    
+                    creds = ServiceAccountCredentials.from_service_account_info(
+                        service_account_info, scopes=SCOPES)
+                    print("[DRIVE_WATCHER-AUTHENTICATE] Service account credentials created from JSON content")
+                    
+                except (json.JSONDecodeError, ValueError) as e:
+                    print(f"[DRIVE_WATCHER-AUTHENTICATE] Error parsing JSON content: {e}")
+                    raise RuntimeError(f"Invalid service account credentials in environment variable: {e}")
+            else:
+                # It's a file path
+                print(f"[DRIVE_WATCHER-AUTHENTICATE] Environment variable contains file path: {service_account_json}")
+                print(f"[DRIVE_WATCHER-AUTHENTICATE] File exists: {os.path.exists(service_account_json)}")
                 
-                # Test the credentials by trying to build the service
+                if os.path.exists(service_account_json):
+                    try:
+                        with open(service_account_json, 'r') as f:
+                            service_account_info = json.load(f)
+                        print(f"[DRIVE_WATCHER-AUTHENTICATE] Loaded JSON from file, keys: {list(service_account_info.keys())}")
+                        print(f"[DRIVE_WATCHER-AUTHENTICATE] Service account email: {service_account_info.get('client_email', 'NOT_FOUND')}")
+                        
+                        creds = ServiceAccountCredentials.from_service_account_info(
+                            service_account_info, scopes=SCOPES)
+                        print("[DRIVE_WATCHER-AUTHENTICATE] Service account credentials created from file")
+                        
+                    except (json.JSONDecodeError, ValueError, FileNotFoundError) as e:
+                        print(f"[DRIVE_WATCHER-AUTHENTICATE] Error loading JSON from file: {e}")
+                        raise RuntimeError(f"Invalid service account credentials file: {e}")
+                else:
+                    print(f"[DRIVE_WATCHER-AUTHENTICATE] Service account file does not exist: {service_account_json}")
+                    raise RuntimeError(f"Service account file not found: {service_account_json}")
+            
+            # Test the credentials
+            try:
+                print("[DRIVE_WATCHER-AUTHENTICATE] Testing service account credentials...")
                 test_service = build('drive', 'v3', credentials=creds)
                 # Make a simple API call to validate credentials
-                test_service.about().get(fields='user').execute()
-                print("Service account credentials validated successfully")
+                user_info = test_service.about().get(fields='user').execute()
+                print(f"[DRIVE_WATCHER-AUTHENTICATE] Service account credentials validated successfully for user: {user_info.get('user', {}).get('emailAddress', 'unknown')}")
+                print("[DRIVE_WATCHER-AUTHENTICATE] Using service account authentication for Google Drive")
                 
-            except (json.JSONDecodeError, ValueError) as e:
-                print(f"Error parsing service account credentials from GOOGLE_DRIVE_CREDENTIALS_JSON: {e}")
-                raise RuntimeError(f"Invalid service account credentials in environment variable: {e}")
             except Exception as e:
-                print(f"Error validating service account credentials: {e}")
+                print(f"[DRIVE_WATCHER-AUTHENTICATE] Error validating service account credentials: {e}")
+                print(f"[DRIVE_WATCHER-AUTHENTICATE] Error type: {type(e).__name__}")
                 raise RuntimeError(f"Service account authentication failed: {e}")
         
         # Priority 2: Check for existing OAuth2 token (backward compatibility)

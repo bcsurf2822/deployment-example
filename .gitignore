@@ -211,6 +211,7 @@ credentials.json
 token.json
 service-account-key.json
 google-credentials.json
+service-account.json
 
 # Database files
 *.db

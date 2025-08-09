@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Frontend service for development with hot reload
   frontend-dev:
@@ -40,11 +38,13 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_BASE_URL=${OPENAI_BASE_URL}
       - OPENAI_MODEL=${OPENAI_MODEL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
       - VISION_MODEL=${VISION_MODEL}
       - BRAVE_API_KEY=${BRAVE_API_KEY}
       - BRAVE_SEARCH_URL=${BRAVE_SEARCH_URL}
       - SEARXNG_BASE_URL=${SEARXNG_BASE_URL}
       - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_ANON_KEY}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
       - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
       - DATABASE_URL=${DATABASE_URL}
@@ -83,6 +83,8 @@ services:
       - ./rag_pipeline:/app
       - ./test_files:/app/test_files
       - rag_venv:/app/venv
+      # Mount the service account JSON file from host to container
+      - ./service-account.json:/app/service-account.json:ro
     restart: unless-stopped
     profiles:
       - with-rag

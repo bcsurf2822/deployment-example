@@ -1,0 +1,295 @@
+rontend-dev-1          | [API-CHAT] Auth user result: { user: 'bf8b4d95-1ff5-4e78-a888-58cdaee72878', error: null }
+frontend-dev-1          | [API-CHAT] Request body: {
+frontend-dev-1          |   query: 'Hello',
+frontend-dev-1          |   user_id: 'bf8b4d95-1ff5-4e78-a888-58cdaee72878',
+frontend-dev-1          |   session_id: 'bf8b4d95-1ff5-4e78-a888-58cdaee72878~n1szpgmw6k'
+frontend-dev-1          | }
+frontend-dev-1          | [API-CHAT] Conversation created: bf8b4d95-1ff5-4e78-a888-58cdaee72878~n1szpgmw6k
+frontend-dev-1          | [API-CHAT] Token prefix: eyJhbGciOiJIUzI1NiIs...
+frontend-dev-1          | [API-CHAT] User ID from session: bf8b4d95-1ff5-4e78-a888-58cdaee72878
+frontend-dev-1          | [API-CHAT] Sending request to: http://agent-api-dev:8001/api/pydantic-agent
+frontend-dev-1          | [API-CHAT] Headers: {
+frontend-dev-1          |   'Content-Type': 'application/json',
+frontend-dev-1          |   Authorization: 'Bearer eyJhbGciOiJIUzI1NiIs...'
+frontend-dev-1          | }
+frontend-dev-1          | [API-CHAT] Payload: {
+frontend-dev-1          |   query: 'Hello',
+frontend-dev-1          |   user_id: 'bf8b4d95-1ff5-4e78-a888-58cdaee72878',
+frontend-dev-1          |   request_id: 'req_1754756248543_y4zzzhn',
+frontend-dev-1          |   session_id: 'bf8b4d95-1ff5-4e78-a888-58cdaee72878~n1szpgmw6k'
+frontend-dev-1          | }
+agent-api-dev-1         | /usr/local/lib/python3.11/site-packages/supabase/_sync/client.py:303: DeprecationWarning: The 'timeout' parameter is deprecated. Please configure it in the http client instead.
+agent-api-dev-1         |   return SyncPostgrestClient(
+agent-api-dev-1         | /usr/local/lib/python3.11/site-packages/supabase/_sync/client.py:303: DeprecationWarning: The 'verify' parameter is deprecated. Please configure it in the http client instead.
+agent-api-dev-1         |   return SyncPostgrestClient(
+agent-api-dev-1         | [SUPABASE-CLIENT] Created authenticated client for user
+agent-api-dev-1         | [AGENT_API-MEMORY_SEARCH] Searching memories for user_id: bf8b4d95-1ff5-4e78-a888-58cdaee72878
+agent-api-dev-1         | [DB_UTILS-STORE_REQUEST] Stored request with UUID: fdacccc8-476c-4f5e-85c8-348542f86fc7 (original ID: req_1754756248543_y4zzzhn)
+agent-api-dev-1         | INFO:     127.0.0.1:58752 - "GET /health HTTP/1.1" 200 OK
+agent-api-dev-1         | [AGENT_API-MEMORY_SEARCH] Found 0 memories
+agent-api-dev-1         | [DB_UTILS-TITLE_CHECK] Session bf8b4d95-1ff5-4e78-a888-58cdaee72878~n1szpgmw6k: 1 messages, has_title: False
+agent-api-dev-1         | [AGENT_API-TITLE_DECISION] Simple greeting, waiting for substantive conversation
+agent-api-dev-1         | INFO:     172.18.0.5:41946 - "POST /api/pydantic-agent HTTP/1.1" 200 OK
+frontend-dev-1          | [API-CHAT] Response status: 200
+agent-api-dev-1         | INFO:mem0.memory.main:Total existing memories: 0
+agent-api-dev-1         | ERROR:mem0.memory.main:Error in memory processing loop (async): cannot access local variable 'new_memories_with_actions' where it is not associated with a value
+frontend-dev-1          |  POST /api/chat 200 in 4539ms
+frontend-dev-1          | [API-CHAT] Starting chat request
+frontend-dev-1          | [API-CHAT] Auth user result: { user: 'bf8b4d95-1ff5-4e78-a888-58cdaee72878', error: null }
+frontend-dev-1          | [API-CHAT] Request body: {
+frontend-dev-1          |   query: 'what is in the knowledgebase?',
+frontend-dev-1          |   user_id: 'bf8b4d95-1ff5-4e78-a888-58cdaee72878',
+frontend-dev-1          |   session_id: 'bf8b4d95-1ff5-4e78-a888-58cdaee72878~n1szpgmw6k'
+frontend-dev-1          | }
+frontend-dev-1          | [API-CHAT] Token prefix: eyJhbGciOiJIUzI1NiIs...
+frontend-dev-1          | [API-CHAT] User ID from session: bf8b4d95-1ff5-4e78-a888-58cdaee72878
+frontend-dev-1          | [API-CHAT] Sending request to: http://agent-api-dev:8001/api/pydantic-agent
+frontend-dev-1          | [API-CHAT] Headers: {
+frontend-dev-1          |   'Content-Type': 'application/json',
+frontend-dev-1          |   Authorization: 'Bearer eyJhbGciOiJIUzI1NiIs...'
+frontend-dev-1          | }
+frontend-dev-1          | [API-CHAT] Payload: {
+frontend-dev-1          |   query: 'what is in the knowledgebase?',
+frontend-dev-1          |   user_id: 'bf8b4d95-1ff5-4e78-a888-58cdaee72878',
+frontend-dev-1          |   request_id: 'req_1754756267023_tuysyqk',
+frontend-dev-1          |   session_id: 'bf8b4d95-1ff5-4e78-a888-58cdaee72878~n1szpgmw6k'
+frontend-dev-1          | }
+agent-api-dev-1         | /usr/local/lib/python3.11/site-packages/supabase/_sync/client.py:303: DeprecationWarning: The 'timeout' parameter is deprecated. Please configure it in the http client instead.
+agent-api-dev-1         |   return SyncPostgrestClient(
+agent-api-dev-1         | /usr/local/lib/python3.11/site-packages/supabase/_sync/client.py:303: DeprecationWarning: The 'verify' parameter is deprecated. Please configure it in the http client instead.
+agent-api-dev-1         |   return SyncPostgrestClient(
+agent-api-dev-1         | [SUPABASE-CLIENT] Created authenticated client for user
+agent-api-dev-1         | [AGENT_API-MEMORY_SEARCH] Searching memories for user_id: bf8b4d95-1ff5-4e78-a888-58cdaee72878
+agent-api-dev-1         | [DB_UTILS-STORE_REQUEST] Stored request with UUID: 63c6958e-c309-406b-be60-826826fe086c (original ID: req_1754756267023_tuysyqk)
+agent-api-dev-1         | [AGENT_API-MEMORY_SEARCH] Found 0 memories
+agent-api-dev-1         | [DB_UTILS-TITLE_CHECK] Session bf8b4d95-1ff5-4e78-a888-58cdaee72878~n1szpgmw6k: 3 messages, has_title: False
+agent-api-dev-1         | [AGENT_API-TITLE_DECISION] New conversation with substantive content
+agent-api-dev-1         | INFO:     172.18.0.5:45530 - "POST /api/pydantic-agent HTTP/1.1" 200 OK
+frontend-dev-1          | [API-CHAT] Response status: 200
+agent-api-dev-1         | ERROR:    Exception in ASGI application
+agent-api-dev-1         |   + Exception Group Traceback (most recent call last):
+agent-api-dev-1         |   |   File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 77, in collapse_excgroups
+agent-api-dev-1         |   |     yield
+agent-api-dev-1         |   |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 271, in __call__
+agent-api-dev-1         |   |     async with anyio.create_task_group() as task_group:
+agent-api-dev-1         |   |   File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+agent-api-dev-1         |   |     raise BaseExceptionGroup(
+agent-api-dev-1         |   | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+agent-api-dev-1         |   +-+---------------- 1 ----------------
+agent-api-dev-1         |     | Traceback (most recent call last):
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+agent-api-dev-1         |     |     result = await app(  # type: ignore[func-returns-value]
+agent-api-dev-1         |     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+agent-api-dev-1         |     |     return await self.app(scope, receive, send)
+agent-api-dev-1         |     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+agent-api-dev-1         |     |     await super().__call__(scope, receive, send)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/applications.py", line 113, in __call__
+agent-api-dev-1         |     |     await self.middleware_stack(scope, receive, send)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
+agent-api-dev-1         |     |     raise exc
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
+agent-api-dev-1         |     |     await self.app(scope, receive, _send)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 85, in __call__
+agent-api-dev-1         |     |     await self.app(scope, receive, send)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+agent-api-dev-1         |     |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+agent-api-dev-1         |     |     raise exc
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+agent-api-dev-1         |     |     await app(scope, receive, sender)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 716, in __call__
+agent-api-dev-1         |     |     await self.middleware_stack(scope, receive, send)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 736, in app
+agent-api-dev-1         |     |     await route.handle(scope, receive, send)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 290, in handle
+agent-api-dev-1         |     |     await self.app(scope, receive, send)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 78, in app
+agent-api-dev-1         |     |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+agent-api-dev-1         |     |     raise exc
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+agent-api-dev-1         |     |     await app(scope, receive, sender)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 76, in app
+agent-api-dev-1         |     |     await response(scope, receive, send)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 270, in __call__
+agent-api-dev-1         |     |     with collapse_excgroups():
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+agent-api-dev-1         |     |     self.gen.throw(typ, value, traceback)
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 83, in collapse_excgroups
+agent-api-dev-1         |     |     raise exc
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 274, in wrap
+agent-api-dev-1         |     |     await func()
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 254, in stream_response
+agent-api-dev-1         |     |     async for chunk in self.body_iterator:
+agent-api-dev-1         |     |   File "/app/agent_api.py", line 398, in stream_response
+agent-api-dev-1         |     |     async with node.stream(run.ctx) as request_stream:
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+agent-api-dev-1         |     |     return await anext(self.gen)
+agent-api-dev-1         |     |            ^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/_agent_graph.py", line 309, in stream
+agent-api-dev-1         |     |     async with self._stream(ctx) as streamed_response:
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+agent-api-dev-1         |     |     return await anext(self.gen)
+agent-api-dev-1         |     |            ^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/_agent_graph.py", line 336, in _stream
+agent-api-dev-1         |     |     async with ctx.deps.model.request_stream(
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+agent-api-dev-1         |     |     return await anext(self.gen)
+agent-api-dev-1         |     |            ^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/instrumented.py", line 225, in request_stream
+agent-api-dev-1         |     |     async with super().request_stream(
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+agent-api-dev-1         |     |     return await anext(self.gen)
+agent-api-dev-1         |     |            ^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/wrapper.py", line 39, in request_stream
+agent-api-dev-1         |     |     async with self.wrapped.request_stream(messages, model_settings, model_request_parameters) as response_stream:
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+agent-api-dev-1         |     |     return await anext(self.gen)
+agent-api-dev-1         |     |            ^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/openai.py", line 261, in request_stream
+agent-api-dev-1         |     |     response = await self._completions_create(
+agent-api-dev-1         |     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/openai.py", line 315, in _completions_create
+agent-api-dev-1         |     |     openai_messages = await self._map_messages(messages)
+agent-api-dev-1         |     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/openai.py", line 486, in _map_messages
+agent-api-dev-1         |     |     tool_calls.append(self._map_tool_call(item))
+agent-api-dev-1         |     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/openai.py", line 508, in _map_tool_call
+agent-api-dev-1         |     |     return chat.ChatCompletionMessageToolCallParam(
+agent-api-dev-1         |     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/typing.py", line 1289, in __call__
+agent-api-dev-1         |     |     result = self.__origin__(*args, **kwargs)
+agent-api-dev-1         |     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |     |   File "/usr/local/lib/python3.11/typing.py", line 486, in __call__
+agent-api-dev-1         |     |     raise TypeError(f"Cannot instantiate {self!r}")
+agent-api-dev-1         |     | TypeError: Cannot instantiate typing.Union
+agent-api-dev-1         |     +------------------------------------
+agent-api-dev-1         | 
+agent-api-dev-1         | During handling of the above exception, another exception occurred:
+agent-api-dev-1         | 
+agent-api-dev-1         | Traceback (most recent call last):
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+agent-api-dev-1         |     result = await app(  # type: ignore[func-returns-value]
+agent-api-dev-1         |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+agent-api-dev-1         |     return await self.app(scope, receive, send)
+agent-api-dev-1         |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+agent-api-dev-1         |     await super().__call__(scope, receive, send)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/applications.py", line 113, in __call__
+agent-api-dev-1         |     await self.middleware_stack(scope, receive, send)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
+agent-api-dev-1         |     raise exc
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
+agent-api-dev-1         |     await self.app(scope, receive, _send)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 85, in __call__
+agent-api-dev-1         |     await self.app(scope, receive, send)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+agent-api-dev-1         |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+agent-api-dev-1         |     raise exc
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+agent-api-dev-1         |     await app(scope, receive, sender)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 716, in __call__
+agent-api-dev-1         |     await self.middleware_stack(scope, receive, send)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 736, in app
+agent-api-dev-1         |     await route.handle(scope, receive, send)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 290, in handle
+agent-api-dev-1         |     await self.app(scope, receive, send)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 78, in app
+agent-api-dev-1         |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+agent-api-dev-1         |     raise exc
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+agent-api-dev-1         |     await app(scope, receive, sender)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 76, in app
+agent-api-dev-1         |     await response(scope, receive, send)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 270, in __call__
+agent-api-dev-1         |     with collapse_excgroups():
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+agent-api-dev-1         |     self.gen.throw(typ, value, traceback)
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 83, in collapse_excgroups
+agent-api-dev-1         |     raise exc
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 274, in wrap
+agent-api-dev-1         |     await func()
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 254, in stream_response
+agent-api-dev-1         |     async for chunk in self.body_iterator:
+agent-api-dev-1         |   File "/app/agent_api.py", line 398, in stream_response
+agent-api-dev-1         |     async with node.stream(run.ctx) as request_stream:
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+agent-api-dev-1         |     return await anext(self.gen)
+agent-api-dev-1         |            ^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/_agent_graph.py", line 309, in stream
+agent-api-dev-1         |     async with self._stream(ctx) as streamed_response:
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+agent-api-dev-1         |     return await anext(self.gen)
+agent-api-dev-1         |            ^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/_agent_graph.py", line 336, in _stream
+agent-api-dev-1         |     async with ctx.deps.model.request_stream(
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+agent-api-dev-1         |     return await anext(self.gen)
+agent-api-dev-1         |            ^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/instrumented.py", line 225, in request_stream
+agent-api-dev-1         |     async with super().request_stream(
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+agent-api-dev-1         |     return await anext(self.gen)
+agent-api-dev-1         |            ^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/wrapper.py", line 39, in request_stream
+agent-api-dev-1         |     async with self.wrapped.request_stream(messages, model_settings, model_request_parameters) as response_stream:
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/contextlib.py", line 210, in __aenter__
+agent-api-dev-1         |     return await anext(self.gen)
+agent-api-dev-1         |            ^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/openai.py", line 261, in request_stream
+agent-api-dev-1         |     response = await self._completions_create(
+agent-api-dev-1         |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/openai.py", line 315, in _completions_create
+agent-api-dev-1         |     openai_messages = await self._map_messages(messages)
+agent-api-dev-1         |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/openai.py", line 486, in _map_messages
+agent-api-dev-1         |     tool_calls.append(self._map_tool_call(item))
+agent-api-dev-1         |                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/site-packages/pydantic_ai/models/openai.py", line 508, in _map_tool_call
+agent-api-dev-1         |     return chat.ChatCompletionMessageToolCallParam(
+agent-api-dev-1         |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/typing.py", line 1289, in __call__
+agent-api-dev-1         |     result = self.__origin__(*args, **kwargs)
+agent-api-dev-1         |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent-api-dev-1         |   File "/usr/local/lib/python3.11/typing.py", line 486, in __call__
+agent-api-dev-1         |     raise TypeError(f"Cannot instantiate {self!r}")
+agent-api-dev-1         | TypeError: Cannot instantiate typing.Union
+frontend-dev-1          | [Error: failed to pipe response] {
+frontend-dev-1          |   [cause]: [TypeError: terminated] {
+frontend-dev-1          |     [cause]: [Error [SocketError]: other side closed] {
+frontend-dev-1          |       code: 'UND_ERR_SOCKET',
+frontend-dev-1          |       socket: {
+frontend-dev-1          |         localAddress: '172.18.0.5',
+frontend-dev-1          |         localPort: 45530,
+frontend-dev-1          |         remoteAddress: '172.18.0.2',
+frontend-dev-1          |         remotePort: 8001,
+frontend-dev-1          |         remoteFamily: 'IPv4',
+frontend-dev-1          |         timeout: undefined,
+frontend-dev-1          |         bytesWritten: 1338,
+frontend-dev-1          |         bytesRead: 142
+frontend-dev-1          |       }
+frontend-dev-1          |     }
+frontend-dev-1          |   }
+frontend-dev-1          | }
+frontend-dev-1          |  POST /api/chat 500 in 3024ms
+agent-api-dev-1         | [AGENT-list_all_documents] Calling list_documents tool
+agent-api-dev-1         | [AGENT_API-GENERATE_TITLE] Generated title: Exploring the Knowledgebase Contents
+agent-api-dev-1         | INFO:     127.0.0.1:48358 - "GET /health HTTP/1.1" 200 OK
+rag-google-drive-dev-1  | Saved last check time: 2025-08-09 16:18:28.605718+00:00
+rag-google-drive-dev-1  | Waiting 60 seconds until next check...
+agent-api-dev-1         | INFO:     127.0.0.1:35810 - "GET /health HTTP/1.1" 200 OK
+agent-api-dev-1         | INFO:     127.0.0.1:54680 - "GET /health HTTP/1.1" 200 OK
+rag-google-drive-dev-1  | Saved last check time: 2025-08-09 16:19:28.981100+00:00
+rag-google-drive-dev-1  | Waiting 60 seconds until next check...
+agent-api-dev-1         | INFO:     127.0.0.1:40854 - "GET /health HTTP/1.1" 200 OK
+agent-api-dev-1         | INFO:     127.0.0.1:36988 - "GET /health HTTP/1.1" 200 OK
+rag-google-drive-dev-1  | Saved last check time: 2025-08-09 16:20:29.339807+00:00
+rag-google-drive-dev-1  | Waiting 60 seconds until next check...
+agent-api-dev-1         | INFO:     127.0.0.1:58864 - "GET /health HTTP/1.1" 200 OK
+agent-api-dev-1         | INFO:     127.0.0.1:34544 - "GET /health HTTP/1.1" 200 OK

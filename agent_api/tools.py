@@ -348,7 +348,8 @@ async def analyze_image_tool(supabase: Client, document_id: str, query: str) -> 
         logger.info(f"[TOOLS-analyze_image_tool] Using base URL: {base_url}")
         
         # Define the vision agent with proper model format
-        vision_agent = Agent(
+        from pydantic_ai import Agent as PydanticAgent
+        vision_agent = PydanticAgent(
             model=f"openai:{llm}",
             system_prompt="You are an image analyzer who looks at images provided and answers the accompanying query in detail"
         )

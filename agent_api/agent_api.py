@@ -24,7 +24,7 @@ from clients import settings, get_supabase_client, get_openai_client, get_mem0_c
 from dependencies import AgentDependencies
 
 # Import Pydantic AI types
-from pydantic_ai import Agent, ModelRequestNode
+from pydantic_ai import Agent as PydanticAgent, ModelRequestNode
 from pydantic_ai.messages import (
     PartStartEvent,
     PartDeltaEvent,
@@ -70,14 +70,13 @@ async def lifespan(app: FastAPI):
     
     # Enable Pydantic AI instrumentation if Langfuse is configured
     if langfuse_client:
-        from pydantic_ai import Agent as PydanticAgent
         PydanticAgent.instrument_all()
 
     # Startup: Initialize clients
     embeddings_client = get_openai_client()
     supabase = get_supabase_client()
     http_client = AsyncClient()
-    title_agent = Agent('openai:gpt-4-turbo', instrument=True)
+    title_agent = PydanticAgent('openai:gpt-4-turbo', instrument=True)
     mem0_client = await get_mem0_client_async()
 
     # Yield control back to FastAPI
@@ -398,16 +397,16 @@ async def pydantic_agent(request: AgentRequest, auth_result: tuple[Dict[str, Any
                         async with node.stream(run.ctx) as request_stream:
                             async for event in request_stream:
                                 if isinstance(event, PartStartEvent) and event.part.part_kind == 'text':
-                                    yield json.dumps({"text": event.part.content}).encode('utf-8') + b'\n'
                                     full_response += event.part.content
+                                    yield json.dumps({"text": full_response}).encode('utf-8') + b'\n'
                                 elif isinstance(event, PartDeltaEvent) and isinstance(event.delta, TextPartDelta):
                                     delta = event.delta.content_delta
-                                    yield json.dumps({"text": full_response}).encode('utf-8') + b'\n'
                                     full_response += delta
+                                    yield json.dumps({"text": full_response}).encode('utf-8') + b'\n'
                                     
 
-            # After streaming is complete store the full response in the database
-            message_data =  run.result.new_messages_json()
+                # After streaming is complete store the full response in the database
+                message_data = run.result.new_messages_json()
             
             # Store agent response
             await store_message(auth_supabase, session_id=session_id, message_type="ai", content=full_response, message_data=message_data, data={"request_id": request.request_id})

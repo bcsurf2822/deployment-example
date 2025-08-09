@@ -4,9 +4,9 @@ uvicorn[standard]>=0.27.0
 python-dotenv>=1.0.0
 httpx>=0.26.0
 
-# Pydantic AI
-pydantic-ai>=0.0.9
-pydantic-ai-slim[mcp]>=0.4.0,<1.0.0
+# Pydantic AI - Using 0.5.x to avoid typing.Union bug
+pydantic-ai>=0.5.0,<0.6.0
+pydantic-ai-slim[mcp]>=0.5.0,<0.6.0
 pydantic>=2.5.0
 pydantic-settings>=2.0.0,<3.0.0
 
@@ -14,8 +14,8 @@ pydantic-settings>=2.0.0,<3.0.0
 supabase>=2.3.0
 vecs>=0.4.0
 
-# OpenAI (for embeddings and title generation)
-openai>=1.12.0
+# OpenAI (for embeddings and title generation) - Fixed version to avoid typing.Union bug
+openai==1.99.1
 
 # Mem0 for memory management
 mem0ai>=0.1.0

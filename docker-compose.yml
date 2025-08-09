@@ -124,6 +124,8 @@ services:
       - DEBUG_MODE=${DEBUG_MODE:-true}
     volumes:
       - ./test_files:/app/test_files
+      # Mount the service account JSON file from host to container
+      - ./service-account.json:/app/service-account.json:ro
     restart: unless-stopped
     profiles:
       - with-rag
