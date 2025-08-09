@@ -177,14 +177,14 @@ async def list_all_documents(ctx: RunContext[AgentDependencies]) -> List[str]:
 @agent.tool
 async def get_full_document(ctx: RunContext[AgentDependencies], document_id: str) -> str:
     """
-    Retrieve the content of a specific document by combining all of its chunks.
+    Retrieve the full content of a specific document by its file ID.
 
     Args:
         ctx: The context including the Supabase client and OpenAI client.
-        document_id: The ID (or file path) of the document to retrieve.
+        document_id: The file_id from the search results (e.g., "1VjmwV4nDTnELGfvd7N0RkdIYC8c_j0S8")
         
     Returns:
-        str: The full content of the document with all of its chunks combined in order.
+        str: The complete content of the document with all chunks combined.
     """
     print(f"[AGENT-get_full_document] Calling get_document_content tool")
     return await get_document_content(ctx.deps.supabase, document_id)

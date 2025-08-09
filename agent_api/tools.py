@@ -149,23 +149,31 @@ async def retrieve_relevant_documents(
     top_k: int = 4
 ) -> str:
     """
-    Retrieve relevant document chunks based on similarity search.
+    Retrieve relevant document chunks based on similarity search using RAG best practices.
     
     Args:
-        supabase: Supabase client
+        supabase: Supabase client (should use service role key to bypass RLS)
         embedding_client: OpenAI client for embeddings
         user_query: The user's search query
         embedding_model: Model to use for embeddings
         top_k: Number of results to return
         
     Returns:
-        Formatted string of relevant document chunks
+        Formatted string of relevant document chunks with similarity scores
     """
     try:
+        logger.info(f"[TOOLS-retrieve_relevant_documents] Searching for: '{user_query}'")
+        
         # Get embedding for the query
         query_embedding = await get_embedding(user_query, embedding_client, embedding_model)
         
-        # Perform similarity search
+        if not query_embedding or len(query_embedding) != 1536:
+            logger.error(f"[TOOLS-retrieve_relevant_documents] Invalid embedding dimensions: {len(query_embedding) if query_embedding else 'None'}")
+            return "Error: Could not generate valid embedding for the query."
+        
+        # Perform similarity search with proper logging
+        logger.info(f"[TOOLS-retrieve_relevant_documents] Executing vector search with {len(query_embedding)}-dim embedding")
+        
         response = supabase.rpc(
             'match_documents',
             {
@@ -175,24 +183,50 @@ async def retrieve_relevant_documents(
             }
         ).execute()
         
-        if not response.data:
-            return "No relevant documents found."
+        logger.info(f"[TOOLS-retrieve_relevant_documents] Found {len(response.data) if response.data else 0} results")
         
-        # Format results
+        if not response.data:
+            return "No relevant documents found in the knowledge base."
+        
+        # Apply similarity threshold (0.5 is more appropriate for embeddings - 0.7 was too restrictive)
+        MIN_SIMILARITY = 0.5
+        filtered_results = [doc for doc in response.data if doc.get('similarity', 0) >= MIN_SIMILARITY]
+        
+        if not filtered_results:
+            logger.info(f"[TOOLS-retrieve_relevant_documents] No results above similarity threshold {MIN_SIMILARITY}")
+            # If no results above threshold, return all results with a note about lower relevance
+            filtered_results = response.data
+            logger.info(f"[TOOLS-retrieve_relevant_documents] Returning all {len(filtered_results)} results due to no high-similarity matches")
+        
+        # Format results with improved readability
         results = []
-        for i, chunk in enumerate(response.data, 1):
-            doc_id = chunk.get('document_id', 'Unknown')
+        for i, chunk in enumerate(filtered_results, 1):
+            doc_id = chunk.get('id', 'Unknown')  # This is the documents.id (BIGINT)
             content = chunk.get('content', '')
             similarity = chunk.get('similarity', 0)
             metadata = chunk.get('metadata', {})
             
+            # Extract file_id and title from metadata for better context
+            file_id = metadata.get('file_id', 'Unknown')  # This is the document_metadata.id (TEXT)
+            title = metadata.get('file_name', metadata.get('title', f'Document {file_id}'))
+            
+            # Truncate content intelligently at sentence boundaries
+            truncated_content = content[:600]
+            if len(content) > 600:
+                # Try to end at a sentence
+                last_period = truncated_content.rfind('.')
+                if last_period > 400:  # Only if we have a reasonable amount of content
+                    truncated_content = truncated_content[:last_period + 1]
+                else:
+                    truncated_content = truncated_content + "..."
+            
             results.append(
-                f"{i}. Document: {doc_id}\n"
-                f"   Similarity: {similarity:.3f}\n"
-                f"   Content: {content[:500]}...\n"
-                f"   Metadata: {metadata}\n"
+                f"{i}. **{title}** (Similarity: {similarity:.3f})\n"
+                f"   File ID: {file_id} | Doc ID: {doc_id}\n"
+                f"   Content: {truncated_content}\n"
             )
         
+        logger.info(f"[TOOLS-retrieve_relevant_documents] Returning {len(filtered_results)} relevant documents")
         return "\n".join(results)
         
     except Exception as e:
@@ -237,31 +271,41 @@ async def list_documents(supabase: Client) -> List[str]:
 
 async def get_document_content(supabase: Client, document_id: str) -> str:
     """
-    Get the full content of a document by combining all its chunks.
+    Get the full content of a document by file_id (from document_metadata).
     
     Args:
         supabase: Supabase client
-        document_id: The document ID
+        document_id: The file_id from document_metadata (TEXT, like Google Drive IDs)
         
     Returns:
-        Combined content of all document chunks
+        Combined content of all document chunks for this file
     """
     try:
-        # Get all chunks for the document, ordered by chunk_index
-        response = supabase.table('document_chunks')\
-            .select('content, chunk_index')\
-            .eq('document_id', document_id)\
-            .order('chunk_index')\
+        logger.info(f"[TOOLS-get_document_content] Fetching content for file_id: {document_id}")
+        
+        # Query documents table where metadata->>'file_id' matches the document_id
+        response = supabase.table('documents')\
+            .select('id, content, metadata')\
+            .eq('metadata->>file_id', document_id)\
             .execute()
         
         if not response.data:
-            return f"No content found for document ID: {document_id}"
+            return f"No content found for file ID: {document_id}"
         
-        # Combine chunks in order
-        content_parts = [chunk['content'] for chunk in response.data]
-        full_content = "\n".join(content_parts)
+        # Combine all document chunks for this file
+        all_content = []
+        for doc in response.data:
+            content = doc.get('content', '')
+            if content:
+                all_content.append(content)
         
-        return full_content
+        if not all_content:
+            return f"File {document_id} found but has no content"
+        
+        combined_content = '\n\n'.join(all_content)
+        logger.info(f"[TOOLS-get_document_content] Retrieved {len(all_content)} chunks, total length: {len(combined_content)}")
+        
+        return combined_content
         
     except Exception as e:
         logger.error(f"[TOOLS-get_document_content] Error: {e}")
