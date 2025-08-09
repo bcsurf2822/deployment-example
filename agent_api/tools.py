@@ -200,8 +200,7 @@ async def retrieve_relevant_documents(
         
         # Format results with improved readability
         results = []
-        for i, chunk in enumerate(filtered_results, 1):
-            doc_id = chunk.get('id', 'Unknown')  # This is the documents.id (BIGINT)
+        for chunk in filtered_results:
             content = chunk.get('content', '')
             similarity = chunk.get('similarity', 0)
             metadata = chunk.get('metadata', {})
@@ -221,9 +220,9 @@ async def retrieve_relevant_documents(
                     truncated_content = truncated_content + "..."
             
             results.append(
-                f"{i}. **{title}** (Similarity: {similarity:.3f})\n"
-                f"   File ID: {file_id} | Doc ID: {doc_id}\n"
-                f"   Content: {truncated_content}\n"
+                f"📄 **{title}** (Match: {similarity:.2f})\n"
+                f"{truncated_content}\n"
+                f"*[File ID: {file_id}]*\n"
             )
         
         logger.info(f"[TOOLS-retrieve_relevant_documents] Returning {len(filtered_results)} relevant documents")
