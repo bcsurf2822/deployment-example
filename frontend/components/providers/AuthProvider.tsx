@@ -41,7 +41,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         
         if (!user && !isPublicPath) {
           router.push('/auth/login')
-        } else if (user && pathname === '/auth/login') {
+        } else if (user && pathname.startsWith('/auth/login')) {
           router.push('/')
         }
       } catch (error) {
@@ -79,6 +79,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     
     if (!user && !isPublicPath) {
       router.push('/auth/login')
+    } else if (user && pathname.startsWith('/auth/login')) {
+      router.push('/')
     }
   }, [pathname, user, initialized, loading, router])
 

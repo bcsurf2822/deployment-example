@@ -35,7 +35,7 @@ export default function Navbar({ title = "RAG Studio" }: NavbarProps) {
                 <form action="/auth/signout" method="post">
                   <button
                     type="submit"
-                    className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
+                    className="bg-gray-100 hover:bg-red-200 text-gray-700 px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer"
                   >
                     Sign Out
                   </button>

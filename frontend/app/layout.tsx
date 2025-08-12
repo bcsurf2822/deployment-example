@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Navbar from "@/components/nav/Navbar.component";
 import AuthProvider from "@/components/providers/AuthProvider";
+import LayoutContent from "@/components/layout/LayoutContent";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,8 +31,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <AuthProvider>
-          <Navbar title="RAG Studio" />
-          <main className="min-h-screen">{children}</main>
+          <LayoutContent title="RAG Studio">
+            {children}
+          </LayoutContent>
         </AuthProvider>
       </body>
     </html>

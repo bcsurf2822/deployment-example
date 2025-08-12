@@ -15,6 +15,7 @@ const navItems: NavItem[] = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   { name: "Chat", href: "/chat" },
+  { name: "RAG Pipelines", href: "/rag-pipelines" },
   { name: "Documents", href: "/documents" },
   { name: "Settings", href: "/settings" },
 ];
