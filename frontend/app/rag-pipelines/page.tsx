@@ -1,10 +1,14 @@
 "use client";
 
 import DragDrop from "@/components/rag-pipelines/DragDrop";
+import GoogleDriveSetupInstructions from "@/components/rag-pipelines/google-drive/SetupInstructions";
 
 export default function RAGPipelinesPage() {
   const handleFilesSelected = (files: File[]) => {
-    console.log("[RAG-PIPELINES-PAGE] Files selected:", files.map(f => f.name));
+    console.log(
+      "[RAG-PIPELINES-PAGE] Files selected:",
+      files.map((f) => f.name)
+    );
   };
 
   return (
@@ -12,11 +16,15 @@ export default function RAGPipelinesPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">RAG Pipelines</h1>
         <p className="text-gray-600">
-          Upload documents to Google Drive for processing through the RAG pipeline
+          Upload documents to Google Drive for processing through the RAG
+          pipeline
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-1">
+        {/* Google Drive Setup Instructions */}
+        {/* <GoogleDriveSetupInstructions /> */}
+
         {/* Upload Section */}
         <div className="bg-white shadow-sm rounded-lg p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">

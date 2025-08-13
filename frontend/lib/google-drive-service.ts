@@ -1,74 +1,147 @@
 // Server-only Google Drive service using @googleapis/drive
-import { drive_v3 } from '@googleapis/drive';
-import { JWT } from 'google-auth-library';
-import * as fs from 'fs';
+import { drive_v3 } from "@googleapis/drive";
+import { JWT } from "google-auth-library";
+import * as fs from "fs";
+import { Readable } from "stream";
 
 // Scopes for Google Drive API (matching RAG pipeline scopes)
 const SCOPES = [
-  'https://www.googleapis.com/auth/drive.file',
-  'https://www.googleapis.com/auth/drive',
+  "https://www.googleapis.com/auth/drive.file",
+  "https://www.googleapis.com/auth/drive",
 ];
 
-// Initialize Google Drive client with service account authentication
+// Initialize Google Drive client with service account authentication and domain delegation
 function createDriveClient(): drive_v3.Drive {
-  console.log('[GOOGLE-DRIVE-SERVICE] Starting authentication...');
-  
+  console.log("[GOOGLE-DRIVE-SERVICE] Starting authentication...");
+
   const serviceAccountJson = process.env.GOOGLE_DRIVE_CREDENTIALS_JSON;
-  console.log(`[GOOGLE-DRIVE-SERVICE] GOOGLE_DRIVE_CREDENTIALS_JSON environment variable: ${serviceAccountJson}`);
+  const impersonateUser = process.env.GOOGLE_DRIVE_IMPERSONATE_USER;
   
+  console.log(
+    `[GOOGLE-DRIVE-SERVICE] GOOGLE_DRIVE_CREDENTIALS_JSON environment variable: ${serviceAccountJson}`
+  );
+  console.log(
+    `[GOOGLE-DRIVE-SERVICE] GOOGLE_DRIVE_IMPERSONATE_USER environment variable: ${impersonateUser ? 'SET' : 'NOT SET'}`
+  );
+
   if (!serviceAccountJson) {
-    throw new Error('[GOOGLE-DRIVE-SERVICE] Google Drive credentials not configured. Please set GOOGLE_DRIVE_CREDENTIALS_JSON environment variable.');
+    throw new Error(
+      "[GOOGLE-DRIVE-SERVICE] Google Drive credentials not configured. Please set GOOGLE_DRIVE_CREDENTIALS_JSON environment variable."
+    );
   }
 
-  console.log(`[GOOGLE-DRIVE-SERVICE] Found service account JSON path: ${serviceAccountJson}`);
+  console.log(
+    `[GOOGLE-DRIVE-SERVICE] Found service account JSON path: ${serviceAccountJson}`
+  );
+
+  interface ServiceAccountInfo {
+    client_email: string;
+    private_key: string;
+    [key: string]: unknown;
+  }
   
-  let serviceAccountInfo: any;
-  
+  let serviceAccountInfo: ServiceAccountInfo;
+
   // Check if it's a file path or JSON content (following RAG pipeline approach)
-  if (serviceAccountJson.startsWith('{')) {
+  if (serviceAccountJson.startsWith("{")) {
     // It's JSON content directly
-    console.log('[GOOGLE-DRIVE-SERVICE] Environment variable contains JSON content directly');
+    console.log(
+      "[GOOGLE-DRIVE-SERVICE] Environment variable contains JSON content directly"
+    );
     try {
       serviceAccountInfo = JSON.parse(serviceAccountJson);
-      console.log(`[GOOGLE-DRIVE-SERVICE] Parsed JSON keys: ${Object.keys(serviceAccountInfo)}`);
-      console.log(`[GOOGLE-DRIVE-SERVICE] Service account email: ${serviceAccountInfo.client_email || 'NOT_FOUND'}`);
+      console.log(
+        `[GOOGLE-DRIVE-SERVICE] Parsed JSON keys: ${Object.keys(
+          serviceAccountInfo
+        )}`
+      );
+      console.log(
+        `[GOOGLE-DRIVE-SERVICE] Service account email: ${
+          serviceAccountInfo.client_email || "NOT_FOUND"
+        }`
+      );
     } catch (e) {
       console.error(`[GOOGLE-DRIVE-SERVICE] Error parsing JSON content: ${e}`);
-      throw new Error(`[GOOGLE-DRIVE-SERVICE] Invalid service account credentials in environment variable: ${e}`);
+      throw new Error(
+        `[GOOGLE-DRIVE-SERVICE] Invalid service account credentials in environment variable: ${e}`
+      );
     }
   } else {
     // It's a file path
-    console.log(`[GOOGLE-DRIVE-SERVICE] Environment variable contains file path: ${serviceAccountJson}`);
-    console.log(`[GOOGLE-DRIVE-SERVICE] File exists: ${fs.existsSync(serviceAccountJson)}`);
-    
+    console.log(
+      `[GOOGLE-DRIVE-SERVICE] Environment variable contains file path: ${serviceAccountJson}`
+    );
+    console.log(
+      `[GOOGLE-DRIVE-SERVICE] File exists: ${fs.existsSync(serviceAccountJson)}`
+    );
+
     if (fs.existsSync(serviceAccountJson)) {
       try {
-        const credentialsContent = fs.readFileSync(serviceAccountJson, 'utf8');
+        const credentialsContent = fs.readFileSync(serviceAccountJson, "utf8");
         serviceAccountInfo = JSON.parse(credentialsContent);
-        console.log(`[GOOGLE-DRIVE-SERVICE] Loaded JSON from file, keys: ${Object.keys(serviceAccountInfo)}`);
-        console.log(`[GOOGLE-DRIVE-SERVICE] Service account email: ${serviceAccountInfo.client_email || 'NOT_FOUND'}`);
+        console.log(
+          `[GOOGLE-DRIVE-SERVICE] Loaded JSON from file, keys: ${Object.keys(
+            serviceAccountInfo
+          )}`
+        );
+        console.log(
+          `[GOOGLE-DRIVE-SERVICE] Service account email: ${
+            serviceAccountInfo.client_email || "NOT_FOUND"
+          }`
+        );
       } catch (e) {
-        console.error(`[GOOGLE-DRIVE-SERVICE] Error loading JSON from file: ${e}`);
-        throw new Error(`[GOOGLE-DRIVE-SERVICE] Invalid service account credentials file: ${e}`);
+        console.error(
+          `[GOOGLE-DRIVE-SERVICE] Error loading JSON from file: ${e}`
+        );
+        throw new Error(
+          `[GOOGLE-DRIVE-SERVICE] Invalid service account credentials file: ${e}`
+        );
       }
     } else {
-      console.error(`[GOOGLE-DRIVE-SERVICE] Service account file does not exist: ${serviceAccountJson}`);
-      throw new Error(`[GOOGLE-DRIVE-SERVICE] Service account file not found: ${serviceAccountJson}`);
+      console.error(
+        `[GOOGLE-DRIVE-SERVICE] Service account file does not exist: ${serviceAccountJson}`
+      );
+      throw new Error(
+        `[GOOGLE-DRIVE-SERVICE] Service account file not found: ${serviceAccountJson}`
+      );
     }
   }
 
   if (!serviceAccountInfo.client_email || !serviceAccountInfo.private_key) {
-    throw new Error('[GOOGLE-DRIVE-SERVICE] Invalid service account credentials. Missing client_email or private_key.');
+    throw new Error(
+      "[GOOGLE-DRIVE-SERVICE] Invalid service account credentials. Missing client_email or private_key."
+    );
   }
 
-  // Create JWT auth client (following the same pattern as RAG pipeline)
-  const auth = new JWT({
+  // Create JWT auth client with domain delegation support
+  const jwtOptions: {
+    email: string;
+    key: string;
+    scopes: string[];
+    subject?: string;
+  } = {
     email: serviceAccountInfo.client_email,
     key: serviceAccountInfo.private_key,
     scopes: SCOPES,
-  });
+  };
 
-  console.log('[GOOGLE-DRIVE-SERVICE] Service account credentials created successfully');
+  // Add domain delegation (user impersonation) if configured
+  if (impersonateUser) {
+    jwtOptions.subject = impersonateUser;
+    console.log(
+      `[GOOGLE-DRIVE-SERVICE] Using domain delegation to impersonate user: ${impersonateUser}`
+    );
+  } else {
+    console.log(
+      "[GOOGLE-DRIVE-SERVICE] No impersonation user configured - using service account directly (may have quota issues)"
+    );
+  }
+
+  const auth = new JWT(jwtOptions);
+
+  console.log(
+    "[GOOGLE-DRIVE-SERVICE] Service account credentials created successfully"
+  );
 
   // Create and return Drive client
   return new drive_v3.Drive({ auth });
@@ -93,24 +166,86 @@ export interface DriveFile {
 }
 
 /**
+ * Check if a folder exists and is accessible
+ * @param folderId - The folder ID to check
+ * @returns Promise with folder details or null if not accessible
+ */
+export async function checkFolderAccess(
+  folderId: string
+): Promise<{
+  accessible: boolean;
+  isSharedDrive: boolean;
+  folderName?: string;
+  error?: string;
+}> {
+  try {
+    const drive = createDriveClient();
+
+    // Try to get folder metadata
+    const response = await drive.files.get({
+      fileId: folderId,
+      fields: "id, name, mimeType, driveId, capabilities",
+      supportsAllDrives: true,
+    });
+
+    const isSharedDrive = !!response.data.driveId;
+
+    console.log(
+      `[GOOGLE-DRIVE-SERVICE] Folder ${folderId} is accessible. Name: ${response.data.name}, Is shared drive: ${isSharedDrive}`
+    );
+
+    return {
+      accessible: true,
+      isSharedDrive,
+      folderName: response.data.name || undefined,
+    };
+  } catch (error) {
+    console.error(
+      `[GOOGLE-DRIVE-SERVICE] Error checking folder access:`,
+      error
+    );
+
+    const errorWithCode = error as { code?: number; message?: string };
+    if (errorWithCode?.code === 404) {
+      return {
+        accessible: false,
+        isSharedDrive: false,
+        error:
+          "Folder not found or not accessible. Make sure the folder is shared with the service account email.",
+      };
+    }
+
+    return {
+      accessible: false,
+      isSharedDrive: false,
+      error: errorWithCode?.message || "Unknown error checking folder access",
+    };
+  }
+}
+
+/**
  * Upload a file to a specific folder in Google Drive
  * @param file - The file to upload
  * @param folderId - The Google Drive folder ID (defaults to pydantic_library folder)
+ * @param useSharedDrive - Whether to use shared drive (Team Drive) features
  * @returns Promise with upload result
  */
 export async function uploadFileToDrive(
   file: File,
-  folderId: string = '1JfdizKUt_H1LW_G2Ze2MlQ1I5aX1ufys' // pydantic_library folder
+  folderId: string = "1JfdizKUt_H1LW_G2Ze2MlQ1I5aX1ufys", // pydantic_library folder
+  useSharedDrive: boolean = true // Enable shared drive support by default
 ): Promise<DriveUploadResult> {
   try {
-    console.log(`[GOOGLE-DRIVE-SERVICE] Starting upload for file: ${file.name}`);
-    
+    console.log(
+      `[GOOGLE-DRIVE-SERVICE] Starting upload for file: ${file.name}`
+    );
+
     const drive = createDriveClient();
-    
+
     // Convert File to Buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    
+
     // Create file metadata
     const fileMetadata: drive_v3.Schema$File = {
       name: file.name,
@@ -118,24 +253,28 @@ export async function uploadFileToDrive(
     };
 
     // Determine MIME type
-    const mimeType = file.type || 'application/octet-stream';
+    const mimeType = file.type || "application/octet-stream";
 
-    console.log(`[GOOGLE-DRIVE-SERVICE] Uploading to folder: ${folderId}, MIME type: ${mimeType}`);
+    console.log(
+      `[GOOGLE-DRIVE-SERVICE] Uploading to folder: ${folderId}, MIME type: ${mimeType}, Use shared drive: ${useSharedDrive}`
+    );
 
     // Create a readable stream from the buffer
-    const { Readable } = require('stream');
     const stream = new Readable();
     stream.push(buffer);
     stream.push(null); // Signal end of stream
 
-    // Upload file to Google Drive
+    // Upload file to Google Drive with shared drive support
+    // Always include supportsAllDrives to handle both shared drives and shared folders
     const response = await drive.files.create({
       requestBody: fileMetadata,
       media: {
         mimeType: mimeType,
         body: stream,
       },
-      fields: 'id, name, webViewLink, webContentLink',
+      fields: "id, name, webViewLink, webContentLink",
+      supportsAllDrives: true, // Always true to support both shared drives and shared folders
+      // This parameter allows uploads to folders shared with the service account
     });
 
     const result: DriveUploadResult = {
@@ -146,14 +285,16 @@ export async function uploadFileToDrive(
       webContentLink: response.data.webContentLink || undefined,
     };
 
-    console.log(`[GOOGLE-DRIVE-SERVICE] Successfully uploaded file with ID: ${result.fileId}`);
+    console.log(
+      `[GOOGLE-DRIVE-SERVICE] Successfully uploaded file with ID: ${result.fileId}`
+    );
     return result;
-
   } catch (error) {
-    console.error('[GOOGLE-DRIVE-SERVICE] Upload error:', error);
-    
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-    
+    console.error("[GOOGLE-DRIVE-SERVICE] Upload error:", error);
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
+
     return {
       success: false,
       error: `Failed to upload file to Google Drive: ${errorMessage}`,
@@ -165,32 +306,39 @@ export async function uploadFileToDrive(
  * List files in a specific Google Drive folder
  * @param folderId - The folder ID to list files from
  * @param maxResults - Maximum number of results to return (default: 100)
+ * @param useSharedDrive - Whether to include shared drive files
  * @returns Promise with array of drive files
  */
 export async function listFilesInFolder(
-  folderId: string = '1JfdizKUt_H1LW_G2Ze2MlQ1I5aX1ufys',
-  maxResults: number = 100
+  folderId: string = "1JfdizKUt_H1LW_G2Ze2MlQ1I5aX1ufys",
+  maxResults: number = 100,
+  useSharedDrive: boolean = true
 ): Promise<DriveFile[]> {
   try {
     console.log(`[GOOGLE-DRIVE-SERVICE] Listing files in folder: ${folderId}`);
-    
+
     const drive = createDriveClient();
-    
+
     const response = await drive.files.list({
       q: `'${folderId}' in parents and trashed = false`,
-      fields: 'files(id, name, mimeType, size, modifiedTime, webViewLink)',
-      orderBy: 'modifiedTime desc',
+      fields: "files(id, name, mimeType, size, modifiedTime, webViewLink)",
+      orderBy: "modifiedTime desc",
       pageSize: maxResults,
+      supportsAllDrives: useSharedDrive,
+      includeItemsFromAllDrives: useSharedDrive,
     });
 
     const files = response.data.files || [];
     console.log(`[GOOGLE-DRIVE-SERVICE] Found ${files.length} files in folder`);
-    
-    return files;
 
+    return files;
   } catch (error) {
-    console.error('[GOOGLE-DRIVE-SERVICE] List files error:', error);
-    throw new Error(`Failed to list files from Google Drive: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error("[GOOGLE-DRIVE-SERVICE] List files error:", error);
+    throw new Error(
+      `Failed to list files from Google Drive: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
   }
 }
 
@@ -199,24 +347,26 @@ export async function listFilesInFolder(
  * @param fileId - The ID of the file to delete
  * @returns Promise with success status
  */
-export async function deleteFileFromDrive(fileId: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteFileFromDrive(
+  fileId: string
+): Promise<{ success: boolean; error?: string }> {
   try {
     console.log(`[GOOGLE-DRIVE-SERVICE] Deleting file: ${fileId}`);
-    
+
     const drive = createDriveClient();
-    
+
     await drive.files.delete({
       fileId: fileId,
     });
-    
+
     console.log(`[GOOGLE-DRIVE-SERVICE] Successfully deleted file: ${fileId}`);
     return { success: true };
-
   } catch (error) {
-    console.error('[GOOGLE-DRIVE-SERVICE] Delete error:', error);
-    
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-    
+    console.error("[GOOGLE-DRIVE-SERVICE] Delete error:", error);
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
+
     return {
       success: false,
       error: `Failed to delete file from Google Drive: ${errorMessage}`,
@@ -230,19 +380,24 @@ export async function deleteFileFromDrive(fileId: string): Promise<{ success: bo
  */
 export async function getDriveAbout() {
   try {
-    console.log('[GOOGLE-DRIVE-SERVICE] Getting Drive about information');
-    
+    console.log("[GOOGLE-DRIVE-SERVICE] Getting Drive about information");
+
     const drive = createDriveClient();
-    
+
     const response = await drive.about.get({
-      fields: 'user, storageQuota',
+      fields: "user, storageQuota",
     });
 
-    console.log('[GOOGLE-DRIVE-SERVICE] Successfully retrieved Drive about information');
+    console.log(
+      "[GOOGLE-DRIVE-SERVICE] Successfully retrieved Drive about information"
+    );
     return response.data;
-
   } catch (error) {
-    console.error('[GOOGLE-DRIVE-SERVICE] Get about error:', error);
-    throw new Error(`Failed to get Drive information: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error("[GOOGLE-DRIVE-SERVICE] Get about error:", error);
+    throw new Error(
+      `Failed to get Drive information: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
   }
 }
