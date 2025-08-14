@@ -2,8 +2,13 @@ import os
 import argparse
 import sys
 from pathlib import Path
+from datetime import datetime, timedelta
+
+# Add parent directory to path for status_server import
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from drive_watcher import GoogleDriveWatcher
+from status_server import start_status_server, pipeline_status
 
 def main():
     """
@@ -35,6 +40,16 @@ def main():
         args.single_run = True
 
     try:
+        # Start status server for monitoring (unless in single-run mode)
+        if not args.single_run:
+            start_status_server(port=8003)
+            pipeline_status.update(
+                status="running",
+                pipeline_type="google_drive",
+                check_interval=args.interval,
+                folder_id=args.folder_id
+            )
+        
         # Start Google Drive Watcher
         watcher = GoogleDriveWatcher(
             credentials_path=args.credentials,
@@ -60,8 +75,39 @@ def main():
             else:
                 sys.exit(0)  # Success
         else:
-            # Watch for changes continuously
-            watcher.watch_for_changes(interval_seconds=args.interval)
+            # Watch for changes continuously with status updates
+            import time
+            
+            while True:
+                # Update status before check
+                next_check = datetime.now() + timedelta(seconds=args.interval)
+                pipeline_status.update(
+                    status="checking",
+                    is_checking=True,
+                    last_check_time=datetime.now().isoformat(),
+                    next_check_time=next_check.isoformat()
+                )
+                
+                # Run the check
+                stats = watcher.check_for_changes()
+                
+                # Update status after check
+                pipeline_status.update(
+                    status="running",
+                    is_checking=False,
+                    total_processed=pipeline_status.data.get("total_processed", 0) + stats['files_processed'],
+                    total_failed=pipeline_status.data.get("total_failed", 0) + stats['errors']
+                )
+                
+                # Log if there were changes
+                if stats['files_processed'] > 0 or stats['files_deleted'] > 0:
+                    print(f"Change check completed: {stats['files_processed']} files processed, "
+                          f"{stats['files_deleted']} files deleted, {stats['errors']} errors, "
+                          f"duration: {stats['duration']:.2f}s")
+                
+                # Wait for next check
+                print(f"Waiting {args.interval} seconds until next check...")
+                time.sleep(args.interval)
             
     except KeyboardInterrupt:
         print("\nShutting down Google Drive watcher...")

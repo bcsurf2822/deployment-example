@@ -3,11 +3,10 @@
 import React, { useState, useCallback } from "react";
 import FileDropzone from "./FileDropzone";
 import UploadQueue, { FileUploadStatus } from "./UploadQueue";
-import ProcessingStatus, { ProcessingFile } from "./ProcessingStatus";
+import RAGPipelineStatus from "./RAGPipelineStatus";
 
 export default function FileUploadManager() {
   const [uploadQueue, setUploadQueue] = useState<FileUploadStatus[]>([]);
-  const [processingFiles, setProcessingFiles] = useState<ProcessingFile[]>([]);
 
   const handleFilesSelected = useCallback((files: File[]) => {
     console.log(`[FILE-UPLOAD-MANAGER] Adding ${files.length} files to upload queue`);
@@ -27,27 +26,8 @@ export default function FileUploadManager() {
     // Remove from upload queue
     setUploadQueue((prev) => prev.filter((item) => item.file.name !== file.name));
     
-    // Add to processing status
-    const processingFile: ProcessingFile = {
-      fileName: file.name,
-      googleDriveId,
-      status: "processing",
-      startedAt: new Date(),
-    };
-    
-    setProcessingFiles((prev) => [...prev, processingFile]);
-    
-    // TODO: Here you would typically poll the RAG pipeline status
-    // For now, we'll simulate processing completion after 10 seconds
-    setTimeout(() => {
-      setProcessingFiles((prev) =>
-        prev.map((pf) =>
-          pf.googleDriveId === googleDriveId
-            ? { ...pf, status: "completed" as const, completedAt: new Date() }
-            : pf
-        )
-      );
-    }, 10000);
+    // The RAG pipeline will automatically detect and process the file
+    // The RAGPipelineStatus component will show it in processing
   }, []);
 
   const handleFileRemove = useCallback((file: File) => {
@@ -67,8 +47,8 @@ export default function FileUploadManager() {
         onFileRemove={handleFileRemove}
       />
       
-      {/* Processing Status */}
-      <ProcessingStatus files={processingFiles} />
+      {/* RAG Pipeline Status - Shows real-time pipeline status */}
+      <RAGPipelineStatus />
     </div>
   );
 }

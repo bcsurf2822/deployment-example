@@ -71,6 +71,8 @@ services:
     build:
       context: ./rag_pipeline
       dockerfile: Dockerfile
+    ports:
+      - "8003:8003"  # Status server port
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
