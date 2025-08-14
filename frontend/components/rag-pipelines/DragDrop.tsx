@@ -22,6 +22,7 @@ export default function DragDrop({
       status: "pending" | "uploading" | "success" | "error";
       progress?: number;
       error?: string;
+      googleDriveId?: string;
     };
   }>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -82,32 +83,72 @@ export default function DragDrop({
   );
 
   const uploadToGoogleDrive = async (file: File) => {
+    // Set initial uploading status with progress animation
     setUploadStatus((prev) => ({
       ...prev,
       [file.name]: { status: "uploading", progress: 0 },
     }));
 
+    // Simulate progress updates while uploading
+    const progressInterval = setInterval(() => {
+      setUploadStatus((prev) => {
+        const current = prev[file.name];
+        if (current?.status === "uploading" && (current.progress || 0) < 90) {
+          return {
+            ...prev,
+            [file.name]: {
+              ...current,
+              progress: Math.min((current.progress || 0) + 10, 90),
+            },
+          };
+        }
+        return prev;
+      });
+    }, 200);
+
     try {
       const formData = new FormData();
       formData.append("file", file);
 
-      // TODO: Replace with actual Google Drive API endpoint
-      // Note: Standard fetch doesn't support upload progress tracking
-      // You would need to use XMLHttpRequest or a library like axios for progress tracking
+      console.log(`[DRAGDROP] Starting upload for ${file.name}`);
       const response = await fetch("/api/google-drive/upload", {
         method: "POST",
         body: formData,
       });
 
+      clearInterval(progressInterval);
+
       if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Upload failed: ${response.statusText}`);
       }
 
+      const result = await response.json();
+      console.log(`[DRAGDROP] Upload successful for ${file.name}:`, result);
+
+      // Mark as success
       setUploadStatus((prev) => ({
         ...prev,
-        [file.name]: { status: "success", progress: 100 },
+        [file.name]: { 
+          status: "success", 
+          progress: 100,
+          googleDriveId: result.file?.googleDriveId 
+        },
       }));
+
+      // After 2 seconds, remove from upload queue
+      setTimeout(() => {
+        setFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+        setUploadStatus((prev) => {
+          const newStatus = { ...prev };
+          delete newStatus[file.name];
+          return newStatus;
+        });
+      }, 2000);
+
     } catch (error) {
+      clearInterval(progressInterval);
+      console.error(`[DRAGDROP] Upload failed for ${file.name}:`, error);
       setUploadStatus((prev) => ({
         ...prev,
         [file.name]: {
@@ -227,7 +268,9 @@ export default function DragDrop({
       {/* File List */}
       {files.length > 0 && (
         <div className="mt-6 space-y-2">
-          <h3 className="text-sm font-medium text-gray-900">Files to upload</h3>
+          <h3 className="text-sm font-medium text-gray-900">
+            Upload Queue
+          </h3>
           <ul className="space-y-2">
             {files.map((file, index) => {
               const status = uploadStatus[file.name];
@@ -307,8 +350,13 @@ export default function DragDrop({
                         {formatFileSize(file.size)}
                         {status?.status === "uploading" &&
                           status.progress !== undefined && (
-                            <span className="ml-2">{status.progress}%</span>
+                            <span className="ml-2">Uploading... {status.progress}%</span>
                           )}
+                        {status?.status === "success" && (
+                          <span className="ml-2 text-green-500">
+                            Upload complete!
+                          </span>
+                        )}
                         {status?.status === "error" && status.error && (
                           <span className="ml-2 text-red-500">
                             {status.error}
@@ -317,7 +365,8 @@ export default function DragDrop({
                       </p>
                     </div>
                   </div>
-                  {status?.status !== "uploading" && (
+                  {status?.status !== "uploading" && 
+                   status?.status !== "success" && (
                     <button
                       onClick={() => removeFile(index)}
                       className="ml-4 text-gray-400 hover:text-gray-500"
