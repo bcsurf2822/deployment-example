@@ -80,58 +80,23 @@ export async function POST(request: NextRequest) {
       `[API-UPLOAD] Successfully uploaded to Google Drive with ID: ${driveResult.fileId}`
     );
 
-    // Store file metadata in the database with Google Drive file ID
-    // Match the schema expected by document_metadata table (id, title, url, schema, created_at)
-    const { data: fileRecord, error: dbError } = await supabase
-      .from("document_metadata")
-      .insert({
+    // Return success response with Google Drive file details
+    // The RAG pipeline will handle database operations when it processes the file
+    return NextResponse.json({
+      success: true,
+      file: {
         title: file.name,
-        url: driveResult.webViewLink || `https://drive.google.com/file/d/${driveResult.fileId}/view`,
-        schema: {
+        googleDriveId: driveResult.fileId,
+        webViewLink: driveResult.webViewLink,
+        webContentLink: driveResult.webContentLink,
+        uploadedAt: new Date().toISOString(),
+        metadata: {
           file_name: file.name,
           file_size: file.size,
           mime_type: file.type,
           user_id: user.id,
           source: "google_drive",
-          google_drive_id: driveResult.fileId,
-          web_view_link: driveResult.webViewLink,
-          web_content_link: driveResult.webContentLink,
-          uploaded_at: new Date().toISOString(),
         },
-      })
-      .select()
-      .single();
-
-    if (dbError) {
-      console.error("[API-UPLOAD] Database error:", dbError);
-      // Note: File is already uploaded to Google Drive at this point
-      return NextResponse.json(
-        {
-          warning: "File uploaded to Google Drive but failed to save metadata",
-          file: {
-            title: file.name,
-            googleDriveId: driveResult.fileId,
-            webViewLink: driveResult.webViewLink,
-          },
-        },
-        { status: 207 } // Multi-Status
-      );
-    }
-
-    console.log(
-      `[API-UPLOAD] File metadata saved to database with ID: ${fileRecord.id}`
-    );
-
-    return NextResponse.json({
-      success: true,
-      file: {
-        id: fileRecord.id,
-        title: fileRecord.title,
-        url: fileRecord.url,
-        googleDriveId: driveResult.fileId,
-        webViewLink: driveResult.webViewLink,
-        uploadedAt: fileRecord.created_at,
-        schema: fileRecord.schema,
       },
     });
   } catch (error) {
