@@ -18,7 +18,7 @@ from pathlib import Path
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.text_processor import extract_text_from_file, chunk_text, create_embeddings
-from common.db_handler import process_file_for_rag, delete_document_by_file_id
+from common.db_handler import process_file_for_rag, delete_document_by_file_id, create_sync_manager, perform_full_sync
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly',
@@ -40,6 +40,10 @@ class GoogleDriveWatcher:
         self.service = None
         self.known_files = {}  # Store file IDs and their last modified time
         self.initialized = False  # Flag to track if we've done the initial scan
+        
+        # Initialize sync manager with a unique pipeline ID
+        pipeline_id = os.getenv('RAG_PIPELINE_ID', f'google_drive_{folder_id or "all"}')
+        self.sync_manager = create_sync_manager(pipeline_id, 'google_drive')
         
         # Load configuration
         self.config = {}
@@ -71,7 +75,14 @@ class GoogleDriveWatcher:
 
             if not self.folder_id:
                 # Check environment variable first, then config file
-                self.folder_id = os.getenv('RAG_WATCH_FOLDER_ID') or self.config.get('watch_folder_id', None)                  
+                self.folder_id = os.getenv('RAG_WATCH_FOLDER_ID') or self.config.get('watch_folder_id', None)
+                
+            # Load pipeline state from database
+            state = self.sync_manager.load_pipeline_state()
+            if state['known_files']:
+                self.known_files = state['known_files']
+                print(f"[DRIVE_WATCHER-LOAD_CONFIG] Loaded {len(self.known_files)} known files from pipeline state")
+                self.initialized = True  # Skip initial scan if we have state
                 
         except Exception as e:
             print(f"Error loading configuration: {e}")
@@ -465,7 +476,8 @@ class GoogleDriveWatcher:
             'files_processed': 0,
             'files_deleted': 0,
             'errors': 0,
-            'duration': 0.0
+            'duration': 0.0,
+            'orphaned_deleted': 0
         }
         
         try:
@@ -476,7 +488,7 @@ class GoogleDriveWatcher:
             # Get changes since the last check
             changed_files = self.get_changes()
             
-            # Check for deleted files
+            # Check for deleted files (from known_files)
             deleted_file_ids = self.check_for_deleted_files()
             
             # Process changed files
@@ -493,7 +505,7 @@ class GoogleDriveWatcher:
                         print(f"Error processing file {file.get('name', 'Unknown')}: {e}")
                         stats['errors'] += 1
             
-            # Process deleted files
+            # Process deleted files from known_files
             if deleted_file_ids:
                 print(f"Found {len(deleted_file_ids)} deleted files.")
                 for file_id in deleted_file_ids:
@@ -506,12 +518,31 @@ class GoogleDriveWatcher:
                     except Exception as e:
                         print(f"Error deleting document for file ID {file_id}: {e}")
                         stats['errors'] += 1
-                        
+            
+            # Check if orphan deletion is enabled in config
+            sync_settings = self.config.get('sync_settings', {})
+            if sync_settings.get('enable_orphan_deletion', True):
+                # Perform full synchronization to catch orphaned documents
+                # Get all current file IDs from Google Drive
+                current_file_ids = set(self.known_files.keys())
+                
+                # Run synchronization to delete orphaned documents
+                sync_stats = self.sync_manager.sync_deletions(current_file_ids, delete_document_by_file_id)
+                stats['orphaned_deleted'] = sync_stats['deleted_success']
+            
+            # Save the updated pipeline state
+            self.sync_manager.save_pipeline_state(self.known_files, self.last_check_time)
+            
         except Exception as e:
             print(f"Error during change check: {e}")
             stats['errors'] += 1
         
         stats['duration'] = time.time() - start_time
+        
+        # Log extended statistics if there were orphaned documents
+        if stats['orphaned_deleted'] > 0:
+            print(f"[DRIVE_WATCHER-SYNC] Removed {stats['orphaned_deleted']} orphaned documents from Supabase")
+        
         return stats
 
     #  WATCH FOR CHANGES IN GOOGLE DRIVE
@@ -554,6 +585,16 @@ class GoogleDriveWatcher:
                         self.known_files[file['id']] = file.get('modifiedTime')
                 
                 print(f"Found {len(self.known_files)} files in initial scan.")
+                
+                # Perform startup sync if enabled
+                sync_settings = self.config.get('sync_settings', {})
+                if sync_settings.get('sync_on_startup', True):
+                    print("[DRIVE_WATCHER-STARTUP] Running startup synchronization...")
+                    current_file_ids = set(self.known_files.keys())
+                    sync_stats = self.sync_manager.sync_deletions(current_file_ids, delete_document_by_file_id)
+                    if sync_stats['deleted_success'] > 0:
+                        print(f"[DRIVE_WATCHER-STARTUP] Removed {sync_stats['deleted_success']} orphaned documents during startup")
+                
                 self.initialized = True
             
             while True:

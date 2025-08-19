@@ -11,7 +11,7 @@ import traceback
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.text_processor import extract_text_from_file, chunk_text, create_embeddings
-from common.db_handler import process_file_for_rag, delete_document_by_file_id
+from common.db_handler import process_file_for_rag, delete_document_by_file_id, create_sync_manager, perform_full_sync
 
 class LocalFilesWatcher:
     def __init__(self, watch_directory: str = None, config_path: str = None):
@@ -25,6 +25,10 @@ class LocalFilesWatcher:
         self.watch_directory = watch_directory
         self.known_files = {}  # Store file paths and their last modified time
         self.initialized = False
+        
+        # Initialize sync manager with a unique pipeline ID
+        pipeline_id = os.getenv('RAG_PIPELINE_ID', f'local_files_{watch_directory or "default"}')
+        self.sync_manager = create_sync_manager(pipeline_id, 'local_files')
         
         # Load configuration
         self.config = {}
@@ -72,6 +76,13 @@ class LocalFilesWatcher:
                     print("Invalid last check time format in config, using default")
             
             print(f"Resuming from last check time: {self.last_check_time}")
+            
+            # Load pipeline state from database
+            state = self.sync_manager.load_pipeline_state()
+            if state['known_files']:
+                self.known_files = state['known_files']
+                print(f"[FILE_WATCHER-LOAD_CONFIG] Loaded {len(self.known_files)} known files from pipeline state")
+                self.initialized = True  # Skip initial scan if we have state
                 
         except Exception as e:
             print(f"Error loading configuration: {e}")
@@ -309,7 +320,8 @@ class LocalFilesWatcher:
             'files_processed': 0,
             'files_deleted': 0,
             'errors': 0,
-            'duration': 0.0
+            'duration': 0.0,
+            'orphaned_deleted': 0
         }
         
         try:
@@ -334,11 +346,22 @@ class LocalFilesWatcher:
                     print(f"Error deleting document for file ID {file_id}: {e}")
                     stats['errors'] += 1
             
+            # Perform full synchronization to catch orphaned documents
+            # Get all current file IDs from local directory
+            current_file_ids = set(self.known_files.keys())
+            
+            # Run synchronization to delete orphaned documents
+            sync_stats = self.sync_manager.sync_deletions(current_file_ids, delete_document_by_file_id)
+            stats['orphaned_deleted'] = sync_stats['deleted_success']
+            
             # Update last check time
             self.last_check_time = datetime.now(timezone.utc)
             
             # Save updated configuration
             self.save_config()
+            
+            # Save the updated pipeline state
+            self.sync_manager.save_pipeline_state(self.known_files, self.last_check_time)
             
         except Exception as e:
             print(f"Error during change check: {e}")
@@ -346,6 +369,11 @@ class LocalFilesWatcher:
             stats['errors'] += 1
         
         stats['duration'] = time.time() - start_time
+        
+        # Log extended statistics if there were orphaned documents
+        if stats['orphaned_deleted'] > 0:
+            print(f"[FILE_WATCHER-SYNC] Removed {stats['orphaned_deleted']} orphaned documents from Supabase")
+        
         return stats
     
     def watch_for_changes(self, interval_seconds: int = 60) -> None:

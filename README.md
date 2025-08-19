@@ -182,8 +182,9 @@ python deploy.py --mode dev  # Containerized
 python deploy.py --mode dev --logs  # Watch logs while developing
 
 # Testing RAG pipeline changes
-python deploy.py --down --mode dev  # Stop everything
 python deploy.py --mode dev --with-rag  # Fresh start with RAG
+python deploy.py --down --mode dev --with-rag # Stop everything
+
 
 # Quick restart after .env changes
 docker compose -p pydantic-agent -f docker-compose.dev.yml restart

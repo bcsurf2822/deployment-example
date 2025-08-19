@@ -12,6 +12,7 @@ from pathlib import Path
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from text_processor import chunk_text, create_embeddings, is_tabular_file, extract_schema_from_csv, extract_rows_from_csv
+from sync_manager import PipelineSyncManager
 
 # Load environment variables from the rag_pipeline .env file
 # Get the path to the rag_pipeline directory
@@ -225,3 +226,31 @@ def process_file_for_rag(file_content: bytes, text: str, file_id: str, file_url:
         traceback.print_exc()
         print(f"Error processing file for RAG: {e}")
         return False
+
+def create_sync_manager(pipeline_id: str, pipeline_type: str) -> PipelineSyncManager:
+    """
+    Create a sync manager instance for a pipeline.
+    
+    Args:
+        pipeline_id: Unique identifier for the pipeline instance
+        pipeline_type: Type of pipeline ('google_drive' or 'local_files')
+    
+    Returns:
+        PipelineSyncManager instance
+    """
+    return PipelineSyncManager(supabase, pipeline_id, pipeline_type)
+
+def perform_full_sync(pipeline_id: str, pipeline_type: str, current_file_ids: set) -> Dict[str, int]:
+    """
+    Perform a full synchronization to remove orphaned documents.
+    
+    Args:
+        pipeline_id: Unique identifier for the pipeline instance
+        pipeline_type: Type of pipeline ('google_drive' or 'local_files')
+        current_file_ids: Set of file IDs that currently exist in the source
+    
+    Returns:
+        Statistics about the sync operation
+    """
+    sync_manager = create_sync_manager(pipeline_id, pipeline_type)
+    return sync_manager.sync_deletions(current_file_ids, delete_document_by_file_id)
