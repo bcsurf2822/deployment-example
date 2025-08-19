@@ -1,7 +1,3 @@
-/**
- * Server actions for authentication
- */
-
 'use server'
 
 import { revalidatePath } from 'next/cache'
@@ -16,12 +12,11 @@ export async function login(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  const { data: result, error } = await supabase.auth.signInWithPassword(data)
+  const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    console.error('Login error:', error)
+    console.error('[login-action] Login error:', error)
     
-    // Handle specific error cases
     if (error.message.includes('Email not confirmed')) {
       redirect('/auth/login?error=Please check your email and click the confirmation link before signing in')
     }
@@ -32,8 +27,10 @@ export async function login(formData: FormData) {
     redirect(`/auth/login?error=${encodeURIComponent(error.message)}`)
   }
 
-  console.log('Login successful:', result.user?.email)
+  console.log('[login-action] Login successful')
+  
   revalidatePath('/', 'layout')
+  
   redirect('/')
 }
 
@@ -48,16 +45,20 @@ export async function signup(formData: FormData) {
   const { data: result, error } = await supabase.auth.signUp(data)
 
   if (error) {
-    console.error('Signup error:', error)
+    console.error('[signup-action] Signup error:', error)
     redirect(`/auth/login?error=${encodeURIComponent(error.message)}`)
   }
 
-  console.log('Signup result:', result)
+  console.log('[signup-action] Signup successful')
+  
   revalidatePath('/', 'layout')
   
-  // Check if email confirmation is required
   if (result.user && !result.user.email_confirmed_at) {
     redirect('/auth/login?message=Check your email and click the confirmation link to complete registration')
+  }
+  
+  if (result.user && result.session) {
+    redirect('/')
   }
   
   redirect('/auth/login?message=Account created successfully! You can now sign in.')
@@ -74,6 +75,7 @@ export async function signInWithGoogle() {
   })
 
   if (error) {
+    console.error('[google-signin-action] Google sign-in error:', error)
     redirect('/auth/login?error=Could not authenticate with Google')
   }
 
