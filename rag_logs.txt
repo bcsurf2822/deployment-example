@@ -1,17 +1,29 @@
-[RAG-PIPELINE-CONTAINER] Starting Google Drive pipeline
-Loaded configuration from /app/Google_Drive/config.json
-Resuming from last check time: 2025-08-02 19:25:40.780239
-Starting Google Drive watcher in folder ID: 1JfdizKUt_H1LW_G2Ze2MlQ1I5aX1ufys. Checking for changes every 60 seconds...
-Using service account authentication for Google Drive
-No valid credentials found, starting OAuth2 authentication...
-Error in watcher: Google Drive credentials file not found: /app/Google_Drive/credentials.json. Either provide OAuth2 credentials file or set GOOGLE_DRIVE_CREDENTIALS_JSON environment variable.
-Error: Google Drive credentials file not found: /app/Google_Drive/credentials.json. Either provide OAuth2 credentials file or set GOOGLE_DRIVE_CREDENTIALS_JSON environment variable.
-[RAG-PIPELINE-CONTAINER] Starting RAG Pipeline service: google_drive
-[RAG-PIPELINE-CONTAINER] Starting Google Drive pipeline
-Loaded configuration from /app/Google_Drive/config.json
-Resuming from last check time: 2025-08-02 19:25:40.780239
-Starting Google Drive watcher in folder ID: 1JfdizKUt_H1LW_G2Ze2MlQ1I5aX1ufys. Checking for changes every 60 seconds...
-Using service account authentication for Google Drive
-No valid credentials found, starting OAuth2 authentication...
-Error in watcher: Google Drive credentials file not found: /app/Google_Drive/credentials.json. Either provide OAuth2 credentials file or set GOOGLE_DRIVE_CREDENTIALS_JSON environment variable.
-Error: Google Drive credentials file not found: /app/Google_Drive/credentials.json. Either provide OAuth2 credentials file or set GOOGLE_DRIVE_CREDENTIALS_JSON environment variable.
+rag-local-files-dev-1   | New file detected: KLoBot Inc - Developer - Employment Agreement with Bonus.pdf
+rag-local-files-dev-1   | New file detected: KLapper Pre-requisites.pdf
+rag-local-files-dev-1   | New file detected: infinite loop klapper.png
+rag-local-files-dev-1   | Processing file: KLoBot Inc - Developer - Employment Agreement with Bonus.pdf (ID: 6123c1ccd0b57b8b646e9609e2c5745d)
+rag-local-files-dev-1   | Error reading file /app/mounted_data/KLoBot Inc - Developer - Employment Agreement with Bonus.pdf: [Errno 35] Resource deadlock avoided
+rag-local-files-dev-1   | Processing file: KLapper Pre-requisites.pdf (ID: e67cb00e0979cf8817dfca27d1a0695c)
+rag-local-files-dev-1   | [file_watcher-process_file] Extracting text from KLapper Pre-requisites.pdf (MIME: application/pdf)
+rag-local-files-dev-1   | Ignoring wrong pointing object 7 0 (offset 0)
+rag-local-files-dev-1   | Ignoring wrong pointing object 9 0 (offset 0)
+rag-local-files-dev-1   | Ignoring wrong pointing object 11 0 (offset 0)
+rag-local-files-dev-1   | Ignoring wrong pointing object 13 0 (offset 0)
+rag-local-files-dev-1   | Ignoring wrong pointing object 15 0 (offset 0)
+rag-local-files-dev-1   | Ignoring wrong pointing object 18 0 (offset 0)
+rag-local-files-dev-1   | Ignoring wrong pointing object 21 0 (offset 0)
+rag-local-files-dev-1   | Ignoring wrong pointing object 29 0 (offset 0)
+rag-local-files-dev-1   | [file_watcher-process_file] Extracted 1859 characters from file
+rag-local-files-dev-1   | [file_watcher-process_file] Processing file for RAG pipeline...
+rag-local-files-dev-1   | Deleted 0 document chunks for file ID: e67cb00e0979cf8817dfca27d1a0695c
+rag-local-files-dev-1   | Deleted 0 document rows for file ID: e67cb00e0979cf8817dfca27d1a0695c
+rag-local-files-dev-1   | Deleted metadata for file ID: e67cb00e0979cf8817dfca27d1a0695c
+rag-local-files-dev-1   | Inserted metadata for file 'KLapper Pre-requisites.pdf' (ID: e67cb00e0979cf8817dfca27d1a0695c)
+rag-local-files-dev-1   | [file_watcher-process_file] Successfully completed processing KLapper Pre-requisites.pdf
+rag-local-files-dev-1   | Successfully processed: KLapper Pre-requisites.pdf
+rag-local-files-dev-1   | Processing file: infinite loop klapper.png (ID: c161c66411d842e573c3a0278f626f32)
+rag-local-files-dev-1   | Error reading file /app/mounted_data/infinite loop klapper.png: [Errno 35] Resource deadlock avoided
+rag-local-files-dev-1   | [SYNC_MANAGER-GET_DOCS] Found 1 unique file IDs in documents table for source: local_files
+rag-local-files-dev-1   | [SYNC_MANAGER-ORPHANED] No orphaned documents found
+rag-local-files-dev-1   | [SYNC_MANAGER-SAVE_STATE] Updated state for pipeline local-files-pipeline
+rag-local-files-dev-1   | Change check completed: 1 files processed, 0 files deleted, 2 errors, duration: 2.15s

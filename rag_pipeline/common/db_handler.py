@@ -58,18 +58,19 @@ def delete_document_by_file_id(file_id: str) -> None:
         print(f"Error deleting documents: {e}")
 
 def insert_document_chunks(chunks: List[str], embeddings: List[List[float]], file_id: str, 
-                        file_url: str, file_title: str, mime_type: str, file_contents: bytes | None = None) -> None:
+                        file_url: str, file_title: str, mime_type: str, file_contents: bytes | None = None, source: str = None) -> None:
     """
     Insert document chunks with their embeddings into the Supabase database.
     
     Args:
         chunks: List of text chunks
         embeddings: List of embedding vectors for each chunk
-        file_id: The Google Drive file ID
+        file_id: The Google Drive file ID or local file path
         file_url: The URL to access the file
         file_title: The title of the file
         mime_type: The mime type of the file
         file_contents: Optional binary of the file to store as metadata
+        source: The source of the file ('google_drive' or 'local_files')
     """
     try:
         # Ensure we have the same number of chunks and embeddings
@@ -88,6 +89,7 @@ def insert_document_chunks(chunks: List[str], embeddings: List[List[float]], fil
                     "file_title": file_title,
                     "mime_type": mime_type,
                     "chunk_index": i,
+                    "source": source,  # Add source to identify which pipeline created this
                     # For images, we need to store the binary in the metadata other documents don't have this due to it being too long
                     **({"file_contents": file_bytes_str} if file_bytes_str else {})
                 },
@@ -160,18 +162,19 @@ def insert_document_rows(file_id: str, rows: List[Dict[str, Any]]) -> None:
         print(f"Error inserting document rows: {e}")
 
 def process_file_for_rag(file_content: bytes, text: str, file_id: str, file_url: str, 
-                        file_title: str, mime_type: str = None, config: Dict[str, Any] = None) -> None:
+                        file_title: str, mime_type: str = None, config: Dict[str, Any] = None, source: str = None) -> None:
     """
     Process a file for the RAG pipeline - delete existing records and insert new ones.
     
     Args:
         file_content: The binary content of the file
         text: The text content extracted from the file
-        file_id: The Google Drive file ID
+        file_id: The Google Drive file ID or local file path
         file_url: The URL to access the file
         file_title: The title of the file
         mime_type: Mime type of the file
         config: Configuration for things like the chunk size and overlap
+        source: The source of the file ('google_drive' or 'local_files')
     """
     try:
         # First, delete any existing records for this file
@@ -215,11 +218,11 @@ def process_file_for_rag(file_content: bytes, text: str, file_id: str, file_url:
 
         # For images, don't chunk the image, just store the title for RAG and include the binary in the metadata
         if mime_type.startswith("image"):
-            insert_document_chunks(chunks, embeddings, file_id, file_url, file_title, mime_type, file_content)
+            insert_document_chunks(chunks, embeddings, file_id, file_url, file_title, mime_type, file_content, source)
             return True
         
         # Insert the chunks with their embeddings
-        insert_document_chunks(chunks, embeddings, file_id, file_url, file_title, mime_type)
+        insert_document_chunks(chunks, embeddings, file_id, file_url, file_title, mime_type, None, source)
 
         return True
     except Exception as e:

@@ -110,7 +110,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_BASE_URL=${OPENAI_BASE_URL}
       - EMBEDDING_MODEL=${EMBEDDING_MODEL}
-      - RAG_WATCH_DIRECTORY=/app/Local_Files/data
+      - RAG_WATCH_DIRECTORY=/app/mounted_data
       - RUN_MODE=${RUN_MODE}
       - RAG_PIPELINE_ID=local-files-pipeline
       - RAG_SERVICE=local_files
@@ -118,7 +118,7 @@ services:
     volumes:
       - ./rag_pipeline:/app
       - ./test_files:/app/test_files
-      - ${RAG_LOCAL_DIRECTORY:-./test_files}:/app/Local_Files/data
+      - ${RAG_LOCAL_DIRECTORY:-./rag_pipeline/Local_Files/data}:/app/mounted_data
       - rag_venv:/app/venv
     restart: unless-stopped
     profiles:

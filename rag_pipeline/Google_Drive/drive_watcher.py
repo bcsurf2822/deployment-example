@@ -410,7 +410,7 @@ class GoogleDriveWatcher:
             return
         
         # Process the file for RAG
-        success = process_file_for_rag(file_content, text, file_id, web_view_link, file_name, mime_type, self.config)
+        success = process_file_for_rag(file_content, text, file_id, web_view_link, file_name, mime_type, self.config, 'google_drive')
         
         # Update the known files dictionary
         self.known_files[file_id] = file.get('modifiedTime')

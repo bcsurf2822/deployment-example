@@ -100,22 +100,25 @@ class PipelineSyncManager:
     
     def get_all_document_file_ids(self) -> Set[str]:
         """
-        Get all file IDs currently stored in the documents table.
+        Get all file IDs currently stored in the documents table for this pipeline type.
         
         Returns:
-            Set of file IDs from the documents table
+            Set of file IDs from the documents table for this pipeline's source
         """
         try:
-            # Query distinct file_ids from documents table
-            response = self.supabase.table("documents").select("metadata->>file_id").execute()
+            # Query documents table and filter by source in metadata
+            response = self.supabase.table("documents").select("metadata").execute()
             
             file_ids = set()
             for row in response.data:
-                file_id = row.get('file_id')
-                if file_id:
-                    file_ids.add(file_id)
+                metadata = row.get('metadata', {})
+                # Only include files from the same pipeline type
+                if metadata.get('source') == self.pipeline_type:
+                    file_id = metadata.get('file_id')
+                    if file_id:
+                        file_ids.add(file_id)
             
-            print(f"[SYNC_MANAGER-GET_DOCS] Found {len(file_ids)} unique file IDs in documents table")
+            print(f"[SYNC_MANAGER-GET_DOCS] Found {len(file_ids)} unique file IDs in documents table for source: {self.pipeline_type}")
             return file_ids
         except Exception as e:
             print(f"[SYNC_MANAGER-GET_DOCS] Error getting document file IDs: {e}")

@@ -231,3 +231,4 @@ npm run type-check  # TypeScript validation (if configured)
 4. **Docker Build Failures**: Clear cache with `docker system prune -a`
 5. **Port Conflicts**: Check for services using ports 3000, 8001, 8002
 6. **Memory Issues**: Increase Docker memory allocation in Docker Desktop
+- please add that this is how you view logs "python deploy.py --mode dev --with-rag --logs"

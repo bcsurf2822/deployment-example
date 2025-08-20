@@ -251,6 +251,10 @@ class LocalFilesWatcher:
                     content = f.read()
             except Exception as e:
                 print(f"Error reading file {file_path}: {e}")
+                # If it's the macOS Docker deadlock error, provide helpful message
+                if "Resource deadlock avoided" in str(e):
+                    print(f"NOTE: File {file_path} appears to be in a cloud-synced folder.")
+                    print("Consider moving files to a non-cloud folder to avoid this issue.")
                 return False
             
             # Create metadata
@@ -283,7 +287,8 @@ class LocalFilesWatcher:
                 file_url=f"file://{file_path}",
                 file_title=file_info['name'],
                 mime_type=file_info['mimeType'],
-                config=self.config
+                config=self.config,
+                source='local_files'
             )
             
             if not success:
