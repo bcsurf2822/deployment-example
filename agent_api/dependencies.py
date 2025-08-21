@@ -6,6 +6,7 @@ the agent's tools and system prompts.
 """
 
 from dataclasses import dataclass
+from typing import Optional
 import httpx
 from supabase import Client
 from openai import AsyncOpenAI
@@ -16,6 +17,7 @@ from clients import (
     get_embedding_client,
     get_http_client
 )
+from mcp_manager import MCPManager
 
 
 @dataclass
@@ -31,6 +33,7 @@ class AgentDependencies:
     supabase: Client
     embedding_client: AsyncOpenAI
     memories: str
+    mcp_manager: Optional[MCPManager] = None
     
     @property
     def brave_api_key(self) -> str:
@@ -48,12 +51,13 @@ class AgentDependencies:
         return self.settings.supabase_key.get_secret_value()
 
 
-async def create_dependencies(memories: str = "") -> AgentDependencies:
+async def create_dependencies(memories: str = "", init_mcp: bool = True) -> AgentDependencies:
     """
     Create and initialize dependencies for the agent.
     
     Args:
         memories: User memories string to include in the dependencies
+        init_mcp: Whether to initialize the MCP manager
     
     Returns:
         AgentDependencies instance with all required dependencies
@@ -63,12 +67,23 @@ async def create_dependencies(memories: str = "") -> AgentDependencies:
     supabase = get_supabase_client()
     embedding_client = get_embedding_client()
     
+    # Initialize MCP manager if requested
+    mcp_manager = None
+    if init_mcp:
+        try:
+            mcp_manager = MCPManager()
+            await mcp_manager.initialize()
+            print("[DEPENDENCIES-create_dependencies] MCP Manager initialized")
+        except Exception as e:
+            print(f"[DEPENDENCIES-create_dependencies] Failed to initialize MCP Manager: {e}")
+    
     return AgentDependencies(
         settings=settings,
         http_client=http_client,
         supabase=supabase,
         embedding_client=embedding_client,
-        memories=memories
+        memories=memories,
+        mcp_manager=mcp_manager
     )
 
 
@@ -81,3 +96,6 @@ async def cleanup_dependencies(deps: AgentDependencies) -> None:
     """
     if deps.http_client:
         await deps.http_client.aclose()
+    
+    if deps.mcp_manager:
+        await deps.mcp_manager.shutdown()

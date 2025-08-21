@@ -1,0 +1,27 @@
+{
+  "servers": [
+    {
+      "name": "python-executor",
+      "transport": "sse",
+      "enabled": true,
+      "auto_start": true,
+      "url": "http://localhost:3001/sse",
+      "process_command": "deno",
+      "process_args": [
+        "run",
+        "-N",
+        "-R=node_modules",
+        "-W=node_modules",
+        "--node-modules-dir=auto",
+        "jsr:@pydantic/mcp-run-python",
+        "sse",
+        "--port",
+        "3001"
+      ],
+      "retry_attempts": 5,
+      "retry_delay": 3,
+      "health_check_interval": 30,
+      "timeout": 10
+    }
+  ]
+}

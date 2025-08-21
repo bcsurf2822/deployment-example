@@ -202,24 +202,23 @@ export default function ConversationsSidebar({
                       className="flex flex-col items-start gap-1 h-auto py-3 px-4 cursor-pointer
                         relative overflow-hidden
                         transition-all duration-300 ease-out
-                        hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50
+                        hover:bg-gray-50/80
                         hover:translate-x-1 hover:shadow-md
-                        hover:border-l-2 hover:border-blue-400
                         group-hover:before:absolute group-hover:before:inset-0
                         group-hover:before:bg-gradient-to-r group-hover:before:from-transparent group-hover:before:via-white/20 group-hover:before:to-transparent
                         group-hover:before:animate-shimmer
                         group-hover:scale-[1.02]
-                        data-[active=true]:bg-blue-50 data-[active=true]:border-l-2 data-[active=true]:border-blue-500"
+                        data-[active=true]:bg-gray-100"
                     >
                       <div className="flex w-full items-center justify-between relative z-10">
                         <div className="flex items-center gap-2">
                           <MessageCircle size={14} className="transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
-                          <span className="truncate text-sm font-medium transition-colors duration-300 group-hover:text-blue-700">
+                          <span className="truncate text-sm font-medium transition-colors duration-300 group-hover:text-gray-900">
                             {getConversationTitle(conversation)}
                           </span>
                         </div>
                       </div>
-                      <div className="flex w-full items-center gap-1 text-xs text-muted-foreground transition-colors duration-300 group-hover:text-blue-600/70 relative z-10">
+                      <div className="flex w-full items-center gap-1 text-xs text-muted-foreground transition-colors duration-300 group-hover:text-gray-700 relative z-10">
                         <Clock size={10} className="transition-transform duration-300 group-hover:scale-110" />
                         <span>{getRelativeTime(conversation.last_message_at)}</span>
                       </div>

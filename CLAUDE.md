@@ -231,4 +231,33 @@ npm run type-check  # TypeScript validation (if configured)
 4. **Docker Build Failures**: Clear cache with `docker system prune -a`
 5. **Port Conflicts**: Check for services using ports 3000, 8001, 8002
 6. **Memory Issues**: Increase Docker memory allocation in Docker Desktop
-- please add that this is how you view logs "python deploy.py --mode dev --with-rag --logs"
+- View logs: `python deploy.py --mode dev --with-rag --logs`
+
+### MCP (Model Context Protocol) Integration
+
+**New MCP Manager System:**
+```bash
+# MCP servers now start automatically with the application
+# Check MCP server status
+curl http://localhost:8001/api/mcp/servers
+
+# Add new MCP server dynamically
+curl -X POST http://localhost:8001/api/mcp/servers \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-server", "transport": "sse", "url": "http://localhost:3002/sse"}'
+
+# Server operations
+curl -X POST http://localhost:8001/api/mcp/servers/python-executor/restart
+```
+
+**MCP Configuration** (`agent_api/mcp_config.json`):
+- Default Python code executor on port 3001
+- Automatic server startup and health monitoring
+- Dynamic server registration via REST API
+- Support for SSE, Stdio, and HTTP transports
+
+**Key Files:**
+- `agent_api/mcp_manager.py` - Core MCP server management
+- `agent_api/mcp_config.json` - Server configuration
+- `agent_api/Dockerfile.mcp` - MCP-enabled Docker setup
+- `MCP_INTEGRATION.md` - Detailed integration guide

@@ -12,7 +12,7 @@ from fastapi import FastAPI, HTTPException, Depends, Security
 from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from httpx import AsyncClient
 
 # Load environment variables from .env
@@ -22,6 +22,7 @@ load_dotenv(override=True)
 from agent import agent, search
 from clients import settings, get_supabase_client, get_openai_client, get_mem0_client_async, get_authenticated_supabase_client
 from dependencies import AgentDependencies
+from mcp_manager import MCPServerConfig, MCPServerConfigModel, TransportType
 
 # Import Pydantic AI types
 from pydantic_ai import Agent as PydanticAgent, ModelRequestNode
@@ -205,6 +206,24 @@ async def health_check():
         }
     }
     
+    # Check MCP manager status
+    try:
+        if mcp_manager:
+            mcp_servers = mcp_manager.get_all_servers_status()
+            health_status["mcp_servers"] = mcp_servers
+            
+            # Check if any enabled servers are in error state
+            error_servers = [s for s in mcp_servers if s.get("enabled", False) and s.get("status") == "error"]
+            if error_servers:
+                health_status["status"] = "degraded"
+                health_status["warnings"] = [f"MCP server {s['name']} is in error state" for s in error_servers]
+        else:
+            health_status["mcp_servers"] = []
+            
+    except Exception as e:
+        health_status["status"] = "degraded" 
+        health_status["warnings"] = [f"MCP manager check failed: {str(e)}"]
+    
     # If any critical service is not initialized, mark as unhealthy
     if not all(health_status["services"].values()):
         health_status["status"] = "unhealthy"
@@ -343,13 +362,15 @@ async def pydantic_agent(request: AgentRequest, auth_result: tuple[Dict[str, Any
             # Process title result if it exists (IN BACKGROUND)
             nonlocal conversation_title
 
-            # Use the global HTTP Client Here
+            # Use the global HTTP Client Here and get MCP manager
+            manager = await get_mcp_manager()
             agent_deps = AgentDependencies(
                 http_client=http_client,
                 embedding_client=embeddings_client,
                 supabase=supabase,
                 settings=settings,
-                memories=memories_str
+                memories=memories_str,
+                mcp_manager=manager
             )
 
             # Process any file attachments for the agent
@@ -384,11 +405,17 @@ async def pydantic_agent(request: AgentRequest, auth_result: tuple[Dict[str, Any
                 os.environ["LANGFUSE_SESSION_ID"] = request.session_id
                 os.environ["LANGFUSE_USER_ID"] = request.user_id
 
+            # Get MCP toolsets from manager
+            toolsets = manager.get_active_toolsets() if manager else []
+            if toolsets:
+                print(f"[AGENT_API-stream_response] Using {len(toolsets)} MCP toolsets")
+            
             # Run Agent with user prompt and the chat history this is the same as streamlit where we can see the agent thinking and typing out its response in rewal time (Cannot do this in N8N)
             async with agent.iter(
                 user_message, 
                 deps=agent_deps, 
-                message_history=pydantic_messages
+                message_history=pydantic_messages,
+                toolsets=toolsets
             ) as run:
                 full_response = ""
                 async for node in run:
@@ -476,7 +503,187 @@ async def pydantic_agent(request: AgentRequest, auth_result: tuple[Dict[str, Any
             media_type="text/plain",
             status_code=500
         )
-    
+
+
+# ============ MCP MANAGEMENT ENDPOINTS ============
+
+class MCPServerResponse(BaseModel):
+    """Response model for MCP server operations."""
+    success: bool
+    message: str
+    server: Optional[Dict[str, Any]] = None
+
+class MCPServerListResponse(BaseModel):
+    """Response model for listing MCP servers."""
+    servers: List[Dict[str, Any]]
+
+# Global MCP manager instance
+mcp_manager = None
+
+async def get_mcp_manager():
+    """Get or create the global MCP manager instance."""
+    global mcp_manager
+    if not mcp_manager:
+        from mcp_manager import MCPManager
+        mcp_manager = MCPManager()
+        await mcp_manager.initialize()
+    return mcp_manager
+
+@app.get("/api/mcp/servers", response_model=MCPServerListResponse)
+async def list_mcp_servers():
+    """List all configured MCP servers and their status."""
+    try:
+        manager = await get_mcp_manager()
+        servers = manager.get_all_servers_status()
+        return MCPServerListResponse(servers=servers)
+    except Exception as e:
+        print(f"[MCP-API] Error listing servers: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to list MCP servers: {str(e)}")
+
+@app.post("/api/mcp/servers", response_model=MCPServerResponse)
+async def add_mcp_server(server_config: MCPServerConfigModel):
+    """Add a new MCP server configuration."""
+    try:
+        manager = await get_mcp_manager()
+        
+        # Convert Pydantic model to dataclass
+        config = MCPServerConfig(
+            name=server_config.name,
+            transport=server_config.transport,
+            enabled=server_config.enabled,
+            auto_start=server_config.auto_start,
+            url=server_config.url,
+            command=server_config.command,
+            args=server_config.args,
+            tool_prefix=server_config.tool_prefix,
+            retry_attempts=server_config.retry_attempts,
+            retry_delay=server_config.retry_delay,
+            health_check_interval=server_config.health_check_interval,
+            timeout=server_config.timeout,
+            process_command=server_config.process_command,
+            process_args=server_config.process_args,
+            process_env=server_config.process_env
+        )
+        
+        success = await manager.add_server(config)
+        if success:
+            server_status = manager.get_server_status(config.name)
+            return MCPServerResponse(
+                success=True,
+                message=f"Server '{config.name}' added successfully",
+                server=server_status
+            )
+        else:
+            return MCPServerResponse(
+                success=False,
+                message=f"Failed to add server '{config.name}'"
+            )
+    except Exception as e:
+        print(f"[MCP-API] Error adding server: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to add MCP server: {str(e)}")
+
+@app.delete("/api/mcp/servers/{server_name}", response_model=MCPServerResponse)
+async def remove_mcp_server(server_name: str):
+    """Remove an MCP server."""
+    try:
+        manager = await get_mcp_manager()
+        success = await manager.remove_server(server_name)
+        if success:
+            return MCPServerResponse(
+                success=True,
+                message=f"Server '{server_name}' removed successfully"
+            )
+        else:
+            return MCPServerResponse(
+                success=False,
+                message=f"Server '{server_name}' not found or failed to remove"
+            )
+    except Exception as e:
+        print(f"[MCP-API] Error removing server: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to remove MCP server: {str(e)}")
+
+@app.get("/api/mcp/servers/{server_name}/health")
+async def get_mcp_server_health(server_name: str):
+    """Get health status of a specific MCP server."""
+    try:
+        manager = await get_mcp_manager()
+        status = manager.get_server_status(server_name)
+        if status:
+            return status
+        else:
+            raise HTTPException(status_code=404, detail=f"Server '{server_name}' not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[MCP-API] Error getting server health: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get server health: {str(e)}")
+
+@app.post("/api/mcp/servers/{server_name}/restart", response_model=MCPServerResponse)
+async def restart_mcp_server(server_name: str):
+    """Restart an MCP server."""
+    try:
+        manager = await get_mcp_manager()
+        success = await manager.restart_server(server_name)
+        if success:
+            server_status = manager.get_server_status(server_name)
+            return MCPServerResponse(
+                success=True,
+                message=f"Server '{server_name}' restarted successfully",
+                server=server_status
+            )
+        else:
+            return MCPServerResponse(
+                success=False,
+                message=f"Failed to restart server '{server_name}'"
+            )
+    except Exception as e:
+        print(f"[MCP-API] Error restarting server: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to restart MCP server: {str(e)}")
+
+@app.post("/api/mcp/servers/{server_name}/start", response_model=MCPServerResponse)
+async def start_mcp_server(server_name: str):
+    """Start an MCP server."""
+    try:
+        manager = await get_mcp_manager()
+        success = await manager.start_server(server_name)
+        if success:
+            server_status = manager.get_server_status(server_name)
+            return MCPServerResponse(
+                success=True,
+                message=f"Server '{server_name}' started successfully",
+                server=server_status
+            )
+        else:
+            return MCPServerResponse(
+                success=False,
+                message=f"Failed to start server '{server_name}'"
+            )
+    except Exception as e:
+        print(f"[MCP-API] Error starting server: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to start MCP server: {str(e)}")
+
+@app.post("/api/mcp/servers/{server_name}/stop", response_model=MCPServerResponse)
+async def stop_mcp_server(server_name: str):
+    """Stop an MCP server."""
+    try:
+        manager = await get_mcp_manager()
+        success = await manager.stop_server(server_name)
+        if success:
+            server_status = manager.get_server_status(server_name)
+            return MCPServerResponse(
+                success=True,
+                message=f"Server '{server_name}' stopped successfully",
+                server=server_status
+            )
+        else:
+            return MCPServerResponse(
+                success=False,
+                message=f"Failed to stop server '{server_name}'"
+            )
+    except Exception as e:
+        print(f"[MCP-API] Error stopping server: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to stop MCP server: {str(e)}")
+
 
 # Run the app with uvicorn and host it on localhost:8001
 if __name__ == "__main__":

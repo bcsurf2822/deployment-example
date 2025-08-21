@@ -1,0 +1,45 @@
+# MCP-enabled Dockerfile without supervisord
+FROM python:3.11-slim
+
+# Install system dependencies including Deno and clean up in same layer
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        curl \
+        unzip && \
+    # Install Deno with explicit environment variable
+    curl -fsSL https://deno.land/install.sh | DENO_INSTALL=/usr/local sh && \
+    # Clean up
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN useradd -m -u 1000 appuser
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies as root (needed for some packages)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Change ownership to appuser
+RUN chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
+
+# Expose port for FastAPI service
+EXPOSE 8001
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8001/health || exit 1
+
+# Start FastAPI directly (MCP manager will handle subprocess)
+CMD ["uvicorn", "agent_api:app", "--host", "0.0.0.0", "--port", "8001"]

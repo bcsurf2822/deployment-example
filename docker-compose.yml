@@ -38,11 +38,11 @@ services:
       agent-api:
         condition: service_healthy
 
-  # Agent API service using the simple Dockerfile (without MCP complexity)
+  # Agent API service with MCP manager (new implementation)
   agent-api:
     build:
       context: ./agent_api
-      dockerfile: Dockerfile.simple
+      dockerfile: Dockerfile.mcp
     ports:
       - "8001:8001" # FastAPI service
     environment:
@@ -68,7 +68,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 30s
+      start_period: 40s  # Longer startup time for MCP initialization
     volumes:
       # Mount for persistent data if needed
       - agent_data:/app/data

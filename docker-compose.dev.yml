@@ -33,11 +33,11 @@ services:
     depends_on:
       - agent-api-dev
 
-  # Agent API service for development
+  # Agent API service for development with MCP manager
   agent-api-dev:
     build:
       context: ./agent_api
-      dockerfile: Dockerfile.simple
+      dockerfile: Dockerfile.mcp
     ports:
       - "8001:8001"
     environment:
@@ -65,6 +65,12 @@ services:
       - agent_venv:/app/venv
     restart: unless-stopped
     command: ["uvicorn", "agent_api:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s  # Longer startup time for MCP initialization
 
   # Google Drive RAG Pipeline service
   rag-google-drive-dev:

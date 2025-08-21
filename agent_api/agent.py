@@ -33,45 +33,33 @@ setup_openai_env()
 
 
 # ============MCP SERVER==========
-# Run this command to start the server:
-# deno run -A jsr:@pydantic/mcp-run-python sse --port 3001
+# MCP servers are now managed dynamically through MCPManager
+# The manager handles:
+# - Automatic startup of configured servers
+# - Health checking and auto-recovery
+# - Dynamic server registration/unregistration
+# - Multiple transport types (SSE, Stdio, HTTP)
 
-# Try to connect to MCP server, but make it optional
-try:
-    import os
-    import httpx
-    
-    # Check if MCP server is available
-    mcp_url = os.getenv('MCP_SERVER_URL', 'http://localhost:3001/sse')
-    
-    # Test if MCP server is reachable
-    try:
-        with httpx.Client(timeout=2.0) as client:
-            response = client.get(mcp_url.replace('/sse', ''))
-            if response.status_code == 200:
-                code_execution_server = MCPServerSSE(url=mcp_url)
-                toolsets = [code_execution_server]
-                print(f"[AGENT-INIT] MCP server connected at {mcp_url}")
-            else:
-                toolsets = []
-                print(f"[AGENT-INIT] MCP server not available at {mcp_url}, continuing without code execution")
-    except (httpx.RequestError, httpx.TimeoutException):
-        toolsets = []
-        print(f"[AGENT-INIT] MCP server not reachable at {mcp_url}, continuing without code execution")
-        
-except Exception as e:
-    toolsets = []
-    print(f"[AGENT-INIT] Failed to initialize MCP server: {e}, continuing without code execution")
-
-# Instrument the agent to get more detailed logs - Langfuse we want to use logfire under the hood from Pydantic AI
+# Create agent with dynamic toolsets from MCP manager
+# Toolsets will be populated from dependencies at runtime
 agent = Agent(
     model=f"openai:{settings.openai_model}",
     system_prompt=SYSTEM_PROMPT,
     deps_type=AgentDependencies,  # Specify the dependency type
-    # Can hook into more MCP servers here
-    toolsets=toolsets,
     instrument=True
 )
+
+# Function to update agent toolsets dynamically
+def update_agent_toolsets(mcp_manager):
+    """Update agent toolsets from MCP manager."""
+    if mcp_manager:
+        toolsets = mcp_manager.get_active_toolsets()
+        if toolsets:
+            # Note: Pydantic AI doesn't have a direct way to update toolsets after creation
+            # We'll need to handle this through dependency injection
+            print(f"[AGENT-update_toolsets] Active MCP toolsets: {len(toolsets)}")
+            return toolsets
+    return []
 
 # ============Agent Tools==========
 # Register tools with proper RunContext usage using decorator pattern
@@ -285,11 +273,18 @@ async def search(query: str) -> str:
     """
     deps = None
     try:
-        # Create dependencies
+        # Create dependencies with MCP manager
         deps = await create_dependencies()
         
-        # Run the agent with dependencies
-        result = await agent.run(query, deps=deps)
+        # Get MCP toolsets from the manager
+        toolsets = []
+        if deps.mcp_manager:
+            toolsets = deps.mcp_manager.get_active_toolsets()
+            if toolsets:
+                print(f"[AGENT-search] Using {len(toolsets)} MCP toolsets")
+        
+        # Run the agent with dependencies and dynamic toolsets
+        result = await agent.run(query, deps=deps, toolsets=toolsets)
         return result.output  # Use .output instead of deprecated .data
         
     except Exception as e:
@@ -312,8 +307,20 @@ async def interactive_search():
     
     # Create dependencies once for the session
     deps = None
+    toolsets = []
     try:
         deps = await create_dependencies()
+        
+        # Get MCP toolsets
+        if deps.mcp_manager:
+            toolsets = deps.mcp_manager.get_active_toolsets()
+            if toolsets:
+                print(f"Connected to {len(toolsets)} MCP server(s)")
+            
+            # Show MCP server status
+            servers_status = deps.mcp_manager.get_all_servers_status()
+            for status in servers_status:
+                print(f"MCP Server '{status['name']}': {status['status']}")
         
         # Show configuration info in debug mode
         if deps.settings.debug_mode:
@@ -341,7 +348,11 @@ async def interactive_search():
             
             print("\nSearching...")
             try:
-                result = await agent.run(query, deps=deps)
+                # Update toolsets in case they changed
+                if deps.mcp_manager:
+                    toolsets = deps.mcp_manager.get_active_toolsets()
+                
+                result = await agent.run(query, deps=deps, toolsets=toolsets)
                 print("\n" + result.output)
             except Exception as e:
                 print(f"Error: {str(e)}")
