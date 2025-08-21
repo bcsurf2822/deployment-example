@@ -7,8 +7,9 @@ from datetime import datetime, timedelta
 # Add parent directory to path for status_server import
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from drive_watcher import GoogleDriveWatcher
+# Import status_server first so it's available for drive_watcher
 from status_server import start_status_server, pipeline_status
+from drive_watcher import GoogleDriveWatcher
 
 def main():
     """
@@ -82,7 +83,7 @@ def main():
                 # Update status before check
                 next_check = datetime.now() + timedelta(seconds=args.interval)
                 pipeline_status.update(
-                    status="checking",
+                    status="running",
                     is_checking=True,
                     last_check_time=datetime.now().isoformat(),
                     next_check_time=next_check.isoformat()

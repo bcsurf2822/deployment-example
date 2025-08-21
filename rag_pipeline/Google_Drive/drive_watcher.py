@@ -19,6 +19,7 @@ from pathlib import Path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.text_processor import extract_text_from_file, chunk_text, create_embeddings
 from common.db_handler import process_file_for_rag, delete_document_by_file_id, create_sync_manager, perform_full_sync
+from status_server import pipeline_status, start_status_server
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly',
@@ -44,6 +45,13 @@ class GoogleDriveWatcher:
         # Initialize sync manager with a unique pipeline ID
         pipeline_id = os.getenv('RAG_PIPELINE_ID', f'google_drive_{folder_id or "all"}')
         self.sync_manager = create_sync_manager(pipeline_id, 'google_drive')
+        
+        # Initialize pipeline status
+        pipeline_status.update(
+            status="initializing",
+            pipeline_type="google_drive",
+            check_interval=60
+        )
         
         # Load configuration
         self.config = {}
@@ -383,30 +391,40 @@ class GoogleDriveWatcher:
         web_view_link = file.get('webViewLink', '')
         is_trashed = file.get('trashed', False)
         
+        # Notify status server that we're starting to process this file
+        pipeline_status.add_processing_file(file_name, file_id)
+        
         # Check if the file is in the trash
         if is_trashed:
             print(f"File '{file_name}' (ID: {file_id}) has been trashed. Removing from database...")
             delete_document_by_file_id(file_id)
             if file_id in self.known_files:
                 del self.known_files[file_id]
+            # Don't notify processing since we're just cleaning up
             return
         
         # Skip unsupported file types
         supported_mime_types = self.config.get('supported_mime_types', [])
         if not any(mime_type.startswith(t) for t in supported_mime_types):
             print(f"Skipping unsupported file type: {mime_type}")
+            # Remove from processing since we're skipping it
+            pipeline_status.complete_file(file_name, False)
             return
         
         # Download the file
         file_content = self.download_file(file_id, mime_type)
         if not file_content:
             print(f"Failed to download file '{file_name}' (ID: {file_id})")
+            # Mark as failed in status
+            pipeline_status.complete_file(file_name, False)
             return
         
         # Extract text from the file
         text = extract_text_from_file(file_content, mime_type, file_name, self.config)
         if not text:
             print(f"No text could be extracted from file '{file_name}' (ID: {file_id})")
+            # Mark as failed in status
+            pipeline_status.complete_file(file_name, False)
             return
         
         # Process the file for RAG
@@ -414,6 +432,9 @@ class GoogleDriveWatcher:
         
         # Update the known files dictionary
         self.known_files[file_id] = file.get('modifiedTime')
+        
+        # Notify status server of completion
+        pipeline_status.complete_file(file_name, success)
         
         if success:
             print(f"Successfully processed file '{file_name}' (ID: {file_id})")
@@ -480,6 +501,9 @@ class GoogleDriveWatcher:
             'orphaned_deleted': 0
         }
         
+        # Update status to indicate we're checking for changes
+        pipeline_status.update(is_checking=True, status="running")
+        
         try:
             # Authenticate if needed
             if not self.service:
@@ -539,6 +563,14 @@ class GoogleDriveWatcher:
         
         stats['duration'] = time.time() - start_time
         
+        # Update status with next check time and clear is_checking flag
+        next_check_time = datetime.now(timezone.utc) + timedelta(seconds=60)
+        pipeline_status.update(
+            is_checking=False,
+            last_check_time=datetime.now(timezone.utc).isoformat(),
+            next_check_time=next_check_time.isoformat()
+        )
+        
         # Log extended statistics if there were orphaned documents
         if stats['orphaned_deleted'] > 0:
             print(f"[DRIVE_WATCHER-SYNC] Removed {stats['orphaned_deleted']} orphaned documents from Supabase")
@@ -556,6 +588,13 @@ class GoogleDriveWatcher:
         """
         folder_msg = f" in folder ID: {self.folder_id}" if self.folder_id else ""
         print(f"Starting Google Drive watcher{folder_msg}. Checking for changes every {interval_seconds} seconds...")
+        
+        # Update pipeline status (status server should be started by main.py)
+        pipeline_status.update(
+            status="running",
+            pipeline_type="google_drive",
+            check_interval=interval_seconds
+        )
         
         try:
             # Authenticate if needed

@@ -4,10 +4,11 @@ import React, { useState, useEffect } from "react";
 
 export interface FileUploadStatus {
   file: File;
-  status: "pending" | "uploading" | "success" | "error";
+  status: "pending" | "uploading" | "success" | "error" | "processing";
   progress?: number;
   error?: string;
   googleDriveId?: string;
+  processingStep?: "vectorizing";
 }
 
 interface UploadQueueProps {
@@ -78,18 +79,16 @@ export default function UploadQueue({
       const result = await response.json();
       console.log(`[UPLOAD-QUEUE] Upload successful for ${file.name}:`, result);
 
-      // Mark as success
+      // Mark as success and immediately notify parent
       updateFileStatus(file, {
         status: "success",
         progress: 100,
         googleDriveId: result.file?.googleDriveId,
       });
 
-      // Notify parent and remove after 2 seconds
+      // Notify parent immediately (no delay)
       if (onFileComplete && result.file?.googleDriveId) {
-        setTimeout(() => {
-          onFileComplete(file, result.file.googleDriveId);
-        }, 2000);
+        onFileComplete(file, result.file.googleDriveId);
       }
     } catch (error) {
       clearInterval(progressInterval);
@@ -133,7 +132,7 @@ export default function UploadQueue({
           >
             <div className="flex items-center space-x-3 flex-1">
               <div className="flex-shrink-0">
-                {fileStatus.status === "uploading" && (
+                {(fileStatus.status === "uploading" || fileStatus.status === "processing") && (
                   <svg
                     className="animate-spin h-5 w-5 text-blue-500"
                     fill="none"
@@ -209,6 +208,13 @@ export default function UploadQueue({
                   {fileStatus.status === "success" && (
                     <span className="ml-2 text-green-500">Upload complete!</span>
                   )}
+                  {fileStatus.status === "processing" && (
+                    <span className="ml-2 text-blue-500">
+                      {fileStatus.processingStep === "vectorizing" 
+                        ? "Converting to vectors..." 
+                        : "Waiting for processing..."}
+                    </span>
+                  )}
                   {fileStatus.status === "error" && fileStatus.error && (
                     <span className="ml-2 text-red-500">{fileStatus.error}</span>
                   )}
@@ -216,7 +222,8 @@ export default function UploadQueue({
               </div>
             </div>
             {fileStatus.status !== "uploading" &&
-              fileStatus.status !== "success" && (
+              fileStatus.status !== "success" &&
+              fileStatus.status !== "processing" && (
                 <button
                   onClick={() => onFileRemove?.(fileStatus.file)}
                   className="ml-4 text-gray-400 hover:text-gray-500"
@@ -237,6 +244,14 @@ export default function UploadQueue({
                     className="bg-blue-500 h-2 rounded-full transition-all"
                     style={{ width: `${fileStatus.progress || 0}%` }}
                   />
+                </div>
+              </div>
+            )}
+            {fileStatus.status === "processing" && (
+              <div className="ml-4 w-24">
+                <div className="bg-gray-200 rounded-full h-2">
+                  <div className="bg-blue-500 h-2 rounded-full transition-all animate-pulse" 
+                       style={{ width: "100%" }} />
                 </div>
               </div>
             )}
