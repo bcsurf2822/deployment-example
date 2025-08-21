@@ -113,7 +113,7 @@ export default function ChatInput({
               <span className="text-gray-700 text-sm font-medium truncate max-w-32">{file.fileName}</span>
               <button
                 onClick={() => removeFile(index)}
-                className="text-gray-500 hover:text-gray-700 transition-colors p-0.5"
+                className="text-gray-500 hover:text-gray-700 transition-colors p-0.5 cursor-pointer hover:scale-110 duration-200"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -139,7 +139,7 @@ export default function ChatInput({
         <button
           onClick={handleFileSelect}
           disabled={isLoading || !user || !sessionId || attachedFiles.length >= MAX_FILES}
-          className="px-3 py-3 bg-white border border-gray-300 rounded-lg text-gray-600 hover:text-blue-600 hover:border-blue-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3 py-3 bg-white border border-gray-300 rounded-lg text-gray-600 hover:text-blue-600 hover:border-blue-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer hover:shadow-md hover:scale-105"
           title={attachedFiles.length >= MAX_FILES ? `Maximum ${MAX_FILES} files allowed` : "Attach files"}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,7 +150,7 @@ export default function ChatInput({
         <button
           onClick={handleSubmit}
           disabled={isLoading || (!input.trim() && attachedFiles.length === 0) || !user || !sessionId}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer hover:shadow-lg hover:scale-105 transform"
         >
           Send
         </button>
