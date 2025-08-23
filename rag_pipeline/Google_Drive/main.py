@@ -3,12 +3,15 @@ import argparse
 import sys
 from pathlib import Path
 from datetime import datetime, timedelta
+import atexit
+import signal
 
 # Add parent directory to path for status_server import
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import status_server first so it's available for drive_watcher
 from status_server import start_status_server, pipeline_status
+from supabase_status import init_status_tracker
 from drive_watcher import GoogleDriveWatcher
 
 def main():
@@ -40,9 +43,27 @@ def main():
     if not args.single_run and os.getenv('RUN_MODE') == 'single':
         args.single_run = True
 
+    # Initialize Supabase status tracker
+    status_tracker = None
+    
+    def cleanup():
+        """Clean up on exit."""
+        if status_tracker:
+            status_tracker.stop()
+    
+    # Register cleanup handlers
+    atexit.register(cleanup)
+    signal.signal(signal.SIGTERM, lambda sig, frame: cleanup())
+    signal.signal(signal.SIGINT, lambda sig, frame: cleanup())
+    
     try:
-        # Start status server for monitoring (unless in single-run mode)
+        # Initialize Supabase status tracker - use existing pipeline ID
+        pipeline_id = "google-drive-pipeline"
+        status_tracker = init_status_tracker(pipeline_id, "google_drive")
+        
+        # Start status tracking (unless in single-run mode)
         if not args.single_run:
+            # Start the old status server for backward compatibility (will phase out)
             start_status_server(port=8003)
             pipeline_status.update(
                 status="running",
@@ -50,6 +71,13 @@ def main():
                 check_interval=args.interval,
                 folder_id=args.folder_id
             )
+            
+            # Start Supabase status tracking
+            status_tracker.start({
+                "folder_id": args.folder_id,
+                "check_interval": args.interval,
+                "status": "running"
+            })
         
         # Start Google Drive Watcher
         watcher = GoogleDriveWatcher(

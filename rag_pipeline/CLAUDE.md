@@ -4,129 +4,236 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Essential Commands
 
-### Development Workflow
+### Running the RAG Pipeline
 
 ```bash
-# Start development with hot reload
-python deploy.py --mode dev --with-rag
+# Google Drive Pipeline
+cd Google_Drive
+python main.py --interval 60 --folder-id <folder_id>
+python main.py --single-run  # Run once and exit
 
-# View logs for debugging
-python deploy.py --mode dev --logs
+# Local Files Pipeline
+cd Local_Files  
+python main.py --directory /path/to/watch --interval 60
+python main.py --single-run  # Run once and exit
 
-# Stop all services
-python deploy.py --down --mode dev --with-rag
-
-# Quick redeploy after changes
-python deploy.py --mode dev --with-rag  # Rebuilds only changed services
-```
-
-### Testing Commands
-
-```bash
-# Run Agent API tests
-cd agent_api && pytest tests/ -v
-
-# Run specific test file
-cd agent_api && pytest tests/test_agent.py -v
-
-# Run RAG Pipeline tests
-cd rag_pipeline/Local_Files && pytest tests/ -v
-
-# Frontend linting
-cd frontend && npm run lint
-
-# Run all tests via Makefile
-make test
-```
-
-### Local Development Without Docker
-
-```bash
-# Agent API
-cd agent_api
-source venv/bin/activate  # Or python -m venv venv && source venv/bin/activate
+# With Docker (service-specific)
+RAG_SERVICE=google_drive python -m venv venv && source venv/bin/activate
+RAG_SERVICE=local_files python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-python agent_api.py  # Runs on port 8001
-
-# Frontend (separate terminal)
-cd frontend
-npm install
-npm run dev  # Runs on port 3000 with hot reload
-
-# RAG Pipeline (separate terminals)
-cd rag_pipeline/Google_Drive && python main.py
-cd rag_pipeline/Local_Files && python main.py
 ```
 
-### Database Setup
+### Testing
 
-Execute SQL files in `/sql/` directory in numerical order via Supabase SQL editor:
-1. `0-all-tables.sql` - Complete schema (use this OR individual files 1-9)
-2. Or execute files 1-9 individually in sequence
+```bash
+# Run Local Files tests with proper path setup
+cd Local_Files && python -m pytest tests/ -v
+python -m pytest tests/test_file_watcher.py::TestLocalFilesWatcher::test_process_new_file -v
+
+# Mock-based testing using conftest.py fixtures
+python -m pytest tests/ -v --tb=short
+```
+
+### Status Monitoring
+
+```bash
+# Check pipeline status (when running)
+curl http://localhost:8003/status  # Legacy status server
+curl http://localhost:8003/health
+
+# Check Supabase pipeline state
+python -c "from supabase_status import init_status_tracker; print('Status OK')"
+```
 
 ## Architecture Overview
 
-### Multi-Service System
+### Core Components
 
-**Core Services:**
-- **Agent API** (`agent_api/`): FastAPI service with Pydantic AI agent, web search (Brave/SearXNG), memory management (Mem0), MCP server support
-- **RAG Pipeline** (`rag_pipeline/`): Parallel document processors for Google Drive and local files with OpenAI embeddings
-- **Frontend** (`frontend/`): Next.js 15 with App Router, React 19, Supabase authentication, real-time chat interface
-- **Database**: PostgreSQL via Supabase with pgvector extension for embeddings
+**Main Services:**
+- `Google_Drive/main.py` - Google Drive file monitoring with OAuth2/Service Account auth
+- `Local_Files/main.py` - Local directory file monitoring with MD5-based file IDs
+- `status_server.py` - HTTP status endpoint (port 8003) with threading 
+- `supabase_status.py` - Database-based heartbeat and status tracking
 
-### Key Technical Patterns
+**Common Modules:**
+- `common/text_processor.py` - Text chunking, PDF extraction, OpenAI embeddings
+- `common/db_handler.py` - Supabase operations for documents/metadata/rows tables
+- `common/sync_manager.py` - Orphaned file cleanup and pipeline state persistence
 
-**Python Development (agent_api/, rag_pipeline/):**
-- Async-first design with asyncio throughout
-- Dependency injection via Pydantic dataclasses
-- Tool system with @agent.tool decorators for extensibility
-- Mock-based testing with pytest fixtures
-- Structured error handling with specific exceptions
+**Entry Points:**
+- `entrypoint.sh` - Docker service selection via `RAG_SERVICE` env var
+- `healthcheck.sh` - Docker health check script
 
-**TypeScript Development (frontend/):**
-- Async runtime APIs in Next.js 15 (await cookies(), headers(), params, searchParams)
-- React Server Components by default, minimize 'use client'
-- TypeScript strict mode with proper type safety
-- Event handler naming: handleClick, handleSubmit, etc.
-- Boolean naming: isLoading, hasError, etc.
+### Processing Flow
 
-### Session ID Format
+1. **File Discovery**: 
+   - Google Drive: Uses Google Drive API with OAuth2 or service account
+   - Local Files: Recursive directory scanning with `os.walk()`
 
-Sessions use format: `{user_id}~{timestamp}` for computed columns in database
+2. **Change Detection**:
+   - Google Drive: Compares `modifiedTime` from API against stored state
+   - Local Files: Compares filesystem `mtime` against known files dictionary
+
+3. **Content Extraction**: 
+   - PDF: `pypdf.PdfReader` for text extraction
+   - Text files: Direct UTF-8 reading with fallback encoding
+   - CSV/Excel: Tabular processing for both chunks and row-by-row storage
+
+4. **Text Chunking**: 
+   - Configurable chunk size (default 1000 chars Local Files, 400 Google Drive)
+   - No overlap by default (configurable)
+   - Text cleaning (remove `\r` characters)
+
+5. **Embedding Generation**: 
+   - OpenAI `text-embedding-3-small` model
+   - Batched processing for efficiency
+   - Error handling with retry logic
+
+6. **Database Storage**:
+   - `documents` table: Text chunks + embeddings (pgvector)
+   - `document_metadata` table: File info and CSV schemas  
+   - `document_rows` table: Row-by-row tabular data
+   - `rag_pipeline_state` table: Pipeline state and known files
+
+7. **Orphaned Cleanup**: 
+   - `PipelineSyncManager` tracks database vs source state
+   - Automatic deletion of documents for removed/moved files
+   - Statistics tracking for cleanup operations
+
+### Database Schema
+
+**Key Tables:**
+- `documents` - Chunks with embeddings, metadata JSONB field
+- `document_metadata` - File metadata, table schemas for CSVs  
+- `document_rows` - Individual rows from spreadsheets/CSVs
+- `rag_pipeline_state` - Pipeline persistence and known files tracking
+
+**Critical Fields:**
+- `documents.metadata->>'file_id'` - Links chunks to source files
+- `documents.metadata->>'source'` - Pipeline type ('google_drive' or 'local_files')
+- `rag_pipeline_state.known_files` - JSONB dict of file_id -> metadata
+
+### Configuration Files
+
+**Google_Drive/config.json:**
+```json
+{
+  "supported_mime_types": [
+    "application/pdf", "text/plain", "text/csv",
+    "application/vnd.google-apps.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  ],
+  "tabular_mime_types": ["text/csv", "application/vnd.ms-excel"],
+  "text_processing": {"chunk_size": 400, "default_chunk_overlap": 0},
+  "watch_folder_id": "1ABC...xyz",
+  "last_check_time": "2025-08-23T20:05:08Z"
+}
+```
+
+**Local_Files/config.json:**
+```json
+{
+  "supported_mime_types": [...],
+  "text_processing": {"chunk_size": 1000},
+  "watch_directory": "/app/Local_Files/data",
+  "last_check_time": "2025-08-23T20:05:08Z"
+}
+```
 
 ### Environment Variables
 
-Critical variables for RAG Pipeline development:
-- `SUPABASE_SERVICE_ROLE_KEY`: Required for RAG operations (not anon key)
-- `GOOGLE_DRIVE_CREDENTIALS_JSON`: Service account JSON for Google Drive
-- `RAG_WATCH_FOLDER_ID`: Google Drive folder to monitor
-- `RAG_WATCH_DIRECTORY`: Local directory to monitor (defaults to /app/Local_Files/data)
-- `DEBUG_MODE`: Enable verbose logging
+**Required:**
+```bash
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=xxx  # Must be service role, not anon key
+OPENAI_API_KEY=sk-xxx
+```
 
-### Docker Compose Files
+**Google Drive:**
+```bash
+GOOGLE_DRIVE_CREDENTIALS_JSON={"type": "service_account", ...}  # Service account
+RAG_WATCH_FOLDER_ID=1ABC...xyz
+```
 
-- **docker-compose.dev.yml**: Hot reload, source volumes, debug mode, separate RAG containers
-- **docker-compose.yml**: Production builds, health checks, optimized images
-- **docker-compose.caddy.yml**: Cloud deployment with automatic SSL via Caddy
+**Local Files:**
+```bash
+RAG_WATCH_DIRECTORY=/app/Local_Files/data
+```
 
-### Common Troubleshooting
+**Optional:**
+```bash
+RAG_SERVICE=google_drive|local_files  # Docker service selection
+RAG_PIPELINE_ID=custom-pipeline-id    # Unique pipeline identifier
+RUN_MODE=single                       # Enable single-run mode
+DEBUG_MODE=true
+```
 
-1. **RAG Permission Errors**: Ensure `SUPABASE_SERVICE_ROLE_KEY` is set (not anon key)
-2. **Frontend API Connection**: Verify `PYDANTIC_AGENT_API_URL` matches backend (default: http://agent-api-dev:8001)
-3. **Google Drive Auth**: Check service account credentials JSON format
-4. **Port Conflicts**: Check for services using ports 3000, 8001, 8002
-5. **Docker Build Failures**: Clear cache with `docker system prune -a`
+### Key Implementation Details
 
-### File Processing (RAG Pipeline)
+**File ID Generation:**
+- Google Drive: Uses native Google Drive file ID
+- Local Files: MD5 hash of absolute file path (`hashlib.md5(abs_path.encode())`)
 
-**Google Drive config.json (`rag_pipeline/Google_Drive/config.json`):**
-- Supported MIME types including Google Docs exports
-- Tabular data processing for CSV/Excel files
-- Text chunking configuration (default_chunk_size: 400)
-- watch_folder_id and last_check_time for incremental processing
+**Authentication:**
+- Google Drive: Service account (env var) or OAuth2 flow (credentials.json)
+- Local Files: File system permissions only
 
-**Supported Formats:**
-- Documents: PDF, TXT, HTML, Markdown
-- Spreadsheets: CSV, Excel, Google Sheets
-- Images: PNG, JPG, SVG
-- Google Docs: Exported as text/plain or CSV
+**Threading and Concurrency:**
+- Status server runs in background daemon thread
+- Heartbeat updates via separate thread in `supabase_status.py`
+- Main processing is single-threaded with proper exception handling
+
+**Error Handling:**
+- `Resource deadlock avoided` - macOS Docker + cloud sync folders
+- Google API quota/auth errors with retry logic
+- Supabase connection failures with graceful degradation
+- File access permissions with detailed logging
+
+**Testing Patterns:**
+- Mock-based testing with `conftest.py` fixtures
+- Temporary directory creation/cleanup
+- Mocked Supabase and OpenAI clients
+- Environment variable patching
+
+### Deployment Modes
+
+**Single-Run Mode:**
+- Processes all changes once and exits
+- Returns statistics: `files_processed`, `files_deleted`, `errors`, `duration`
+- Exit codes: 0 (success), 1 (errors occurred)
+
+**Continuous Mode:**
+- Infinite loop with configurable interval (default 60s)
+- Graceful shutdown with SIGTERM/SIGINT handling
+- Persistent state via database and config files
+
+**Docker Deployment:**
+```bash
+# Build image
+docker build -t rag-pipeline .
+
+# Google Drive service
+docker run -e RAG_SERVICE=google_drive \
+  -e SUPABASE_URL=xxx \
+  -e SUPABASE_SERVICE_ROLE_KEY=xxx \
+  -e GOOGLE_DRIVE_CREDENTIALS_JSON='{}' \
+  -e RAG_WATCH_FOLDER_ID=xxx \
+  rag-pipeline
+
+# Local Files service  
+docker run -e RAG_SERVICE=local_files \
+  -v /host/path:/app/Local_Files/data \
+  -e SUPABASE_URL=xxx \
+  -e SUPABASE_SERVICE_ROLE_KEY=xxx \
+  rag-pipeline
+```
+
+### Common Issues
+
+1. **Permission Denied**: Ensure `SUPABASE_SERVICE_ROLE_KEY` not `SUPABASE_ANON_KEY`
+2. **Google Auth Failed**: Check service account JSON format and Drive API permissions
+3. **No Files Processing**: Verify `last_check_time` in config.json isn't too recent  
+4. **Embedding Errors**: Confirm `OPENAI_API_KEY` is valid and has quota
+5. **Docker Volume Issues**: Check mounted directory permissions (user 1001:1001)
+6. **Cloud Sync Deadlock**: Move files out of iCloud/Dropbox/OneDrive folders
+7. **State Persistence**: Verify `rag_pipeline_state` table exists in Supabase

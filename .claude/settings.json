@@ -1,0 +1,49 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); echo \"$input\" | jq -c \". + {event_type: \\\"UserPromptSubmit\\\"}\" | .claude/hooks/orchestrator-activity-logger.sh'",
+            "description": "Log task-orchestrator activation and agent utilization"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command", 
+            "command": "bash -c 'input=$(cat); echo \"$input\" | jq -c \". + {event_type: \\\"PreToolUse\\\"}\" | .claude/hooks/orchestrator-activity-logger.sh'",
+            "description": "Log task delegation to subagents"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); echo \"$input\" | jq -c \". + {event_type: \\\"SubagentStop\\\"}\" | .claude/hooks/orchestrator-activity-logger.sh'",
+            "description": "Log subagent completion and task orchestrator workflow end"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); agent_name=$(echo \"$input\" | jq -r \".agent_name // empty\"); if [[ \"$agent_name\" == \"task-orchestrator\" ]]; then timestamp=$(date \"+%Y-%m-%d %H:%M:%S\"); mkdir -p .claude/logs; echo \"[$timestamp] task-orchestrator Orchestration session complete\" >> .claude/logs/orchestrator-activity.log; fi; echo \"{}\"'",
+            "description": "Log when task-orchestrator finishes coordination"
+          }
+        ]
+      }
+    ]
+  }
+}

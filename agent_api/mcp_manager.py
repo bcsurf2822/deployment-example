@@ -1,4 +1,4 @@
-"""
+f"""
 MCP Server Manager for dynamic server lifecycle management.
 
 This module provides a centralized manager for MCP servers with support for:
@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 import logging
 
 from pydantic_ai.mcp import MCPServerSSE, MCPServerStdio, MCPServerStreamableHTTP
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, model_validator
 
 logger = logging.getLogger(__name__)
 
@@ -95,19 +95,16 @@ class MCPServerConfigModel(BaseModel):
     process_args: Optional[List[str]] = Field(None, description="Arguments for server process")
     process_env: Optional[Dict[str, str]] = Field(None, description="Environment variables")
     
-    @validator('url')
-    def validate_url(cls, v, values):
-        transport = values.get('transport')
-        if transport in [TransportType.SSE, TransportType.HTTP] and not v:
-            raise ValueError(f"URL required for {transport} transport")
-        return v
-    
-    @validator('command')
-    def validate_command(cls, v, values):
-        transport = values.get('transport')
-        if transport == TransportType.STDIO and not v:
+    @model_validator(mode='after')
+    def validate_transport_requirements(self):
+        """Validate that required fields are present based on transport type."""
+        if self.transport in [TransportType.SSE, TransportType.HTTP] and not self.url:
+            raise ValueError(f"URL required for {self.transport} transport")
+        
+        if self.transport == TransportType.STDIO and not self.command:
             raise ValueError("Command required for stdio transport")
-        return v
+        
+        return self
 
 
 class MCPManager:

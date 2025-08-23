@@ -32,17 +32,30 @@ interface PipelineStatus {
   last_activity: string;
 }
 
+// Check if polling should be disabled (for development/debugging)
+const DISABLE_RAG_POLLING = process.env.NEXT_PUBLIC_DISABLE_RAG_POLLING === 'true';
+const MIN_POLL_INTERVAL = parseInt(process.env.NEXT_PUBLIC_RAG_POLL_INTERVAL || '10000');
+
 export default function RAGPipelineStatus() {
   const [status, setStatus] = useState<PipelineStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState(false);
   const [countdown, setCountdown] = useState<number>(0);
+  const [lastFetch, setLastFetch] = useState<Date | null>(null);
 
   useEffect(() => {
-    // Fetch status every 2 seconds
+    // Skip if polling is disabled
+    if (DISABLE_RAG_POLLING) {
+      setError("RAG status polling is disabled");
+      return;
+    }
+
+    // Fetch status with smart polling intervals
     const fetchStatus = async () => {
       try {
-        // Fetch from our API route which proxies to the RAG pipeline
+        setLastFetch(new Date());
+        
+        // Fetch from our API route which now reads from Supabase
         const response = await fetch("/api/rag-status");
         
         if (response.ok) {
@@ -77,11 +90,22 @@ export default function RAGPipelineStatus() {
     // Initial fetch
     fetchStatus();
 
-    // Set up polling
-    const interval = setInterval(fetchStatus, 2000);
+    // Set up smart polling intervals:
+    // - Default: MIN_POLL_INTERVAL (10 seconds by default)
+    // - Every 30 seconds when pipeline is offline
+    // - Every 5 seconds when files are processing (more responsive)
+    let pollInterval = MIN_POLL_INTERVAL;
+    
+    if (!isOnline) {
+      pollInterval = Math.max(30000, MIN_POLL_INTERVAL); // At least 30 seconds when offline
+    } else if (status?.files_processing && status.files_processing.length > 0) {
+      pollInterval = Math.min(5000, MIN_POLL_INTERVAL); // 5 seconds when processing files (unless MIN is higher)
+    }
+
+    const interval = setInterval(fetchStatus, pollInterval);
 
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Empty dependency array - only run once on mount
 
   // Countdown timer
   useEffect(() => {
@@ -126,11 +150,18 @@ export default function RAGPipelineStatus() {
             </span>
           </div>
         </div>
-        {status && (
-          <div className="text-sm text-gray-500">
-            Type: {status.pipeline_type || "Unknown"}
-          </div>
-        )}
+        <div className="flex flex-col items-end">
+          {status && (
+            <div className="text-sm text-gray-500">
+              Type: {status.pipeline_type || "Unknown"}
+            </div>
+          )}
+          {lastFetch && (
+            <div className="text-xs text-gray-400">
+              Updated: {formatTime(lastFetch.toISOString())}
+            </div>
+          )}
+        </div>
       </div>
 
       {error && !isOnline && (

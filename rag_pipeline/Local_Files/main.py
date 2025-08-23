@@ -7,11 +7,14 @@ import os
 import sys
 import argparse
 from pathlib import Path
+import atexit
+import signal
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from file_watcher import LocalFilesWatcher
+from supabase_status import init_status_tracker
 
 def main():
     """Main function to run the Local Files watcher."""
@@ -42,7 +45,35 @@ def main():
     
     args = parser.parse_args()
     
+    # Initialize Supabase status tracker
+    status_tracker = None
+    
+    def cleanup():
+        """Clean up on exit."""
+        if status_tracker:
+            status_tracker.stop()
+    
+    # Register cleanup handlers
+    atexit.register(cleanup)
+    signal.signal(signal.SIGTERM, lambda sig, frame: cleanup())
+    signal.signal(signal.SIGINT, lambda sig, frame: cleanup())
+    
     try:
+        # Initialize Supabase status tracker - use existing pipeline ID
+        pipeline_id = "local-files-pipeline"
+        status_tracker = init_status_tracker(pipeline_id, "local_files")
+        
+        # Get watch directory
+        watch_dir = args.directory or os.getenv('RAG_WATCH_DIRECTORY', '/app/Local_Files/data')
+        
+        # Start status tracking (unless in single-run mode)
+        if not args.single_run:
+            status_tracker.start({
+                "watch_directory": watch_dir,
+                "check_interval": args.interval,
+                "status": "running"
+            })
+        
         # Create watcher instance
         watcher = LocalFilesWatcher(
             watch_directory=args.directory,

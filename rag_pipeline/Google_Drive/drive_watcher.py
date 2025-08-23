@@ -20,6 +20,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.text_processor import extract_text_from_file, chunk_text, create_embeddings
 from common.db_handler import process_file_for_rag, delete_document_by_file_id, create_sync_manager, perform_full_sync
 from status_server import pipeline_status, start_status_server
+from supabase_status import status_tracker
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly',
@@ -394,6 +395,15 @@ class GoogleDriveWatcher:
         # Notify status server that we're starting to process this file
         pipeline_status.add_processing_file(file_name, file_id)
         
+        # Also update Supabase status
+        if status_tracker:
+            file_info = {
+                "name": file_name,
+                "id": file_id,
+                "started_at": datetime.now().isoformat()
+            }
+            status_tracker.update_processing_status(files_processing=[file_info])
+        
         # Check if the file is in the trash
         if is_trashed:
             print(f"File '{file_name}' (ID: {file_id}) has been trashed. Removing from database...")
@@ -425,6 +435,18 @@ class GoogleDriveWatcher:
             print(f"No text could be extracted from file '{file_name}' (ID: {file_id})")
             # Mark as failed in status
             pipeline_status.complete_file(file_name, False)
+            
+            # Also update Supabase status
+            if status_tracker:
+                file_info = {
+                    "name": file_name,
+                    "id": file_id,
+                    "completed_at": datetime.now().isoformat()
+                }
+                status_tracker.update_processing_status(
+                    files_processing=[],  # Clear processing
+                    files_failed=[file_info]  # Add to failed
+                )
             return
         
         # Process the file for RAG
@@ -435,6 +457,25 @@ class GoogleDriveWatcher:
         
         # Notify status server of completion
         pipeline_status.complete_file(file_name, success)
+        
+        # Also update Supabase status - move file from processing to completed/failed
+        if status_tracker:
+            file_info = {
+                "name": file_name,
+                "id": file_id,
+                "completed_at": datetime.now().isoformat()
+            }
+            
+            if success:
+                status_tracker.update_processing_status(
+                    files_processing=[],  # Clear processing
+                    files_completed=[file_info]  # Add to completed
+                )
+            else:
+                status_tracker.update_processing_status(
+                    files_processing=[],  # Clear processing
+                    files_failed=[file_info]  # Add to failed
+                )
         
         if success:
             print(f"Successfully processed file '{file_name}' (ID: {file_id})")

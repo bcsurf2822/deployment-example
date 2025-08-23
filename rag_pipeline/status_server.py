@@ -95,13 +95,24 @@ class StatusHandler(BaseHTTPRequestHandler):
             self.end_headers()
             
             status = pipeline_status.get()
-            # Calculate time until next check
             if status["next_check_time"]:
-                next_check = datetime.fromisoformat(status["next_check_time"])
-                now = datetime.now()
-                if next_check > now:
-                    status["seconds_until_next_check"] = int((next_check - now).total_seconds())
-                else:
+
+                try:
+                    next_check = datetime.fromisoformat(status["next_check_time"])
+                    now = datetime.now()
+                    
+                    # Make both timezone-naive for comparison
+                    if next_check.tzinfo is not None:
+                        next_check = next_check.replace(tzinfo=None)
+                    if now.tzinfo is not None:
+                        now = now.replace(tzinfo=None)
+                    
+                    if next_check > now:
+                        status["seconds_until_next_check"] = int((next_check - now).total_seconds())
+                    else:
+                        status["seconds_until_next_check"] = 0
+                except Exception as e:
+                    print(f"Error calculating next check time: {e}")
                     status["seconds_until_next_check"] = 0
             
             self.wfile.write(json.dumps(status, indent=2).encode())

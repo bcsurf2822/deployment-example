@@ -1,0 +1,207 @@
+{
+  "agents": {
+    "frontend-specialist": {
+      "name": "frontend-specialist",
+      "specialization": "Next.js 15 and React 19 frontend development",
+      "primary_domains": [
+        "UI/UX development",
+        "React components",
+        "API route implementation", 
+        "Next.js optimization",
+        "TypeScript development",
+        "Tailwind CSS styling",
+        "Supabase integration"
+      ],
+      "key_responsibilities": [
+        "Creating new pages with App Router structure",
+        "API route implementation with streaming and auth",
+        "Component development following project patterns",
+        "State management (server, client, URL state)",
+        "Authentication flow implementation",
+        "Real-time features with SSE",
+        "File upload interfaces",
+        "Responsive design implementation"
+      ],
+      "triggers": [
+        "frontend development",
+        "UI implementation",
+        "React components",
+        "Next.js features",
+        "API routes",
+        "authentication flow",
+        "responsive design",
+        "component architecture"
+      ],
+      "tools": ["Read", "Edit", "MultiEdit", "Write", "Bash", "Grep", "Glob", "LS", "WebFetch", "mcp__MCP_DOCKER__brave_web_search"],
+      "project_focus": "frontend/ directory",
+      "documentation_reference": "frontend/CLAUDE.md",
+      "external_resources": ["https://nextjs.org/docs"],
+      "coordinates_with": ["backend-engineer", "task-orchestrator"]
+    },
+    "backend-engineer": {
+      "name": "backend-engineer", 
+      "specialization": "Pydantic AI and FastAPI backend development",
+      "primary_domains": [
+        "Pydantic AI framework",
+        "FastAPI service architecture",
+        "Agent tool development",
+        "MCP server integration",
+        "Database operations",
+        "Authentication systems",
+        "API development"
+      ],
+      "key_responsibilities": [
+        "Agent tool development with proper Pydantic AI patterns",
+        "API endpoint implementation with streaming and authentication",
+        "Database operations with Supabase and RLS",
+        "MCP server integration and management",
+        "Memory management with Mem0",
+        "Performance optimization and async patterns",
+        "Security implementation and JWT validation",
+        "Error handling and graceful degradation"
+      ],
+      "triggers": [
+        "backend development",
+        "Pydantic AI",
+        "FastAPI",
+        "agent tools",
+        "API endpoints",
+        "database operations",
+        "MCP integration",
+        "authentication",
+        "backend services"
+      ],
+      "tools": ["Read", "Edit", "MultiEdit", "Write", "Bash", "Grep", "Glob", "LS", "WebFetch", "Task"],
+      "project_focus": "agent_api/ directory",
+      "documentation_reference": "agent_api/CLAUDE.md",
+      "external_resources": ["https://ai.pydantic.dev/", "https://github.com/pydantic/pydantic-ai"],
+      "coordinates_with": ["frontend-specialist", "rag-pipeline-engineer", "task-orchestrator"]
+    },
+    "rag-pipeline-engineer": {
+      "name": "rag-pipeline-engineer",
+      "specialization": "RAG pipeline and document processing systems",
+      "primary_domains": [
+        "Document processing",
+        "Vector embeddings",
+        "File monitoring systems",
+        "Google Drive integration",
+        "Local file processing",
+        "Database operations",
+        "Pipeline orchestration"
+      ],
+      "key_responsibilities": [
+        "Pipeline development for Google Drive and Local Files",
+        "Integration work for new file types and MIME types",
+        "Database operations for embedding storage and retrieval",
+        "Performance optimization with batching and parallel processing",
+        "Monitoring setup with status endpoints and health checks",
+        "Error handling with retry logic and graceful degradation",
+        "Configuration management for environment and deployment",
+        "Deployment support with Docker and service orchestration"
+      ],
+      "triggers": [
+        "document processing",
+        "RAG pipeline",
+        "embeddings",
+        "file monitoring",
+        "Google Drive",
+        "local files",
+        "vector storage",
+        "document ingestion",
+        "text chunking",
+        "pipeline optimization"
+      ],
+      "tools": ["Read", "Edit", "MultiEdit", "Write", "Bash", "Grep", "Glob", "LS", "Task"],
+      "project_focus": "rag_pipeline/ directory",
+      "documentation_reference": "rag_pipeline/CLAUDE.md",
+      "coordinates_with": ["backend-engineer", "frontend-specialist", "task-orchestrator"]
+    },
+    "task-orchestrator": {
+      "name": "task-orchestrator",
+      "specialization": "Multi-agent task coordination and delegation",
+      "primary_domains": [
+        "Task decomposition",
+        "Agent coordination",
+        "Workflow orchestration",
+        "Result synthesis",
+        "Quality assurance",
+        "Cross-agent communication"
+      ],
+      "key_responsibilities": [
+        "Analyzing complex requests and breaking them into subtasks",
+        "Identifying appropriate subagents for each task component",
+        "Orchestrating parallel and sequential task execution",
+        "Synthesizing results from multiple agents into cohesive outputs",
+        "Maintaining agent registry and capability awareness",
+        "Monitoring task completion and quality assurance"
+      ],
+      "triggers": [
+        "use subagents",
+        "complex multi-step tasks",
+        "cross-component operations",
+        "learn how to delegate",
+        "coordinate multiple agents"
+      ],
+      "tools": ["Task", "Read", "Glob", "LS"],
+      "project_focus": "Cross-system coordination",
+      "documentation_reference": ".claude/agents/agent-registry.json",
+      "coordinates_with": ["frontend-specialist", "backend-engineer", "rag-pipeline-engineer"],
+      "special_capabilities": [
+        "Agent registry management",
+        "Dynamic agent learning",
+        "Task completion aggregation",
+        "Cross-agent result synthesis"
+      ]
+    }
+  },
+  "coordination_patterns": {
+    "full_stack_development": {
+      "agents": ["frontend-specialist", "backend-engineer", "task-orchestrator"],
+      "sequence": "parallel",
+      "description": "Complete feature development requiring both UI and API changes"
+    },
+    "document_processing_enhancement": {
+      "agents": ["rag-pipeline-engineer", "backend-engineer", "task-orchestrator"],
+      "sequence": "sequential",
+      "description": "RAG pipeline improvements that affect backend retrieval systems"
+    },
+    "end_to_end_feature": {
+      "agents": ["frontend-specialist", "backend-engineer", "rag-pipeline-engineer", "task-orchestrator"],
+      "sequence": "mixed",
+      "description": "Complete feature involving UI, backend logic, and document processing"
+    },
+    "system_optimization": {
+      "agents": ["backend-engineer", "rag-pipeline-engineer", "task-orchestrator"],
+      "sequence": "parallel",
+      "description": "Performance optimization across backend and pipeline systems"
+    },
+    "integration_testing": {
+      "agents": ["frontend-specialist", "backend-engineer", "rag-pipeline-engineer", "task-orchestrator"],
+      "sequence": "sequential",
+      "description": "Cross-system testing and validation workflows"
+    }
+  },
+  "completion_tracking": {
+    "required_confirmations": [
+      "task_completed",
+      "output_validated", 
+      "quality_assured",
+      "coordination_complete"
+    ],
+    "reporting_format": {
+      "agent_name": "string",
+      "task_summary": "string", 
+      "status": "completed|failed|needs_followup",
+      "outputs": "array",
+      "next_steps": "string|null",
+      "coordination_needed": "boolean"
+    }
+  },
+  "registry_metadata": {
+    "version": "1.0",
+    "last_updated": "2025-01-27",
+    "total_agents": 4,
+    "auto_discovery": true,
+    "description": "Dynamic registry of available subagents for task-orchestrator coordination"
+  }
+}
