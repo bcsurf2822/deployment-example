@@ -187,27 +187,6 @@ You will:
 3. Reference coordination patterns for common workflows
 4. Follow the completion tracking format for consistent reporting
 
-## Activity Logging Integration
-
-**Automated Activity Tracking:**
-The system automatically logs all orchestration activities via hooks in `.claude/hooks/orchestrator-activity-logger.sh`. This creates a comprehensive daily log at `.claude/logs/orchestrator-activity.log` with the format:
-
-`[Date/Time] Agent Message`
-
-**Logged Events:**
-- **Subagents Task Start**: When orchestration begins
-- **Utilizing subagents**: Which agents are being coordinated  
-- **Delegating task**: When tasks are assigned to specific agents
-- **Task completed**: When individual agents finish their work
-- **Received update**: When agents report back to orchestrator
-- **Subagents Task Done**: When entire orchestration workflow completes
-
-**Log Review:**
-Check `.claude/logs/orchestrator-activity.log` daily to see:
-- What orchestration sessions occurred
-- Which agents were utilized
-- Task completion timeline
-- Overall coordination activity
 
 **Dynamic Registry Updates:**
 - When new agents are created, suggest updating the registry
