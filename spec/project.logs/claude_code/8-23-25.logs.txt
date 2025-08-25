@@ -1,0 +1,70 @@
+<--- Last few GCs --->
+
+[43641:0xbf8400000]   114477 ms: Mark-Compact 3979.6 (4133.8) -> 3968.9 (4139.1) MB, pooled: 0 MB, 836.38 / 0.00 ms  (average mu = 0.306, current mu = 0.021) allocation failure; scavenge might not succeed
+[43641:0xbf8400000]   115648 ms: Mark-Compact 3985.3 (4139.6) -> 3974.7 (4144.8) MB, pooled: 0 MB, 1153.38 / 0.00 ms  (average mu = 0.158, current mu = 0.016) allocation failure; scavenge might not succeed
+
+
+<--- JS stacktrace --->
+
+FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0x100ce9cac node::OOMErrorHandler(char const*, v8::OOMDetails const&) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+ 2: 0x100ebf998 v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+ 3: 0x1010cf0c0 v8::internal::Heap::stack() [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+ 4: 0x1010cd460 v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+ 5: 0x1010c1a48 v8::internal::HeapAllocator::AllocateRawWithLightRetrySlowPath(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+ 6: 0x1010c2280 v8::internal::HeapAllocator::AllocateRawWithRetryOrFailSlowPath(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+ 7: 0x1010a55a0 v8::internal::Factory::NewFillerObject(int, v8::internal::AllocationAlignment, v8::internal::AllocationType, v8::internal::AllocationOrigin) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+ 8: 0x1014c1050 v8::internal::Runtime_AllocateInYoungGeneration(int, unsigned long*, v8::internal::Isolate*) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+ 9: 0x101981af4 Builtins_CEntry_Return1_ArgvOnStack_NoBuiltinExit [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+10: 0x1019261d4 Builtins_CloneFastJSArrayFillingHoles [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+11: 0x1019495e4 Builtins_IterableToListWithSymbolLookup [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+12: 0x10c6303e0 
+13: 0x10c628ed0 
+14: 0x10c0cd8ec 
+15: 0x10c648648 
+16: 0x10c7f1ad0 
+17: 0x10c63a35c 
+18: 0x10c71564c 
+19: 0x10c7a44f0 
+20: 0x10c69cbe8 
+21: 0x10c6ea824 
+22: 0x10c738be4 
+23: 0x10c68d4d4 
+24: 0x1018ecef0 Builtins_InterpreterEntryTrampoline [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+25: 0x101929290 Builtins_AsyncFunctionAwaitResolveClosure [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+26: 0x1019f44d8 Builtins_PromiseFulfillReactionJob [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+27: 0x101919594 Builtins_RunMicrotasks [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+28: 0x1018eaaf4 Builtins_JSRunMicrotasksEntry [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+29: 0x101026f7c v8::internal::(anonymous namespace)::Invoke(v8::internal::Isolate*, v8::internal::(anonymous namespace)::InvokeParams const&) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+30: 0x101027824 v8::internal::(anonymous namespace)::InvokeWithTryCatch(v8::internal::Isolate*, v8::internal::(anonymous namespace)::InvokeParams const&) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+31: 0x10102795c v8::internal::Execution::TryRunMicrotasks(v8::internal::Isolate*, v8::internal::MicrotaskQueue*) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+32: 0x101054b80 v8::internal::MicrotaskQueue::RunMicrotasks(v8::internal::Isolate*) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+33: 0x101055304 v8::internal::MicrotaskQueue::PerformCheckpoint(v8::Isolate*) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+34: 0x1018ef0f4 Builtins_CallApiCallbackOptimizedNoProfiling [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+35: 0x10c7371e0 
+36: 0x1018eac0c Builtins_JSEntryTrampoline [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+37: 0x1018ea8f4 Builtins_JSEntry [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+38: 0x101026fbc v8::internal::(anonymous namespace)::Invoke(v8::internal::Isolate*, v8::internal::(anonymous namespace)::InvokeParams const&) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+39: 0x101026918 v8::internal::Execution::Call(v8::internal::Isolate*, v8::internal::Handle<v8::internal::Object>, v8::internal::Handle<v8::internal::Object>, int, v8::internal::Handle<v8::internal::Object>*) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+40: 0x100ed5f04 v8::Function::Call(v8::Local<v8::Context>, v8::Local<v8::Value>, int, v8::Local<v8::Value>*) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+41: 0x100be9a80 node::InternalCallbackScope::Close() [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+42: 0x100be9cc4 node::InternalMakeCallback(node::Environment*, v8::Local<v8::Object>, v8::Local<v8::Object>, v8::Local<v8::Function>, int, v8::Local<v8::Value>*, node::async_context, v8::Local<v8::Value>) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+43: 0x100bffa7c node::AsyncWrap::MakeCallback(v8::Local<v8::Function>, int, v8::Local<v8::Value>*) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+44: 0x100dfed80 node::StreamBase::CallJSOnreadMethod(long, v8::Local<v8::ArrayBuffer>, unsigned long, node::StreamBase::StreamBaseJSChecks) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+45: 0x100e00514 node::EmitToJSStreamListener::OnStreamRead(long, uv_buf_t const&) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+46: 0x100e9870c node::crypto::TLSWrap::ClearOut() [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+47: 0x100e9a674 node::crypto::TLSWrap::OnStreamRead(long, uv_buf_t const&) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+48: 0x100e049dc node::LibuvStreamWrap::OnUvRead(long, uv_buf_t const*) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+49: 0x100e05124 node::LibuvStreamWrap::ReadStart()::$_1::__invoke(uv_stream_s*, long, uv_buf_t const*) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+50: 0x1018d6504 uv__stream_io [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+51: 0x1018deb2c uv__io_poll [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+52: 0x1018caedc uv_run [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+53: 0x100bea4f4 node::SpinEventLoopInternal(node::Environment*) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+54: 0x100d34e74 node::NodeMainInstance::Run() [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+55: 0x100ca5008 node::Start(int, char**) [/Users/benjamincorbett/.nvm/versions/node/v22.17.0/bin/node]
+56: 0x18841d924 start [/usr/lib/dyld]
+[1]    43641 abort      claude
+
+~/code/agents/deployment-example main* ❯                                                                                                                                         1m 56s 04:43:53 PM

@@ -16,6 +16,7 @@ services:
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
       - NEXT_PUBLIC_ENABLE_STREAMING=${NEXT_PUBLIC_ENABLE_STREAMING}
       - NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT=${NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT}
+      - NEXT_PUBLIC_WEBSOCKET_URL=${NEXT_PUBLIC_WEBSOCKET_URL}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - SUPABASE_CALLBACK_URL=${SUPABASE_CALLBACK_URL}
@@ -64,13 +65,22 @@ services:
       - ./agent_api:/app
       - agent_venv:/app/venv
     restart: unless-stopped
-    command: ["uvicorn", "agent_api:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+    command:
+      [
+        "uvicorn",
+        "agent_api:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8001",
+        "--reload",
+      ]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s  # Longer startup time for MCP initialization
+      start_period: 40s # Longer startup time for MCP initialization
 
   # Google Drive RAG Pipeline service
   rag-google-drive-dev:
@@ -78,7 +88,7 @@ services:
       context: ./rag_pipeline
       dockerfile: Dockerfile
     ports:
-      - "8003:8003"  # Status server port
+      - "8003:8003" # Status server port
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
@@ -103,7 +113,7 @@ services:
     profiles:
       - with-rag
 
-  # Local Files RAG Pipeline service  
+  # Local Files RAG Pipeline service
   rag-local-files-dev:
     build:
       context: ./rag_pipeline
