@@ -4,7 +4,6 @@ import os
 
 load_dotenv()
 
-# Configure Langfuse for agent observability
 def configure_langfuse():
     """
     Configure Langfuse for agent observability and tracing.
@@ -16,12 +15,10 @@ def configure_langfuse():
     LANGFUSE_SECRET_KEY = os.getenv("LANGFUSE_SECRET_KEY")
     LANGFUSE_HOST = os.getenv("LANGFUSE_HOST", "https://cloud.langfuse.com")
     
-    # If Langfuse credentials are not provided, return None
     if not LANGFUSE_PUBLIC_KEY or not LANGFUSE_SECRET_KEY:
         print("Langfuse credentials not found. Tracing disabled.")
         return None
     
-    # Initialize Langfuse client
     try:
         langfuse_client = Langfuse(
             public_key=LANGFUSE_PUBLIC_KEY,

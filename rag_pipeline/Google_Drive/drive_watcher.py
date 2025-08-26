@@ -22,7 +22,7 @@ from common.db_handler import process_file_for_rag, delete_document_by_file_id, 
 from status_server import pipeline_status, start_status_server
 from supabase_status import status_tracker
 
-# If modifying these scopes, delete the file token.json.
+
 SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly',
           'https://www.googleapis.com/auth/drive.readonly']
 

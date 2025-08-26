@@ -22,7 +22,6 @@ class Settings(BaseSettings):
     Follows Pydantic Settings best practices for secure configuration management.
     """
     
-    # API Keys - using SecretStr for sensitive data
     openai_api_key: SecretStr = Field(
         ..., 
         alias="OPENAI_API_KEY",
@@ -56,7 +55,6 @@ class Settings(BaseSettings):
         description="PostgreSQL connection string for Supabase"
     )
     
-    # API Endpoints
     openai_base_url: str = Field(
         default="https://api.openai.com/v1",
         alias="OPENAI_BASE_URL",
@@ -68,7 +66,6 @@ class Settings(BaseSettings):
         description="Brave Search API endpoint"
     )
     
-    # Model Configuration
     openai_model: str = Field(
         default="gpt-4o-mini",
         alias="OPENAI_MODEL",
@@ -80,14 +77,12 @@ class Settings(BaseSettings):
         description="OpenAI embedding model to use"
     )
     
-    # Request Configuration
     request_timeout: int = Field(
         default=30,
         alias="REQUEST_TIMEOUT",
         description="HTTP request timeout in seconds"
     )
     
-    # Debug Configuration
     debug_mode: bool = Field(
         default=False,
         alias="DEBUG_MODE",
@@ -102,7 +97,6 @@ class Settings(BaseSettings):
     )
 
 
-# Create a singleton instance
 print("[SETTINGS-INIT] Creating Settings instance...")
 print(f"[SETTINGS-INIT] Environment variables:")
 import os
@@ -147,10 +141,8 @@ def get_authenticated_supabase_client(access_token: str) -> Client:
     url = settings.supabase_url
     key = settings.supabase_anon_key.get_secret_value()
     
-    # Create a new client instance
     client = create_client(url, key)
     
-    # Set the auth header on the postgrest client
     client.postgrest.auth(access_token)
     
     print(f"[SUPABASE-CLIENT] Created authenticated client for user")

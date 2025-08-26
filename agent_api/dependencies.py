@@ -62,12 +62,10 @@ async def create_dependencies(memories: str = "", init_mcp: bool = True) -> Agen
     Returns:
         AgentDependencies instance with all required dependencies
     """
-    # Use client factory functions from clients module
     http_client = get_http_client()
     supabase = get_supabase_client()
     embedding_client = get_embedding_client()
     
-    # Initialize MCP manager if requested
     mcp_manager = None
     if init_mcp:
         try:

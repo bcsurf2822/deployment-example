@@ -218,8 +218,6 @@ async def run_sql_query(ctx: RunContext[AgentDependencies], sql_query: str) -> s
     print(f"[AGENT-run_sql_query] Calling execute_sql_query tool with SQL: {sql_query}")
     return await execute_sql_query(ctx.deps.supabase, sql_query)
 
-# Image Analysis Tool
-
 @agent.tool
 async def analyze_image(ctx: RunContext[AgentDependencies], document_id: str, query: str) -> str:
     """
@@ -358,7 +356,6 @@ async def interactive_search():
                 print(f"Error: {str(e)}")
                 
     finally:
-        # Always clean up dependencies
         if deps:
             await cleanup_dependencies(deps)
 

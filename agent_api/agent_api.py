@@ -15,16 +15,16 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
 from httpx import AsyncClient
 
-# Load environment variables from .env
+
 load_dotenv(override=True)
 
-# Now import from local modules
+
 from agent import agent, search
 from clients import settings, get_supabase_client, get_openai_client, get_mem0_client_async, get_authenticated_supabase_client
 from dependencies import AgentDependencies
 from mcp_manager import MCPServerConfig, MCPServerConfigModel, TransportType
 
-# Import Pydantic AI types
+
 from pydantic_ai import Agent as PydanticAgent, ModelRequestNode
 from pydantic_ai.messages import (
     PartStartEvent,
@@ -33,7 +33,6 @@ from pydantic_ai.messages import (
     BinaryContent
 )
 
-# Import database utilities
 from db_utils import (
     fetch_conversation_history,
     convert_history_to_pydantic_format,
@@ -46,11 +45,10 @@ from db_utils import (
     generate_conversation_summary
 )
 
-# Import Langfuse configuration
+
 from configure_langfuse import configure_langfuse
 
 
-# We now define clients as None
 embeddings_client = None
 supabase = None
 http_client = None
@@ -66,24 +64,18 @@ langfuse_client = None
 async def lifespan(app: FastAPI):
     global embeddings_client, supabase, http_client, title_agent, mem0_client, langfuse_client
     
-    # Configure Langfuse (returns None if not configured)
     langfuse_client = configure_langfuse()
-    
-    # Enable Pydantic AI instrumentation if Langfuse is configured
-    if langfuse_client:
-        PydanticAgent.instrument_all()
 
-    # Startup: Initialize clients
     embeddings_client = get_openai_client()
     supabase = get_supabase_client()
     http_client = AsyncClient()
-    title_agent = PydanticAgent('openai:gpt-4-turbo', instrument=True)
+    # Title agent should NOT be instrumented to avoid duplicate message logging
+    title_agent = PydanticAgent('openai:gpt-4-turbo', instrument=False)
     mem0_client = await get_mem0_client_async()
 
-    # Yield control back to FastAPI
     yield
 
-    # Shutdown: Clean up clients
+    # Clean up clients
     if http_client:
         await http_client.aclose()
     if langfuse_client:
@@ -103,7 +95,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# File attachments
 class FileAttachment(BaseModel):
     fileName: str
     content: str # Base64 encoded content
@@ -305,14 +296,18 @@ async def pydantic_agent(request: AgentRequest, auth_result: tuple[Dict[str, Any
                     "mimeType": file.mimeType,
                 } for file in request.files]
 
-        # Store users query right away
-        await store_message(auth_supabase, session_id=session_id, message_type="human", content=request.query, files=file_attachments)
-
-        # Fetch Conversation History from DB 
+        # IMPORTANT: Fetch conversation history BEFORE storing the new message
+        # This prevents duplicate user messages in Langfuse traces because:
+        # 1. We pass message_history to agent.iter() which should contain PAST messages only
+        # 2. We pass the current query as user_message to agent.iter() separately
+        # If we store first, the current message appears in both places causing duplication
         conversation_history = await fetch_conversation_history(auth_supabase, session_id)
 
         # Convert conversation history into framework format (Pydantic Here)
         pydantic_messages = await convert_history_to_pydantic_format(conversation_history)
+        
+        # Store users query AFTER fetching history to avoid duplication in agent context
+        await store_message(auth_supabase, session_id=session_id, message_type="human", content=request.query, files=file_attachments)
 
         # Retrieve user's memories with Mem0
         print(f"[AGENT_API-MEMORY_SEARCH] Searching memories for user_id: {request.user_id}")

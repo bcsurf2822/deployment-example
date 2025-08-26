@@ -23,7 +23,6 @@ async def fetch_conversation_history(supabase: Client, session_id: str, limit: i
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching conversation history: {e}")
 
-# Conver History to Pydantic Format
 async def convert_history_to_pydantic_format(conversation_history):
     """ Convert the conversation history to Pydantic format 
     Handles both AI messages with message_data and human messages without
@@ -42,7 +41,6 @@ async def convert_history_to_pydantic_format(conversation_history):
                 messages.extend(ModelMessagesTypeAdapter.validate_json(msg["message_data"]))
             except Exception as e:
                 print(f"[DB_UTILS-CONVERT_HISTORY] Error parsing message_data: {e}")
-                # Skip message if there is an error
                 continue
         
         # Handle human messages without message_data
