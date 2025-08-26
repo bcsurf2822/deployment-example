@@ -3,6 +3,7 @@
 import { Suspense } from 'react';
 import AuthContainer from '@/components/auth/AuthContainer';
 import LoginForm from '@/components/auth/LoginForm';
+import GoogleOneTap from '@/components/auth/GoogleOneTap';
 import { login, signup, signInWithGoogle } from './actions';
 
 function LoginContent() {
@@ -15,13 +16,18 @@ function LoginContent() {
     }
   };
 
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
   return (
-    <AuthContainer>
-      <LoginForm 
-        onSubmit={handleSubmit}
-        onGoogleSignIn={signInWithGoogle}
-      />
-    </AuthContainer>
+    <>
+      {googleClientId && <GoogleOneTap clientId={googleClientId} />}
+      <AuthContainer>
+        <LoginForm 
+          onSubmit={handleSubmit}
+          onGoogleSignIn={signInWithGoogle}
+        />
+      </AuthContainer>
+    </>
   );
 }
 

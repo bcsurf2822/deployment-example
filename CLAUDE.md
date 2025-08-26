@@ -95,12 +95,6 @@ python deploy.py --type local [--with-rag]
 
 # Custom project name
 python deploy.py --mode dev --project my-agent
-
-# Alternative: Using Makefile
-make dev           # Development mode
-make with-rag      # With RAG pipeline
-make logs          # View logs
-make down          # Stop services
 ```
 
 ## Architecture Overview

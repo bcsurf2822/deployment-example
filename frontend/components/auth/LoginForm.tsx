@@ -59,7 +59,7 @@ export default function LoginForm({ onSubmit, onGoogleSignIn }: LoginFormProps) 
       <button
         onClick={handleGoogleSignIn}
         disabled={isLoading}
-        className="w-full mb-6 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400 text-gray-700 py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full mb-6 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400 text-gray-700 py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -119,7 +119,7 @@ export default function LoginForm({ onSubmit, onGoogleSignIn }: LoginFormProps) 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {isLoading ? 'Loading...' : isSignUp ? 'Create Account' : 'Sign In'}
         </button>
@@ -128,7 +128,7 @@ export default function LoginForm({ onSubmit, onGoogleSignIn }: LoginFormProps) 
       <div className="mt-6 text-center">
         <button
           onClick={() => setIsSignUp(!isSignUp)}
-          className="text-gray-600 hover:text-gray-900 transition-colors text-sm"
+          className="text-gray-600 hover:text-gray-900 transition-colors text-sm cursor-pointer"
         >
           {isSignUp 
             ? "Already have an account? Sign in" 
