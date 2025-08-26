@@ -17,6 +17,7 @@ services:
       - NEXT_PUBLIC_ENABLE_STREAMING=${NEXT_PUBLIC_ENABLE_STREAMING}
       - NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT=${NEXT_PUBLIC_LANGFUSE_HOST_WITH_PROJECT}
       - NEXT_PUBLIC_WEBSOCKET_URL=${NEXT_PUBLIC_WEBSOCKET_URL}
+      - NEXT_PUBLIC_RAG_SOCKET_URL=${NEXT_PUBLIC_RAG_SOCKET_URL:-http://localhost:8002}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - SUPABASE_CALLBACK_URL=${SUPABASE_CALLBACK_URL}
@@ -137,6 +138,34 @@ services:
       - ${RAG_LOCAL_DIRECTORY:-./rag_pipeline/Local_Files/data}:/app/mounted_data
       - rag_venv:/app/venv
     restart: unless-stopped
+    profiles:
+      - with-rag
+
+  # Socket.IO Server for RAG Pipeline real-time updates
+  rag-socket-server-dev:
+    build:
+      context: ./rag_pipeline
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      - SOCKET_PORT=8002
+      - SOCKET_HOST=0.0.0.0
+    volumes:
+      - ./rag_pipeline:/app
+      - rag_venv:/app/venv
+    restart: unless-stopped
+    command:
+      [
+        "python",
+        "socket_server.py"
+      ]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     profiles:
       - with-rag
 

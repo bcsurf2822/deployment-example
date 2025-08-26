@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import AuthProvider from "@/components/providers/AuthProvider";
+import { SocketProvider } from "@/components/providers/SocketProvider";
 import LayoutContent from "@/components/layout/LayoutContent";
 import "./globals.css";
 
@@ -31,9 +32,11 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <AuthProvider>
-          <LayoutContent title="RAG Studio">
-            {children}
-          </LayoutContent>
+          <SocketProvider>
+            <LayoutContent title="RAG Studio">
+              {children}
+            </LayoutContent>
+          </SocketProvider>
         </AuthProvider>
       </body>
     </html>
