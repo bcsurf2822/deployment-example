@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSocket } from "@/components/providers/SocketProvider";
 
 export interface FileUploadStatus {
   file: File;
@@ -23,6 +24,7 @@ export default function UploadQueue({
   onFileRemove,
 }: UploadQueueProps) {
   const [uploadStatuses, setUploadStatuses] = useState<FileUploadStatus[]>([]);
+  const { socket, isConnected } = useSocket();
 
   useEffect(() => {
     setUploadStatuses(files);
@@ -85,6 +87,16 @@ export default function UploadQueue({
         progress: 100,
         googleDriveId: result.file?.googleDriveId,
       });
+
+      // Send socket notification when upload is 100% complete
+      if (socket && isConnected && result.file?.googleDriveId) {
+        console.log(`[UPLOAD-QUEUE] Sending upload-complete notification for ${file.name}`);
+        socket.emit("upload-complete", {
+          fileName: file.name,
+          googleDriveId: result.file.googleDriveId,
+          fileSize: file.size
+        });
+      }
 
       // Notify parent immediately (no delay)
       if (onFileComplete && result.file?.googleDriveId) {

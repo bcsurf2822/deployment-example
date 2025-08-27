@@ -135,6 +135,29 @@ async def broadcast(sid, data):
     
     logger.info(f"[SOCKET-SERVER-broadcast] Sent confirmation back to {sid}")
 
+@sio.event
+async def upload_complete(sid, data):
+    file_name = data.get('fileName', 'Unknown')
+    google_drive_id = data.get('googleDriveId', 'Unknown')
+    file_size = data.get('fileSize', 0)
+    
+    print(f"[SOCKET-SERVER-upload_complete] 🎉 UPLOAD COMPLETED! File: {file_name}")
+    print(f"[SOCKET-SERVER-upload_complete] Google Drive ID: {google_drive_id}")
+    print(f"[SOCKET-SERVER-upload_complete] File Size: {file_size} bytes")
+    print(f"[SOCKET-SERVER-upload_complete] Received from client: {sid}")
+    
+    logger.info(f"[SOCKET-SERVER-upload_complete] Upload completed - File: {file_name}, Drive ID: {google_drive_id}, Size: {file_size}")
+    
+    # For now, just acknowledge the upload completion
+    await sio.emit('message', {
+        'type': 'upload_acknowledged',
+        'file_name': file_name,
+        'google_drive_id': google_drive_id,
+        'message': f'Upload of {file_name} acknowledged by server',
+        'timestamp': datetime.now().isoformat(),
+        'from_server': True
+    }, room=sid)
+
 async def emit_processing_status(file_info: Dict[str, Any], status: str, pipeline_type: str = "unknown"):
     update_data = {
         'type': 'file_processing',

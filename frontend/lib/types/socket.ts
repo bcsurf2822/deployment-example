@@ -13,6 +13,7 @@ interface ServerToClientEvents {
 interface ClientToServerEvents {
   message: (data: unknown) => void;
   broadcast: (data: { message: string; userId?: string }) => void;
+  'upload-complete': (data: { fileName: string; googleDriveId: string; fileSize: number }) => void;
 }
 
 export type {
