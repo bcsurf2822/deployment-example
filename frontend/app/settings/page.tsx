@@ -1,10 +1,28 @@
+"use client";
+
+import { useState } from "react";
+import SettingsContainer from "@/components/settings/SettingsContainer";
+import SettingsMenu from "@/components/settings/SettingsMenu";
+import { TestSocketSettings } from "@/components/settings/SettingsItems";
+
 export default function SettingsPage() {
+  const [activeSection, setActiveSection] = useState("general");
+
+  const sections = [
+    {
+      id: "general",
+      label: "General",
+      component: <TestSocketSettings />
+    }
+  ];
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Settings</h1>
-      <div className="bg-white shadow-sm rounded-lg p-6">
-        <p className="text-gray-600">User settings and preferences coming soon...</p>
-      </div>
-    </div>
+    <SettingsContainer>
+      <SettingsMenu 
+        sections={sections}
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
+      />
+    </SettingsContainer>
   );
 }

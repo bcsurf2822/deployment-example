@@ -1,12 +1,7 @@
-/**
- * Main types export file
- * Consolidates all TypeScript interfaces and types
- */
 
-// Database types
 export * from './database';
+export * from './socket';
 
-// UI/Component types
 export interface LoadingState {
   isLoading: boolean;
   error: string | null;

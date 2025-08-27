@@ -121,6 +121,20 @@ async def unsubscribe_from_updates(sid, data):
         
         logger.info(f"[SOCKET-SERVER-unsubscribe] Client {sid} unsubscribed from {subscription_type}")
 
+@sio.event
+async def broadcast(sid, data):
+    logger.info(f"[SOCKET-SERVER-broadcast] Received broadcast from {sid}: {data}")
+    
+    await sio.emit('broadcast-received', {
+        'type': 'confirmation',
+        'original_message': data.get('message', ''),
+        'message': 'Broadcast successfully received by server',
+        'timestamp': datetime.now().isoformat(),
+        'from_server': True
+    }, room=sid)
+    
+    logger.info(f"[SOCKET-SERVER-broadcast] Sent confirmation back to {sid}")
+
 async def emit_processing_status(file_info: Dict[str, Any], status: str, pipeline_type: str = "unknown"):
     update_data = {
         'type': 'file_processing',

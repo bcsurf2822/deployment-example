@@ -1,12 +1,3 @@
-/**
- * TypeScript interfaces for database models
- * Based on spec/models.md specification
- */
-
-// ============================================================================
-// Core Models
-// ============================================================================
-
 
 
 export interface UserProfile {
@@ -14,25 +5,25 @@ export interface UserProfile {
   email: string;
   full_name: string | null;
   is_admin: boolean;
-  created_at: string; // ISO timestamp
-  updated_at: string; // ISO timestamp
+  created_at: string; 
+  updated_at: string; 
 }
 
 export interface Request {
-  id: string; // UUID
-  user_id: string; // UUID
-  timestamp: string | null; // ISO timestamp
+  id: string; 
+  user_id: string; 
+  timestamp: string | null; 
   user_query: string;
 }
 
 export interface Conversation {
-  session_id: string; // VARCHAR primary key
-  user_id: string; // UUID
+  session_id: string; 
+  user_id: string; 
   title: string | null;
-  created_at: string | null; // ISO timestamp
-  last_message_at: string | null; // ISO timestamp
+  created_at: string | null; 
+  last_message_at: string | null; 
   is_archived: boolean | null;
-  metadata: Record<string, unknown>; // JSONB - currently empty objects
+  metadata: Record<string, unknown>; 
 }
 
 export interface FileAttachment {
