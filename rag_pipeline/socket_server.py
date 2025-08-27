@@ -148,7 +148,7 @@ async def upload_complete(sid, data):
     
     logger.info(f"[SOCKET-SERVER-upload_complete] Upload completed - File: {file_name}, Drive ID: {google_drive_id}, Size: {file_size}")
     
-    # For now, just acknowledge the upload completion
+    # Acknowledge to the original sender
     await sio.emit('message', {
         'type': 'upload_acknowledged',
         'file_name': file_name,
@@ -157,6 +157,16 @@ async def upload_complete(sid, data):
         'timestamp': datetime.now().isoformat(),
         'from_server': True
     }, room=sid)
+    
+    # Broadcast upload completion to all connected clients (including Google Drive watcher)
+    print(f"[SOCKET-SERVER-upload_complete] Broadcasting upload completion to all connected clients")
+    await sio.emit('upload_complete', {
+        'fileName': file_name,
+        'googleDriveId': google_drive_id,
+        'fileSize': file_size,
+        'timestamp': datetime.now().isoformat(),
+        'from_server': True
+    })  # No room specified = broadcast to all clients
 
 async def emit_processing_status(file_info: Dict[str, Any], status: str, pipeline_type: str = "unknown"):
     update_data = {

@@ -14,6 +14,9 @@ import sys
 import os
 import io
 from pathlib import Path
+import socketio
+import threading
+from threading import Lock
 
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -42,6 +45,14 @@ class GoogleDriveWatcher:
         self.service = None
         self.known_files = {}  # Store file IDs and their last modified time
         self.initialized = False  # Flag to track if we've done the initial scan
+        
+        # Processing state tracking for double-processing prevention
+        self.processing_files = set()  # Track files currently being processed
+        self.processing_lock = Lock()  # Thread safety for processing_files
+        
+        # Socket client for immediate processing notifications
+        self.socket_client = None
+        self.socket_connected = False
         
         # Initialize sync manager with a unique pipeline ID
         pipeline_id = os.getenv('RAG_PIPELINE_ID', f'google_drive_{folder_id or "all"}')
@@ -117,7 +128,50 @@ class GoogleDriveWatcher:
                 "last_check_time": "1970-01-01T00:00:00.000Z"
             }
             self.last_check_time = datetime.strptime('1970-01-01T00:00:00.000Z', '%Y-%m-%dT%H:%M:%S.%fZ')
-            print("Using default configuration")          
+            print("Using default configuration")
+            
+    def setup_socket_client(self) -> None:
+        """
+        Set up socket client connection for immediate processing notifications.
+        """
+        try:
+            socket_url = os.getenv('RAG_SOCKET_URL', 'http://localhost:8002')
+            print(f"[DRIVE_WATCHER-SOCKET] Connecting to socket server at {socket_url}")
+            
+            self.socket_client = socketio.Client(
+                logger=False,  # Reduce noise in logs
+                engineio_logger=False
+            )
+            
+            @self.socket_client.event
+            def connect():
+                print("[DRIVE_WATCHER-SOCKET] Connected to socket server")
+                self.socket_connected = True
+            
+            @self.socket_client.event
+            def disconnect():
+                print("[DRIVE_WATCHER-SOCKET] Disconnected from socket server")
+                self.socket_connected = False
+            
+            @self.socket_client.event
+            def upload_complete(data):
+                print(f"[DRIVE_WATCHER-SOCKET] Received upload-complete: {data}")
+                self.handle_upload_complete(data)
+            
+            # Connect to socket server in a separate thread to avoid blocking
+            def connect_socket():
+                try:
+                    self.socket_client.connect(socket_url)
+                except Exception as e:
+                    print(f"[DRIVE_WATCHER-SOCKET] Failed to connect: {e}")
+                    self.socket_connected = False
+            
+            socket_thread = threading.Thread(target=connect_socket, daemon=True)
+            socket_thread.start()
+            
+        except Exception as e:
+            print(f"[DRIVE_WATCHER-SOCKET] Error setting up socket client: {e}")
+            self.socket_connected = False
             
     def save_last_check_time(self) -> None:
         """
@@ -134,6 +188,104 @@ class GoogleDriveWatcher:
             print(f"Saved last check time: {self.last_check_time}")
         except Exception as e:
             print(f"Error saving last check time: {e}")
+            
+    def handle_upload_complete(self, data: Dict[str, Any]) -> None:
+        """
+        Handle upload completion notification from socket server.
+        
+        Args:
+            data: Upload completion data containing fileName, googleDriveId, fileSize
+        """
+        try:
+            file_name = data.get('fileName', 'Unknown')
+            google_drive_id = data.get('googleDriveId')
+            file_size = data.get('fileSize', 0)
+            
+            print(f"[DRIVE_WATCHER-UPLOAD_COMPLETE] Processing immediate upload: {file_name} (ID: {google_drive_id})")
+            
+            if not google_drive_id:
+                print("[DRIVE_WATCHER-UPLOAD_COMPLETE] No Google Drive ID provided, skipping")
+                return
+                
+            # Process the file immediately
+            success = self.process_file_immediately(google_drive_id, file_name)
+            
+            if success:
+                print(f"[DRIVE_WATCHER-UPLOAD_COMPLETE] Successfully processed {file_name} immediately")
+            else:
+                print(f"[DRIVE_WATCHER-UPLOAD_COMPLETE] Failed to process {file_name} immediately, will retry in next timer cycle")
+                
+        except Exception as e:
+            print(f"[DRIVE_WATCHER-UPLOAD_COMPLETE] Error handling upload complete: {e}")
+    
+    def process_file_immediately(self, google_drive_id: str, file_name: str) -> bool:
+        """
+        Process a specific file immediately by its Google Drive ID.
+        
+        Args:
+            google_drive_id: The Google Drive file ID
+            file_name: The file name for logging
+            
+        Returns:
+            True if processing was successful, False otherwise
+        """
+        try:
+            # Check if file is already being processed
+            with self.processing_lock:
+                if google_drive_id in self.processing_files:
+                    print(f"[DRIVE_WATCHER-IMMEDIATE] File {file_name} (ID: {google_drive_id}) is already being processed, skipping")
+                    return True  # Not an error, just already being handled
+                
+                # Mark as processing
+                self.processing_files.add(google_drive_id)
+                
+            try:
+                # Authenticate if needed
+                if not self.service:
+                    self.authenticate()
+                
+                # Get file metadata from Google Drive
+                print(f"[DRIVE_WATCHER-IMMEDIATE] Fetching metadata for {file_name} (ID: {google_drive_id})")
+                file_metadata = self.service.files().get(
+                    fileId=google_drive_id,
+                    fields="id, name, mimeType, webViewLink, modifiedTime, createdTime, trashed"
+                ).execute()
+                
+                # Check if file was recently processed (within last 5 minutes to avoid race conditions)
+                current_modified_time = file_metadata.get('modifiedTime')
+                if google_drive_id in self.known_files:
+                    known_modified_time = self.known_files[google_drive_id]
+                    if current_modified_time == known_modified_time:
+                        print(f"[DRIVE_WATCHER-IMMEDIATE] File {file_name} already processed (same modifiedTime), skipping")
+                        return True
+                
+                # Check if file is in correct folder (if folder watching is enabled)
+                if self.folder_id:
+                    # Get file's parent folders
+                    parents_response = self.service.files().get(
+                        fileId=google_drive_id,
+                        fields="parents"
+                    ).execute()
+                    
+                    file_parents = parents_response.get('parents', [])
+                    if self.folder_id not in file_parents:
+                        print(f"[DRIVE_WATCHER-IMMEDIATE] File {file_name} not in watched folder {self.folder_id}, skipping")
+                        return True
+                
+                # Process the file using existing process_file method
+                print(f"[DRIVE_WATCHER-IMMEDIATE] Processing {file_name} immediately")
+                self.process_file(file_metadata)
+                
+                return True
+                
+            finally:
+                # Always remove from processing set
+                with self.processing_lock:
+                    self.processing_files.discard(google_drive_id)
+                    
+        except Exception as e:
+            print(f"[DRIVE_WATCHER-IMMEDIATE] Error processing file immediately: {e}")
+            return False
     
     def authenticate(self) -> None:
         """
@@ -392,95 +544,110 @@ class GoogleDriveWatcher:
         web_view_link = file.get('webViewLink', '')
         is_trashed = file.get('trashed', False)
         
-        # Notify status server that we're starting to process this file
-        pipeline_status.add_processing_file(file_name, file_id)
+        # Check if file is already being processed (for timer-based processing)
+        with self.processing_lock:
+            if file_id in self.processing_files:
+                print(f"[DRIVE_WATCHER-PROCESS] File {file_name} (ID: {file_id}) is already being processed, skipping")
+                return
+            
+            # Mark as processing
+            self.processing_files.add(file_id)
         
-        # Also update Supabase status
-        if status_tracker:
-            file_info = {
-                "name": file_name,
-                "id": file_id,
-                "started_at": datetime.now().isoformat()
-            }
-            status_tracker.update_processing_status(files_processing=[file_info])
-        
-        # Check if the file is in the trash
-        if is_trashed:
-            print(f"File '{file_name}' (ID: {file_id}) has been trashed. Removing from database...")
-            delete_document_by_file_id(file_id)
-            if file_id in self.known_files:
-                del self.known_files[file_id]
-            # Don't notify processing since we're just cleaning up
-            return
-        
-        # Skip unsupported file types
-        supported_mime_types = self.config.get('supported_mime_types', [])
-        if not any(mime_type.startswith(t) for t in supported_mime_types):
-            print(f"Skipping unsupported file type: {mime_type}")
-            # Remove from processing since we're skipping it
-            pipeline_status.complete_file(file_name, False)
-            return
-        
-        # Download the file
-        file_content = self.download_file(file_id, mime_type)
-        if not file_content:
-            print(f"Failed to download file '{file_name}' (ID: {file_id})")
-            # Mark as failed in status
-            pipeline_status.complete_file(file_name, False)
-            return
-        
-        # Extract text from the file
-        text = extract_text_from_file(file_content, mime_type, file_name, self.config)
-        if not text:
-            print(f"No text could be extracted from file '{file_name}' (ID: {file_id})")
-            # Mark as failed in status
-            pipeline_status.complete_file(file_name, False)
+        try:
+            # Notify status server that we're starting to process this file
+            pipeline_status.add_processing_file(file_name, file_id)
             
             # Also update Supabase status
             if status_tracker:
                 file_info = {
                     "name": file_name,
                     "id": file_id,
+                    "started_at": datetime.now().isoformat()
+                }
+                status_tracker.update_processing_status(files_processing=[file_info])
+            
+            # Check if the file is in the trash
+            if is_trashed:
+                print(f"File '{file_name}' (ID: {file_id}) has been trashed. Removing from database...")
+                delete_document_by_file_id(file_id)
+                if file_id in self.known_files:
+                    del self.known_files[file_id]
+                # Don't notify processing since we're just cleaning up
+                return
+            
+            # Skip unsupported file types
+            supported_mime_types = self.config.get('supported_mime_types', [])
+            if not any(mime_type.startswith(t) for t in supported_mime_types):
+                print(f"Skipping unsupported file type: {mime_type}")
+                # Remove from processing since we're skipping it
+                pipeline_status.complete_file(file_name, False)
+                return
+            
+            # Download the file
+            file_content = self.download_file(file_id, mime_type)
+            if not file_content:
+                print(f"Failed to download file '{file_name}' (ID: {file_id})")
+                # Mark as failed in status
+                pipeline_status.complete_file(file_name, False)
+                return
+            
+            # Extract text from the file
+            text = extract_text_from_file(file_content, mime_type, file_name, self.config)
+            if not text:
+                print(f"No text could be extracted from file '{file_name}' (ID: {file_id})")
+                # Mark as failed in status
+                pipeline_status.complete_file(file_name, False)
+                
+                # Also update Supabase status
+                if status_tracker:
+                    file_info = {
+                        "name": file_name,
+                        "id": file_id,
+                        "completed_at": datetime.now().isoformat()
+                    }
+                    status_tracker.update_processing_status(
+                        files_processing=[],  # Clear processing
+                        files_failed=[file_info]  # Add to failed
+                    )
+                return
+            
+            # Process the file for RAG
+            success = process_file_for_rag(file_content, text, file_id, web_view_link, file_name, mime_type, self.config, 'google_drive')
+            
+            # Update the known files dictionary
+            self.known_files[file_id] = file.get('modifiedTime')
+            
+            # Notify status server of completion
+            pipeline_status.complete_file(file_name, success)
+            
+            # Also update Supabase status - move file from processing to completed/failed
+            if status_tracker:
+                file_info = {
+                    "name": file_name,
+                    "id": file_id,
                     "completed_at": datetime.now().isoformat()
                 }
-                status_tracker.update_processing_status(
-                    files_processing=[],  # Clear processing
-                    files_failed=[file_info]  # Add to failed
-                )
-            return
-        
-        # Process the file for RAG
-        success = process_file_for_rag(file_content, text, file_id, web_view_link, file_name, mime_type, self.config, 'google_drive')
-        
-        # Update the known files dictionary
-        self.known_files[file_id] = file.get('modifiedTime')
-        
-        # Notify status server of completion
-        pipeline_status.complete_file(file_name, success)
-        
-        # Also update Supabase status - move file from processing to completed/failed
-        if status_tracker:
-            file_info = {
-                "name": file_name,
-                "id": file_id,
-                "completed_at": datetime.now().isoformat()
-            }
+                
+                if success:
+                    status_tracker.update_processing_status(
+                        files_processing=[],  # Clear processing
+                        files_completed=[file_info]  # Add to completed
+                    )
+                else:
+                    status_tracker.update_processing_status(
+                        files_processing=[],  # Clear processing
+                        files_failed=[file_info]  # Add to failed
+                    )
             
             if success:
-                status_tracker.update_processing_status(
-                    files_processing=[],  # Clear processing
-                    files_completed=[file_info]  # Add to completed
-                )
+                print(f"Successfully processed file '{file_name}' (ID: {file_id})")
             else:
-                status_tracker.update_processing_status(
-                    files_processing=[],  # Clear processing
-                    files_failed=[file_info]  # Add to failed
-                )
+                print(f"Failed to process file '{file_name}' (ID: {file_id})")
         
-        if success:
-            print(f"Successfully processed file '{file_name}' (ID: {file_id})")
-        else:
-            print(f"Failed to process file '{file_name}' (ID: {file_id})")
+        finally:
+            # Always remove file from processing set
+            with self.processing_lock:
+                self.processing_files.discard(file_id)
     
     def check_for_deleted_files(self) -> List[str]:
         """
@@ -561,7 +728,16 @@ class GoogleDriveWatcher:
                 print(f"Found {len(changed_files)} changed files.")
                 for file in changed_files:
                     try:
-                        print(f"Processing: {file.get('name', 'Unknown')}")
+                        file_id = file.get('id')
+                        file_name = file.get('name', 'Unknown')
+                        
+                        # Skip files that are already being processed immediately
+                        with self.processing_lock:
+                            if file_id in self.processing_files:
+                                print(f"[DRIVE_WATCHER-TIMER] Skipping {file_name} - already being processed immediately")
+                                continue
+                        
+                        print(f"Processing: {file_name}")
                         self.process_file(file)
                         # Update known_files with just the modifiedTime
                         self.known_files[file['id']] = file.get('modifiedTime')
@@ -642,6 +818,9 @@ class GoogleDriveWatcher:
             if not self.service:
                 self.authenticate()
             
+            # Set up socket client for immediate processing
+            self.setup_socket_client()
+            
             # Initial scan to build the known_files dictionary
             if not self.initialized:
                 print("Performing initial scan of files...")
@@ -696,3 +875,18 @@ class GoogleDriveWatcher:
         except Exception as e:
             print(f"Error in watcher: {e}")
             raise
+        finally:
+            # Disconnect socket client on shutdown
+            self.disconnect_socket_client()
+            
+    def disconnect_socket_client(self) -> None:
+        """
+        Disconnect the socket client gracefully.
+        """
+        try:
+            if self.socket_client and self.socket_connected:
+                print("[DRIVE_WATCHER-SOCKET] Disconnecting from socket server")
+                self.socket_client.disconnect()
+                self.socket_connected = False
+        except Exception as e:
+            print(f"[DRIVE_WATCHER-SOCKET] Error disconnecting socket client: {e}")
