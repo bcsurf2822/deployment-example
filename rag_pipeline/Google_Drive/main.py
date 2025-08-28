@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 import atexit
 import signal
 
-# Add parent directory to path for status_server import
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import status_server first so it's available for drive_watcher
@@ -43,7 +42,6 @@ def main():
     if not args.single_run and os.getenv('RUN_MODE') == 'single':
         args.single_run = True
 
-    # Initialize Supabase status tracker
     status_tracker = None
     
     def cleanup():
@@ -97,18 +95,18 @@ def main():
             print(f"  Files deleted: {stats['files_deleted']}")
             print(f"  Errors: {stats['errors']}")
             print(f"  Duration: {stats['duration']:.2f} seconds")
-            
-            # Exit with appropriate code
+
             if stats['errors'] > 0:
-                sys.exit(1)  # Exit with error if there were any errors
+                sys.exit(1)  
             else:
-                sys.exit(0)  # Success
+                sys.exit(0) 
         else:
-            # Watch for changes continuously with status updates
+            watcher.setup_socket_client()
+
             import time
             
             while True:
-                # Update status before check
+
                 next_check = datetime.now() + timedelta(seconds=args.interval)
                 pipeline_status.update(
                     status="running",
@@ -117,10 +115,9 @@ def main():
                     next_check_time=next_check.isoformat()
                 )
                 
-                # Run the check
+
                 stats = watcher.check_for_changes()
-                
-                # Update status after check
+
                 pipeline_status.update(
                     status="running",
                     is_checking=False,
@@ -128,7 +125,6 @@ def main():
                     total_failed=pipeline_status.data.get("total_failed", 0) + stats['errors']
                 )
                 
-                # Log if there were changes
                 if stats['files_processed'] > 0 or stats['files_deleted'] > 0:
                     print(f"Change check completed: {stats['files_processed']} files processed, "
                           f"{stats['files_deleted']} files deleted, {stats['errors']} errors, "

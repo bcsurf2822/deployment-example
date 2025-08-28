@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useSocket } from "@/components/providers/SocketProvider";
+import type { ServerToClientEvents } from "@/lib/types/socket";
 
 export interface FileUploadStatus {
   file: File;
@@ -11,6 +12,10 @@ export interface FileUploadStatus {
   googleDriveId?: string;
   processingStep?: "vectorizing";
 }
+
+type ProcessingStartedData = Parameters<ServerToClientEvents['processing-started']>[0];
+type ProcessingCompleteData = Parameters<ServerToClientEvents['processing-complete']>[0];
+type ProcessingFailedData = Parameters<ServerToClientEvents['processing-failed']>[0];
 
 interface UploadQueueProps {
   files: FileUploadStatus[];
@@ -29,6 +34,56 @@ export default function UploadQueue({
   useEffect(() => {
     setUploadStatuses(files);
   }, [files]);
+
+  useEffect(() => {
+    if (!socket || !isConnected) return;
+
+    // Listen for processing status updates
+    const handleProcessingStarted = (data: ProcessingStartedData) => {
+      console.log('[UPLOAD-QUEUE] Received processing-started:', data);
+      const fileName = data.fileName;
+      if (fileName) {
+        updateFileStatusByName(fileName, { 
+          status: "processing", 
+          processingStep: undefined 
+        });
+      }
+    };
+
+    const handleProcessingComplete = (data: ProcessingCompleteData) => {
+      console.log('[UPLOAD-QUEUE] Received processing-complete:', data);
+      const fileName = data.fileName;
+      if (fileName) {
+        updateFileStatusByName(fileName, { 
+          status: "success" 
+        });
+      }
+    };
+
+    const handleProcessingFailed = (data: ProcessingFailedData) => {
+      console.log('[UPLOAD-QUEUE] Received processing-failed:', data);
+      const fileName = data.fileName;
+      const error = data.error || 'Processing failed';
+      if (fileName) {
+        updateFileStatusByName(fileName, { 
+          status: "error",
+          error: error
+        });
+      }
+    };
+
+    // Register socket listeners
+    socket.on('processing-started', handleProcessingStarted);
+    socket.on('processing-complete', handleProcessingComplete);
+    socket.on('processing-failed', handleProcessingFailed);
+
+    // Cleanup function
+    return () => {
+      socket.off('processing-started', handleProcessingStarted);
+      socket.off('processing-complete', handleProcessingComplete);
+      socket.off('processing-failed', handleProcessingFailed);
+    };
+  }, [socket, isConnected]);
 
   useEffect(() => {
     // Start uploading pending files
@@ -119,6 +174,17 @@ export default function UploadQueue({
     setUploadStatuses((prev) =>
       prev.map((fs) =>
         fs.file.name === file.name ? { ...fs, ...updates } : fs
+      )
+    );
+  };
+
+  const updateFileStatusByName = (
+    fileName: string,
+    updates: Partial<FileUploadStatus>
+  ) => {
+    setUploadStatuses((prev) =>
+      prev.map((fs) =>
+        fs.file.name === fileName ? { ...fs, ...updates } : fs
       )
     );
   };

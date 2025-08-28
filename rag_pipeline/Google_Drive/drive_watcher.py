@@ -134,43 +134,75 @@ class GoogleDriveWatcher:
         """
         Set up socket client connection for immediate processing notifications.
         """
+        print(f"[DRIVE_WATCHER-SOCKET] ===== STARTING SOCKET CLIENT SETUP =====")
         try:
             socket_url = os.getenv('RAG_SOCKET_URL', 'http://localhost:8002')
-            print(f"[DRIVE_WATCHER-SOCKET] Connecting to socket server at {socket_url}")
+            print(f"[DRIVE_WATCHER-SOCKET] Socket URL from environment: {socket_url}")
+            print(f"[DRIVE_WATCHER-SOCKET] Attempting to connect to socket server at {socket_url}")
             
             self.socket_client = socketio.Client(
-                logger=False,  # Reduce noise in logs
-                engineio_logger=False
+                logger=True,  # Enable logging for debugging
+                engineio_logger=True
             )
             
             @self.socket_client.event
             def connect():
-                print("[DRIVE_WATCHER-SOCKET] Connected to socket server")
+                print("[DRIVE_WATCHER-SOCKET] ===== SUCCESSFULLY CONNECTED TO SOCKET SERVER =====")
                 self.socket_connected = True
+                # Send identification message
+                self.socket_client.emit('message', {
+                    'type': 'identify',
+                    'client': 'google-drive-watcher',
+                    'message': 'Google Drive watcher connected and ready'
+                })
             
             @self.socket_client.event
             def disconnect():
-                print("[DRIVE_WATCHER-SOCKET] Disconnected from socket server")
+                print("[DRIVE_WATCHER-SOCKET] ===== DISCONNECTED FROM SOCKET SERVER =====")
                 self.socket_connected = False
             
             @self.socket_client.event
-            def upload_complete(data):
-                print(f"[DRIVE_WATCHER-SOCKET] Received upload-complete: {data}")
+            def message(data):
+                print(f"[DRIVE_WATCHER-SOCKET] Received message: {data}")
+            
+            @self.socket_client.on('upload-complete')
+            def on_upload_complete(data):
+                print(f"[DRIVE_WATCHER-SOCKET] ===== RECEIVED UPLOAD-COMPLETE EVENT =====")
+                print(f"[DRIVE_WATCHER-SOCKET] Data: {data}")
+                self.handle_upload_complete(data)
+            
+            # Also listen for the underscore version just in case
+            @self.socket_client.on('upload_complete')
+            def on_upload_complete_underscore(data):
+                print(f"[DRIVE_WATCHER-SOCKET] ===== RECEIVED UPLOAD_COMPLETE EVENT (underscore) =====")
+                print(f"[DRIVE_WATCHER-SOCKET] Data: {data}")
                 self.handle_upload_complete(data)
             
             # Connect to socket server in a separate thread to avoid blocking
             def connect_socket():
                 try:
+                    print(f"[DRIVE_WATCHER-SOCKET] Starting connection attempt to {socket_url}")
                     self.socket_client.connect(socket_url)
+                    print(f"[DRIVE_WATCHER-SOCKET] Connection thread: socket client connected")
+                    # Keep the connection alive
+                    self.socket_client.wait()
                 except Exception as e:
                     print(f"[DRIVE_WATCHER-SOCKET] Failed to connect: {e}")
+                    import traceback
+                    traceback.print_exc()
                     self.socket_connected = False
             
             socket_thread = threading.Thread(target=connect_socket, daemon=True)
             socket_thread.start()
             
+            # Give the socket a moment to connect
+            time.sleep(2)
+            print(f"[DRIVE_WATCHER-SOCKET] Socket connected status: {self.socket_connected}")
+            
         except Exception as e:
             print(f"[DRIVE_WATCHER-SOCKET] Error setting up socket client: {e}")
+            import traceback
+            traceback.print_exc()
             self.socket_connected = False
             
     def save_last_check_time(self) -> None:
@@ -271,6 +303,11 @@ class GoogleDriveWatcher:
                     if self.folder_id not in file_parents:
                         print(f"[DRIVE_WATCHER-IMMEDIATE] File {file_name} not in watched folder {self.folder_id}, skipping")
                         return True
+                
+                # Remove from processing_files temporarily so process_file doesn't skip it
+                # We'll re-add it inside process_file
+                with self.processing_lock:
+                    self.processing_files.discard(google_drive_id)
                 
                 # Process the file using existing process_file method
                 print(f"[DRIVE_WATCHER-IMMEDIATE] Processing {file_name} immediately")
@@ -557,6 +594,16 @@ class GoogleDriveWatcher:
             # Notify status server that we're starting to process this file
             pipeline_status.add_processing_file(file_name, file_id)
             
+            # Send socket notification that processing has started
+            if self.socket_client and self.socket_connected:
+                print(f"[DRIVE_WATCHER-PROCESS] Sending processing-started notification for {file_name}")
+                self.socket_client.emit("processing-started", {
+                    "fileName": file_name,
+                    "googleDriveId": file_id,
+                    "timestamp": datetime.now().isoformat(),
+                    "pipelineType": "google_drive"
+                })
+            
             # Also update Supabase status
             if status_tracker:
                 file_info = {
@@ -581,6 +628,17 @@ class GoogleDriveWatcher:
                 print(f"Skipping unsupported file type: {mime_type}")
                 # Remove from processing since we're skipping it
                 pipeline_status.complete_file(file_name, False)
+                
+                # Send socket notification for unsupported file type
+                if self.socket_client and self.socket_connected:
+                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (unsupported type)")
+                    self.socket_client.emit("processing-failed", {
+                        "fileName": file_name,
+                        "googleDriveId": file_id,
+                        "timestamp": datetime.now().isoformat(),
+                        "pipelineType": "google_drive",
+                        "error": f"Unsupported file type: {mime_type}"
+                    })
                 return
             
             # Download the file
@@ -589,6 +647,17 @@ class GoogleDriveWatcher:
                 print(f"Failed to download file '{file_name}' (ID: {file_id})")
                 # Mark as failed in status
                 pipeline_status.complete_file(file_name, False)
+                
+                # Send socket notification for download failure
+                if self.socket_client and self.socket_connected:
+                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (download failed)")
+                    self.socket_client.emit("processing-failed", {
+                        "fileName": file_name,
+                        "googleDriveId": file_id,
+                        "timestamp": datetime.now().isoformat(),
+                        "pipelineType": "google_drive",
+                        "error": "Failed to download file"
+                    })
                 return
             
             # Extract text from the file
@@ -597,6 +666,17 @@ class GoogleDriveWatcher:
                 print(f"No text could be extracted from file '{file_name}' (ID: {file_id})")
                 # Mark as failed in status
                 pipeline_status.complete_file(file_name, False)
+                
+                # Send socket notification for text extraction failure
+                if self.socket_client and self.socket_connected:
+                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (text extraction failed)")
+                    self.socket_client.emit("processing-failed", {
+                        "fileName": file_name,
+                        "googleDriveId": file_id,
+                        "timestamp": datetime.now().isoformat(),
+                        "pipelineType": "google_drive",
+                        "error": "No text could be extracted from file"
+                    })
                 
                 # Also update Supabase status
                 if status_tracker:
@@ -619,6 +699,26 @@ class GoogleDriveWatcher:
             
             # Notify status server of completion
             pipeline_status.complete_file(file_name, success)
+            
+            # Send socket notification based on success/failure
+            if self.socket_client and self.socket_connected:
+                if success:
+                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-complete notification for {file_name}")
+                    self.socket_client.emit("processing-complete", {
+                        "fileName": file_name,
+                        "googleDriveId": file_id,
+                        "timestamp": datetime.now().isoformat(),
+                        "pipelineType": "google_drive"
+                    })
+                else:
+                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name}")
+                    self.socket_client.emit("processing-failed", {
+                        "fileName": file_name,
+                        "googleDriveId": file_id,
+                        "timestamp": datetime.now().isoformat(),
+                        "pipelineType": "google_drive",
+                        "error": "Failed to process file for RAG"
+                    })
             
             # Also update Supabase status - move file from processing to completed/failed
             if status_tracker:

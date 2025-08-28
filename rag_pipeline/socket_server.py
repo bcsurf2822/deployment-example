@@ -55,6 +55,7 @@ async def get_clients():
 
 @sio.event
 async def connect(sid, environ, auth):
+    print(f"[SOCKET-SERVER-connect] ===== NEW CLIENT CONNECTED: {sid} =====")
     logger.info(f"[SOCKET-SERVER-connect] Client {sid} connected")
     
     connected_clients[sid] = {
@@ -62,6 +63,9 @@ async def connect(sid, environ, auth):
         "subscriptions": set(),
         "user_id": auth.get("user_id") if auth else None
     }
+    
+    print(f"[SOCKET-SERVER-connect] Total connected clients: {len(connected_clients)}")
+    print(f"[SOCKET-SERVER-connect] Connected client IDs: {list(connected_clients.keys())}")
     
     await sio.emit('message', {
         'type': 'connection_status',
@@ -73,13 +77,23 @@ async def connect(sid, environ, auth):
 
 @sio.event
 async def disconnect(sid):
+    print(f"[SOCKET-SERVER-disconnect] ===== CLIENT DISCONNECTED: {sid} =====")
     logger.info(f"[SOCKET-SERVER-disconnect] Client {sid} disconnected")
     if sid in connected_clients:
         del connected_clients[sid]
+    print(f"[SOCKET-SERVER-disconnect] Remaining clients: {len(connected_clients)}")
 
 @sio.event
 async def message(sid, data):
+    print(f"[SOCKET-SERVER-message] Received from {sid}: {data}")
     logger.info(f"[SOCKET-SERVER-message] Received from {sid}: {data}")
+    
+    # Check if it's an identification message
+    if isinstance(data, dict) and data.get('type') == 'identify':
+        client_name = data.get('client', 'unknown')
+        print(f"[SOCKET-SERVER-message] ===== CLIENT IDENTIFIED: {client_name} (SID: {sid}) =====")
+        if sid in connected_clients:
+            connected_clients[sid]['client_name'] = client_name
     
     await sio.emit('message', {
         'type': 'echo',
@@ -135,16 +149,17 @@ async def broadcast(sid, data):
     
     logger.info(f"[SOCKET-SERVER-broadcast] Sent confirmation back to {sid}")
 
-@sio.event
+@sio.on("upload-complete")
 async def upload_complete(sid, data):
     file_name = data.get('fileName', 'Unknown')
     google_drive_id = data.get('googleDriveId', 'Unknown')
     file_size = data.get('fileSize', 0)
     
-    print(f"[SOCKET-SERVER-upload_complete] 🎉 UPLOAD COMPLETED! File: {file_name}")
+    print(f"[SOCKET-SERVER-upload_complete] UPLOAD COMPLETED! File: {file_name}")
     print(f"[SOCKET-SERVER-upload_complete] Google Drive ID: {google_drive_id}")
     print(f"[SOCKET-SERVER-upload_complete] File Size: {file_size} bytes")
     print(f"[SOCKET-SERVER-upload_complete] Received from client: {sid}")
+    print(f"[SOCKET-SERVER-upload_complete] Connected clients: {list(connected_clients.keys())}")
     
     logger.info(f"[SOCKET-SERVER-upload_complete] Upload completed - File: {file_name}, Drive ID: {google_drive_id}, Size: {file_size}")
     
@@ -159,11 +174,114 @@ async def upload_complete(sid, data):
     }, room=sid)
     
     # Broadcast upload completion to all connected clients (including Google Drive watcher)
-    print(f"[SOCKET-SERVER-upload_complete] Broadcasting upload completion to all connected clients")
-    await sio.emit('upload_complete', {
+    print(f"[SOCKET-SERVER-upload_complete] Broadcasting upload completion to {len(connected_clients)} connected clients")
+    await sio.emit('upload-complete', {
         'fileName': file_name,
         'googleDriveId': google_drive_id,
         'fileSize': file_size,
+        'timestamp': datetime.now().isoformat(),
+        'from_server': True
+    })  # No room specified = broadcast to all clients
+
+@sio.on("processing-started")
+async def processing_started(sid, data):
+    file_name = data.get('fileName', 'Unknown')
+    google_drive_id = data.get('googleDriveId', 'Unknown')
+    pipeline_type = data.get('pipelineType', 'unknown')
+    
+    print(f"[SOCKET-SERVER-processing_started] PROCESSING STARTED! File: {file_name}")
+    print(f"[SOCKET-SERVER-processing_started] Google Drive ID: {google_drive_id}")
+    print(f"[SOCKET-SERVER-processing_started] Pipeline Type: {pipeline_type}")
+    print(f"[SOCKET-SERVER-processing_started] Received from client: {sid}")
+    
+    logger.info(f"[SOCKET-SERVER-processing_started] Processing started - File: {file_name}, Drive ID: {google_drive_id}, Pipeline: {pipeline_type}")
+    
+    # Acknowledge to the original sender
+    await sio.emit('message', {
+        'type': 'processing_started_acknowledged',
+        'file_name': file_name,
+        'google_drive_id': google_drive_id,
+        'message': f'Processing started for {file_name} acknowledged by server',
+        'timestamp': datetime.now().isoformat(),
+        'from_server': True
+    }, room=sid)
+    
+    # Broadcast processing started to all connected clients (including frontend)
+    print(f"[SOCKET-SERVER-processing_started] Broadcasting processing started to {len(connected_clients)} connected clients")
+    await sio.emit('processing-started', {
+        'fileName': file_name,
+        'googleDriveId': google_drive_id,
+        'pipelineType': pipeline_type,
+        'timestamp': datetime.now().isoformat(),
+        'from_server': True
+    })  # No room specified = broadcast to all clients
+
+@sio.on("processing-complete")
+async def processing_complete(sid, data):
+    file_name = data.get('fileName', 'Unknown')
+    google_drive_id = data.get('googleDriveId', 'Unknown')
+    pipeline_type = data.get('pipelineType', 'unknown')
+    
+    print(f"[SOCKET-SERVER-processing_complete] PROCESSING COMPLETE! File: {file_name}")
+    print(f"[SOCKET-SERVER-processing_complete] Google Drive ID: {google_drive_id}")
+    print(f"[SOCKET-SERVER-processing_complete] Pipeline Type: {pipeline_type}")
+    print(f"[SOCKET-SERVER-processing_complete] Received from client: {sid}")
+    
+    logger.info(f"[SOCKET-SERVER-processing_complete] Processing complete - File: {file_name}, Drive ID: {google_drive_id}, Pipeline: {pipeline_type}")
+    
+    # Acknowledge to the original sender
+    await sio.emit('message', {
+        'type': 'processing_complete_acknowledged',
+        'file_name': file_name,
+        'google_drive_id': google_drive_id,
+        'message': f'Processing complete for {file_name} acknowledged by server',
+        'timestamp': datetime.now().isoformat(),
+        'from_server': True
+    }, room=sid)
+    
+    # Broadcast processing complete to all connected clients (including frontend)
+    print(f"[SOCKET-SERVER-processing_complete] Broadcasting processing complete to {len(connected_clients)} connected clients")
+    await sio.emit('processing-complete', {
+        'fileName': file_name,
+        'googleDriveId': google_drive_id,
+        'pipelineType': pipeline_type,
+        'timestamp': datetime.now().isoformat(),
+        'from_server': True
+    })  # No room specified = broadcast to all clients
+
+@sio.on("processing-failed")
+async def processing_failed(sid, data):
+    file_name = data.get('fileName', 'Unknown')
+    google_drive_id = data.get('googleDriveId', 'Unknown')
+    pipeline_type = data.get('pipelineType', 'unknown')
+    error_message = data.get('error', 'Unknown error')
+    
+    print(f"[SOCKET-SERVER-processing_failed] PROCESSING FAILED! File: {file_name}")
+    print(f"[SOCKET-SERVER-processing_failed] Google Drive ID: {google_drive_id}")
+    print(f"[SOCKET-SERVER-processing_failed] Pipeline Type: {pipeline_type}")
+    print(f"[SOCKET-SERVER-processing_failed] Error: {error_message}")
+    print(f"[SOCKET-SERVER-processing_failed] Received from client: {sid}")
+    
+    logger.error(f"[SOCKET-SERVER-processing_failed] Processing failed - File: {file_name}, Drive ID: {google_drive_id}, Pipeline: {pipeline_type}, Error: {error_message}")
+    
+    # Acknowledge to the original sender
+    await sio.emit('message', {
+        'type': 'processing_failed_acknowledged',
+        'file_name': file_name,
+        'google_drive_id': google_drive_id,
+        'error': error_message,
+        'message': f'Processing failed for {file_name} acknowledged by server',
+        'timestamp': datetime.now().isoformat(),
+        'from_server': True
+    }, room=sid)
+    
+    # Broadcast processing failed to all connected clients (including frontend)
+    print(f"[SOCKET-SERVER-processing_failed] Broadcasting processing failed to {len(connected_clients)} connected clients")
+    await sio.emit('processing-failed', {
+        'fileName': file_name,
+        'googleDriveId': google_drive_id,
+        'pipelineType': pipeline_type,
+        'error': error_message,
         'timestamp': datetime.now().isoformat(),
         'from_server': True
     })  # No room specified = broadcast to all clients

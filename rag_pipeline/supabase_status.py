@@ -18,7 +18,6 @@ class SupabaseStatusTracker:
         self.pipeline_id = pipeline_id
         self.pipeline_type = pipeline_type
         
-        # Initialize Supabase client
         url = os.environ.get("SUPABASE_URL")
         key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
         
@@ -50,7 +49,6 @@ class SupabaseStatusTracker:
             
             print(f"[SUPABASE-STATUS] Pipeline {self.pipeline_id} marked as online")
             
-            # Start heartbeat thread
             self.stop_heartbeat = False
             self.heartbeat_thread = threading.Thread(target=self._heartbeat_loop, daemon=True)
             self.heartbeat_thread.start()
@@ -63,12 +61,10 @@ class SupabaseStatusTracker:
     def stop(self):
         """Mark the pipeline as offline and stop heartbeat."""
         try:
-            # Stop heartbeat thread
             self.stop_heartbeat = True
             if self.heartbeat_thread:
                 self.heartbeat_thread.join(timeout=2)
             
-            # Update pipeline status to offline
             result = self.supabase.table("rag_pipeline_state").update({
                 "server_status": "offline",
                 "last_heartbeat": datetime.now().isoformat(),
@@ -99,7 +95,6 @@ class SupabaseStatusTracker:
         """Background thread to send heartbeats."""
         while not self.stop_heartbeat:
             try:
-                # Send heartbeat every 30 seconds
                 time.sleep(30)
                 
                 if not self.stop_heartbeat:
@@ -150,7 +145,6 @@ class SupabaseStatusTracker:
             print(f"[SUPABASE-STATUS] Error updating processing status: {e}")
             return None
 
-# Global instance (will be initialized by main pipeline)
 status_tracker: Optional[SupabaseStatusTracker] = None
 
 def init_status_tracker(pipeline_id: str, pipeline_type: str) -> SupabaseStatusTracker:

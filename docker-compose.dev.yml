@@ -90,6 +90,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8003:8003" # Status server port
+    depends_on:
+      - rag-socket-server-dev
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
@@ -104,6 +106,7 @@ services:
       - RAG_PIPELINE_ID=google-drive-pipeline
       - RAG_SERVICE=google_drive
       - DEBUG_MODE=${DEBUG_MODE:-true}
+      - RAG_SOCKET_URL=http://rag-socket-server-dev:8002
     volumes:
       - ./rag_pipeline:/app
       - ./test_files:/app/test_files
@@ -119,6 +122,8 @@ services:
     build:
       context: ./rag_pipeline
       dockerfile: Dockerfile
+    depends_on:
+      - rag-socket-server-dev
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
@@ -132,6 +137,7 @@ services:
       - RAG_PIPELINE_ID=local-files-pipeline
       - RAG_SERVICE=local_files
       - DEBUG_MODE=${DEBUG_MODE:-true}
+      - RAG_SOCKET_URL=http://rag-socket-server-dev:8002
     volumes:
       - ./rag_pipeline:/app
       - ./test_files:/app/test_files

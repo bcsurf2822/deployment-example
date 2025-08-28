@@ -1,0 +1,14 @@
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["upload-complete",{"fileName":"AI Builder Prompting Guide.pdf","googleDriveId":"1pWcXBfktSgia0EQzH3fe57WniQseyDn6","fileSize":645784,"timestamp":"2025-08-28T10:50:48.988514","from_server":true}]
+rag-google-drive-dev-1   | Received event "upload-complete" [/]
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] ===== RECEIVED UPLOAD-COMPLETE EVENT =====
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=UJj1MncetfxfN8FjAAAG
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Data: {'fileName': 'AI Builder Prompting Guide.pdf', 'googleDriveId': '1pWcXBfktSgia0EQzH3fe57WniQseyDn6', 'fileSize': 645784, 'timestamp': '2025-08-28T10:50:48.988514', 'from_server': True}
+rag-google-drive-dev-1   | [DRIVE_WATCHER-UPLOAD_COMPLETE] Processing immediate upload: AI Builder Prompting Guide.pdf (ID: 1pWcXBfktSgia0EQzH3fe57WniQseyDn6)
+rag-google-drive-dev-1   | [DRIVE_WATCHER-IMMEDIATE] Fetching metadata for AI Builder Prompting Guide.pdf (ID: 1pWcXBfktSgia0EQzH3fe57WniQseyDn6)
+rag-google-drive-dev-1   | [DRIVE_WATCHER-IMMEDIATE] Processing AI Builder Prompting Guide.pdf immediately
+rag-google-drive-dev-1   | Deleted 0 document chunks for file ID: 1pWcXBfktSgia0EQzH3fe57WniQseyDn6
+rag-google-drive-dev-1   | Deleted 0 document rows for file ID: 1pWcXBfktSgia0EQzH3fe57WniQseyDn6
+rag-google-drive-dev-1   | Deleted metadata for file ID: 1pWcXBfktSgia0EQzH3fe57WniQseyDn6
+rag-google-drive-dev-1   | Inserted metadata for file 'AI Builder Prompting Guide.pdf' (ID: 1pWcXBfktSgia0EQzH3fe57WniQseyDn6)
+rag-google-drive-dev-1   | Successfully processed file 'AI Builder Prompting Guide.pdf' (ID: 1pWcXBfktSgia0EQzH3fe57WniQseyDn6)
+rag-google-drive-dev-1   | [DRIVE_WATCHER-UPLOAD_COMPLETE] Successfully processed AI Builder Prompting Guide.pdf immediately
