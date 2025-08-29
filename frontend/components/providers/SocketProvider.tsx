@@ -29,8 +29,16 @@ export function SocketProvider({ children }: SocketProviderProps) {
     });
 
     socketInstance.on('connect', () => {
-      console.log('[SOCKET-PROVIDER-connect] Connected to socket server');
+      console.log('[SOCKET-PROVIDER-connect] Connected to socket server with ID:', socketInstance.id);
       setIsConnected(true);
+      
+      // Identify this client as frontend for proper message routing
+      socketInstance.emit('message', {
+        type: 'identify',
+        client: 'frontend',
+        message: 'Frontend client connected and ready for processing notifications'
+      });
+      console.log('[SOCKET-PROVIDER-connect] Sent frontend client identification for ID:', socketInstance.id);
     });
 
     socketInstance.on('disconnect', () => {

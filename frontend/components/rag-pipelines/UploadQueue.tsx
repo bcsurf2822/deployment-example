@@ -6,7 +6,7 @@ import type { ServerToClientEvents } from "@/lib/types/socket";
 
 export interface FileUploadStatus {
   file: File;
-  status: "pending" | "uploading" | "success" | "error" | "processing";
+  status: "pending" | "uploading" | "uploaded" | "processing" | "success" | "error";
   progress?: number;
   error?: string;
   googleDriveId?: string;
@@ -37,6 +37,8 @@ export default function UploadQueue({
 
   useEffect(() => {
     if (!socket || !isConnected) return;
+    
+    console.log('[UPLOAD-QUEUE] Setting up socket event listeners for socket ID:', socket.id);
 
     // Listen for processing status updates
     const handleProcessingStarted = (data: ProcessingStartedData) => {
@@ -54,9 +56,11 @@ export default function UploadQueue({
       console.log('[UPLOAD-QUEUE] Received processing-complete:', data);
       const fileName = data.fileName;
       if (fileName) {
-        updateFileStatusByName(fileName, { 
-          status: "success" 
-        });
+        // Remove file from queue after successful processing
+        setUploadStatuses((prev) => 
+          prev.filter((fs) => fs.file.name !== fileName)
+        );
+        console.log(`[UPLOAD-QUEUE] File ${fileName} processed successfully and removed from queue`);
       }
     };
 
@@ -72,6 +76,14 @@ export default function UploadQueue({
       }
     };
 
+    // Add generic listener to catch all socket events for debugging
+    const handleAnyEvent = (eventName: string, ...args: any[]) => {
+      console.log(`[UPLOAD-QUEUE] Received socket event '${eventName}':`, args);
+    };
+    
+    // Listen for any socket event (debugging)
+    socket.onAny(handleAnyEvent);
+
     // Register socket listeners
     socket.on('processing-started', handleProcessingStarted);
     socket.on('processing-complete', handleProcessingComplete);
@@ -79,6 +91,7 @@ export default function UploadQueue({
 
     // Cleanup function
     return () => {
+      socket.offAny(handleAnyEvent);
       socket.off('processing-started', handleProcessingStarted);
       socket.off('processing-complete', handleProcessingComplete);
       socket.off('processing-failed', handleProcessingFailed);
@@ -136,9 +149,9 @@ export default function UploadQueue({
       const result = await response.json();
       console.log(`[UPLOAD-QUEUE] Upload successful for ${file.name}:`, result);
 
-      // Mark as success and immediately notify parent
+      // Mark as uploaded (waiting for processing to start)
       updateFileStatus(file, {
-        status: "success",
+        status: "uploaded",
         progress: 100,
         googleDriveId: result.file?.googleDriveId,
       });
@@ -210,7 +223,7 @@ export default function UploadQueue({
           >
             <div className="flex items-center space-x-3 flex-1">
               <div className="flex-shrink-0">
-                {(fileStatus.status === "uploading" || fileStatus.status === "processing") && (
+                {(fileStatus.status === "uploading" || fileStatus.status === "processing" || fileStatus.status === "uploaded") && (
                   <svg
                     className="animate-spin h-5 w-5 text-blue-500"
                     fill="none"
@@ -283,15 +296,18 @@ export default function UploadQueue({
                         Uploading... {fileStatus.progress}%
                       </span>
                     )}
-                  {fileStatus.status === "success" && (
-                    <span className="ml-2 text-green-500">Upload complete!</span>
+                  {fileStatus.status === "uploaded" && (
+                    <span className="ml-2 text-blue-500">Uploaded! Waiting for processing...</span>
                   )}
                   {fileStatus.status === "processing" && (
                     <span className="ml-2 text-blue-500">
                       {fileStatus.processingStep === "vectorizing" 
                         ? "Converting to vectors..." 
-                        : "Waiting for processing..."}
+                        : "Processing document..."}
                     </span>
+                  )}
+                  {fileStatus.status === "success" && (
+                    <span className="ml-2 text-green-500">Processing complete!</span>
                   )}
                   {fileStatus.status === "error" && fileStatus.error && (
                     <span className="ml-2 text-red-500">{fileStatus.error}</span>
@@ -300,6 +316,7 @@ export default function UploadQueue({
               </div>
             </div>
             {fileStatus.status !== "uploading" &&
+              fileStatus.status !== "uploaded" &&
               fileStatus.status !== "success" &&
               fileStatus.status !== "processing" && (
                 <button
@@ -325,7 +342,7 @@ export default function UploadQueue({
                 </div>
               </div>
             )}
-            {fileStatus.status === "processing" && (
+            {(fileStatus.status === "uploaded" || fileStatus.status === "processing") && (
               <div className="ml-4 w-24">
                 <div className="bg-gray-200 rounded-full h-2">
                   <div className="bg-blue-500 h-2 rounded-full transition-all animate-pulse" 

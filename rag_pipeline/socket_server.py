@@ -38,6 +38,40 @@ socket_app = socketio.ASGIApp(sio, app)
 
 connected_clients: Dict[str, Dict[str, Any]] = {}
 
+async def emit_to_frontend_clients(event_name: str, data: Dict[str, Any]):
+    """Emit event only to frontend clients"""
+    frontend_clients = []
+    print(f"[SOCKET-SERVER-routing] Looking for frontend clients among {len(connected_clients)} connected clients")
+    
+    for sid, client_info in connected_clients.items():
+        client_type = client_info.get('client_type', 'unknown')
+        client_name = client_info.get('client_name', 'unknown')
+        print(f"[SOCKET-SERVER-routing] Client {sid}: type='{client_type}', name='{client_name}'")
+        
+        if client_type == 'frontend':
+            frontend_clients.append(sid)
+            await sio.emit(event_name, data, room=sid)
+            print(f"[SOCKET-SERVER-routing] Emitted '{event_name}' to frontend client {sid}")
+    
+    print(f"[SOCKET-SERVER-routing] Total frontend clients found: {len(frontend_clients)}")
+    logger.info(f"[SOCKET-SERVER-routing] Emitted '{event_name}' to {len(frontend_clients)} frontend clients: {frontend_clients}")
+
+async def emit_to_pipeline_clients(event_name: str, data: Dict[str, Any]):
+    """Emit event only to pipeline clients (Google Drive, Local Files)"""
+    pipeline_clients = []
+    for sid, client_info in connected_clients.items():
+        client_type = client_info.get('client_type', 'unknown')
+        if client_type in ['google-drive-watcher', 'local-files-watcher']:
+            pipeline_clients.append(sid)
+            await sio.emit(event_name, data, room=sid)
+    
+    logger.info(f"[SOCKET-SERVER-routing] Emitted '{event_name}' to {len(pipeline_clients)} pipeline clients: {pipeline_clients}")
+
+async def emit_to_all_clients(event_name: str, data: Dict[str, Any]):
+    """Emit event to all connected clients"""
+    await sio.emit(event_name, data)  # No room specified = broadcast to all
+    logger.info(f"[SOCKET-SERVER-routing] Broadcasted '{event_name}' to all {len(connected_clients)} clients")
+
 @app.get("/health")
 async def health_check():
     return {
@@ -48,8 +82,16 @@ async def health_check():
 
 @app.get("/clients")
 async def get_clients():
+    client_details = {}
+    for sid, client_info in connected_clients.items():
+        client_details[sid] = {
+            "client_type": client_info.get("client_type", "unknown"),
+            "client_name": client_info.get("client_name", "unknown"),
+            "connected_at": client_info.get("connected_at")
+        }
+    
     return {
-        "connected_clients": list(connected_clients.keys()),
+        "connected_clients": client_details,
         "count": len(connected_clients)
     }
 
@@ -61,7 +103,8 @@ async def connect(sid, environ, auth):
     connected_clients[sid] = {
         "connected_at": datetime.now().isoformat(),
         "subscriptions": set(),
-        "user_id": auth.get("user_id") if auth else None
+        "user_id": auth.get("user_id") if auth else None,
+        "client_type": "unknown"  # Will be updated when client identifies itself
     }
     
     print(f"[SOCKET-SERVER-connect] Total connected clients: {len(connected_clients)}")
@@ -94,6 +137,8 @@ async def message(sid, data):
         print(f"[SOCKET-SERVER-message] ===== CLIENT IDENTIFIED: {client_name} (SID: {sid}) =====")
         if sid in connected_clients:
             connected_clients[sid]['client_name'] = client_name
+            connected_clients[sid]['client_type'] = client_name  # Store client type for routing
+            logger.info(f"[SOCKET-SERVER-identify] Client {sid} identified as '{client_name}' for message routing")
     
     await sio.emit('message', {
         'type': 'echo',
@@ -173,15 +218,15 @@ async def upload_complete(sid, data):
         'from_server': True
     }, room=sid)
     
-    # Broadcast upload completion to all connected clients (including Google Drive watcher)
+    # Broadcast upload completion to all connected clients (triggers processing pipelines)
     print(f"[SOCKET-SERVER-upload_complete] Broadcasting upload completion to {len(connected_clients)} connected clients")
-    await sio.emit('upload-complete', {
+    await emit_to_all_clients('upload-complete', {
         'fileName': file_name,
         'googleDriveId': google_drive_id,
         'fileSize': file_size,
         'timestamp': datetime.now().isoformat(),
         'from_server': True
-    })  # No room specified = broadcast to all clients
+    })
 
 @sio.on("processing-started")
 async def processing_started(sid, data):
@@ -206,15 +251,15 @@ async def processing_started(sid, data):
         'from_server': True
     }, room=sid)
     
-    # Broadcast processing started to all connected clients (including frontend)
-    print(f"[SOCKET-SERVER-processing_started] Broadcasting processing started to {len(connected_clients)} connected clients")
-    await sio.emit('processing-started', {
+    # Send processing started ONLY to frontend clients (not back to pipeline)
+    print(f"[SOCKET-SERVER-processing_started] Routing processing started to frontend clients only")
+    await emit_to_frontend_clients('processing-started', {
         'fileName': file_name,
         'googleDriveId': google_drive_id,
         'pipelineType': pipeline_type,
         'timestamp': datetime.now().isoformat(),
         'from_server': True
-    })  # No room specified = broadcast to all clients
+    })
 
 @sio.on("processing-complete")
 async def processing_complete(sid, data):
@@ -239,15 +284,15 @@ async def processing_complete(sid, data):
         'from_server': True
     }, room=sid)
     
-    # Broadcast processing complete to all connected clients (including frontend)
-    print(f"[SOCKET-SERVER-processing_complete] Broadcasting processing complete to {len(connected_clients)} connected clients")
-    await sio.emit('processing-complete', {
+    # Send processing complete ONLY to frontend clients (not back to pipeline)
+    print(f"[SOCKET-SERVER-processing_complete] Routing processing complete to frontend clients only")
+    await emit_to_frontend_clients('processing-complete', {
         'fileName': file_name,
         'googleDriveId': google_drive_id,
         'pipelineType': pipeline_type,
         'timestamp': datetime.now().isoformat(),
         'from_server': True
-    })  # No room specified = broadcast to all clients
+    })
 
 @sio.on("processing-failed")
 async def processing_failed(sid, data):
@@ -275,16 +320,16 @@ async def processing_failed(sid, data):
         'from_server': True
     }, room=sid)
     
-    # Broadcast processing failed to all connected clients (including frontend)
-    print(f"[SOCKET-SERVER-processing_failed] Broadcasting processing failed to {len(connected_clients)} connected clients")
-    await sio.emit('processing-failed', {
+    # Send processing failed ONLY to frontend clients (not back to pipeline)
+    print(f"[SOCKET-SERVER-processing_failed] Routing processing failed to frontend clients only")
+    await emit_to_frontend_clients('processing-failed', {
         'fileName': file_name,
         'googleDriveId': google_drive_id,
         'pipelineType': pipeline_type,
         'error': error_message,
         'timestamp': datetime.now().isoformat(),
         'from_server': True
-    })  # No room specified = broadcast to all clients
+    })
 
 async def emit_processing_status(file_info: Dict[str, Any], status: str, pipeline_type: str = "unknown"):
     update_data = {

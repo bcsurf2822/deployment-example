@@ -1,0 +1,181 @@
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["upload-complete",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","fileSize":541388,"timestamp":"2025-08-29T10:45:36.209980","from_server":true}]
+rag-google-drive-dev-1   | Received event "upload-complete" [/]
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] ===== RECEIVED UPLOAD-COMPLETE EVENT =====
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Data: {'fileName': 'AWS Business Foundations Syllabus.pdf', 'googleDriveId': '1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx', 'fileSize': 541388, 'timestamp': '2025-08-29T10:45:36.209980', 'from_server': True}
+rag-google-drive-dev-1   | [DRIVE_WATCHER-UPLOAD_COMPLETE] Processing immediate upload: AWS Business Foundations Syllabus.pdf (ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx)
+rag-google-drive-dev-1   | [DRIVE_WATCHER-IMMEDIATE] Fetching metadata for AWS Business Foundations Syllabus.pdf (ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx)
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA
+rag-google-drive-dev-1   | [DRIVE_WATCHER-IMMEDIATE] Processing AWS Business Foundations Syllabus.pdf immediately
+rag-google-drive-dev-1   | [DRIVE_WATCHER-PROCESS] Sending processing-started notification for AWS Business Foundations Syllabus.pdf
+rag-google-drive-dev-1   | Emitting event "processing-started" [/]
+rag-google-drive-dev-1   | Sending packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","timestamp":"2025-08-29T10:45:36.670587","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | L9sKQDbAhGjHIxHJAAAA: Received packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","timestamp":"2025-08-29T10:45:36.670587","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | INFO:engineio.server:L9sKQDbAhGjHIxHJAAAA: Received packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","timestamp":"2025-08-29T10:45:36.670587","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | received event "processing-started" from aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "processing-started" from aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | INFO:     172.18.0.4:40742 - "POST /socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] PROCESSING STARTED! File: AWS Business Foundations Syllabus.pdf
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Google Drive ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Pipeline Type: google_drive
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Received from client: aFJ3YuemLae9WCiVAAAB
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-processing_started] Processing started - File: AWS Business Foundations Syllabus.pdf, Drive ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx, Pipeline: google_drive
+rag-socket-server-dev-1  | emitting event "message" to aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | L9sKQDbAhGjHIxHJAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"AWS Business Foundations Syllabus.pdf","google_drive_id":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","message":"Processing started for AWS Business Foundations Syllabus.pdf acknowledged by server","timestamp":"2025-08-29T10:45:36.676752","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:L9sKQDbAhGjHIxHJAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"AWS Business Foundations Syllabus.pdf","google_drive_id":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","message":"Processing started for AWS Business Foundations Syllabus.pdf acknowledged by server","timestamp":"2025-08-29T10:45:36.676752","from_server":true}]
+rag-socket-server-dev-1  | emitting event "processing-started" to NqZUiOuy62sOCF4hAAAD [/]
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Routing processing started to frontend clients only
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Looking for frontend clients among 3 connected clients
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client aFJ3YuemLae9WCiVAAAB: type='google-drive-watcher', name='google-drive-watcher'
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client NqZUiOuy62sOCF4hAAAD: type='frontend', name='frontend'
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "processing-started" to NqZUiOuy62sOCF4hAAAD [/]
+rag-socket-server-dev-1  | INFO:     172.18.0.4:50444 - "GET /socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA&t=1756464336.2166257 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | 2Sy28XMQK6bsxavcAAAC: Sending packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:36.676931","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:2Sy28XMQK6bsxavcAAAC: Sending packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:36.676931","from_server":true}]
+rag-socket-server-dev-1  | emitting event "processing-started" to 5cb5j9-4zZe86-QhAAAH [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "processing-started" to 5cb5j9-4zZe86-QhAAAH [/]
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Emitted 'processing-started' to frontend client NqZUiOuy62sOCF4hAAAD
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client 5cb5j9-4zZe86-QhAAAH: type='frontend', name='frontend'
+rag-socket-server-dev-1  | 2cA4Mz0XT6H7ykupAAAG: Sending packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:36.676931","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:2cA4Mz0XT6H7ykupAAAG: Sending packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:36.676931","from_server":true}]
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"AWS Business Foundations Syllabus.pdf","google_drive_id":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","message":"Processing started for AWS Business Foundations Syllabus.pdf acknowledged by server","timestamp":"2025-08-29T10:45:36.676752","from_server":true}]
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Emitted 'processing-started' to frontend client 5cb5j9-4zZe86-QhAAAH
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Total frontend clients found: 2
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-routing] Emitted 'processing-started' to 2 frontend clients: ['NqZUiOuy62sOCF4hAAAD', '5cb5j9-4zZe86-QhAAAH']
+rag-google-drive-dev-1   | Received event "message" [/]
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Received message: {'type': 'processing_started_acknowledged', 'file_name': 'AWS Business Foundations Syllabus.pdf', 'google_drive_id': '1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx', 'message': 'Processing started for AWS Business Foundations Syllabus.pdf acknowledged by server', 'timestamp': '2025-08-29T10:45:36.676752', 'from_server': True}
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA
+rag-google-drive-dev-1   | Deleted 0 document chunks for file ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx
+rag-google-drive-dev-1   | Deleted 0 document rows for file ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx
+rag-google-drive-dev-1   | Deleted metadata for file ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx
+rag-google-drive-dev-1   | Inserted metadata for file 'AWS Business Foundations Syllabus.pdf' (ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx)
+rag-google-drive-dev-1   | [DRIVE_WATCHER-PROCESS] Sending processing-complete notification for AWS Business Foundations Syllabus.pdf
+rag-google-drive-dev-1   | Emitting event "processing-complete" [/]
+rag-google-drive-dev-1   | Sending packet MESSAGE data 2["processing-complete",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","timestamp":"2025-08-29T10:45:44.652722","pipelineType":"google_drive"}]
+rag-google-drive-dev-1   | Successfully processed file 'AWS Business Foundations Syllabus.pdf' (ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx)
+rag-google-drive-dev-1   | [DRIVE_WATCHER-UPLOAD_COMPLETE] Successfully processed AWS Business Foundations Syllabus.pdf immediately
+rag-socket-server-dev-1  | L9sKQDbAhGjHIxHJAAAA: Received packet MESSAGE data 2["processing-complete",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","timestamp":"2025-08-29T10:45:44.652722","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | INFO:engineio.server:L9sKQDbAhGjHIxHJAAAA: Received packet MESSAGE data 2["processing-complete",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","timestamp":"2025-08-29T10:45:44.652722","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | received event "processing-complete" from aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "processing-complete" from aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | INFO:     172.18.0.4:37420 - "POST /socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] PROCESSING COMPLETE! File: AWS Business Foundations Syllabus.pdf
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Google Drive ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Pipeline Type: google_drive
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Received from client: aFJ3YuemLae9WCiVAAAB
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-processing_complete] Processing complete - File: AWS Business Foundations Syllabus.pdf, Drive ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx, Pipeline: google_drive
+rag-socket-server-dev-1  | emitting event "message" to aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Routing processing complete to frontend clients only
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Looking for frontend clients among 3 connected clients
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client aFJ3YuemLae9WCiVAAAB: type='google-drive-watcher', name='google-drive-watcher'
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client NqZUiOuy62sOCF4hAAAD: type='frontend', name='frontend'
+rag-socket-server-dev-1  | L9sKQDbAhGjHIxHJAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_complete_acknowledged","file_name":"AWS Business Foundations Syllabus.pdf","google_drive_id":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","message":"Processing complete for AWS Business Foundations Syllabus.pdf acknowledged by server","timestamp":"2025-08-29T10:45:44.657329","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:L9sKQDbAhGjHIxHJAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_complete_acknowledged","file_name":"AWS Business Foundations Syllabus.pdf","google_drive_id":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","message":"Processing complete for AWS Business Foundations Syllabus.pdf acknowledged by server","timestamp":"2025-08-29T10:45:44.657329","from_server":true}]
+rag-socket-server-dev-1  | emitting event "processing-complete" to NqZUiOuy62sOCF4hAAAD [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "processing-complete" to NqZUiOuy62sOCF4hAAAD [/]
+rag-socket-server-dev-1  | INFO:     172.18.0.4:50444 - "GET /socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA&t=1756464336.678508 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | 2Sy28XMQK6bsxavcAAAC: Sending packet MESSAGE data 2["processing-complete",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:44.657642","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:2Sy28XMQK6bsxavcAAAC: Sending packet MESSAGE data 2["processing-complete",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:44.657642","from_server":true}]
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Emitted 'processing-complete' to frontend client NqZUiOuy62sOCF4hAAAD
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client 5cb5j9-4zZe86-QhAAAH: type='frontend', name='frontend'
+rag-socket-server-dev-1  | emitting event "processing-complete" to 5cb5j9-4zZe86-QhAAAH [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "processing-complete" to 5cb5j9-4zZe86-QhAAAH [/]
+rag-socket-server-dev-1  | 2cA4Mz0XT6H7ykupAAAG: Sending packet MESSAGE data 2["processing-complete",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:44.657642","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:2cA4Mz0XT6H7ykupAAAG: Sending packet MESSAGE data 2["processing-complete",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:44.657642","from_server":true}]
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-routing] Emitted 'processing-complete' to 2 frontend clients: ['NqZUiOuy62sOCF4hAAAD', '5cb5j9-4zZe86-QhAAAH']
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Emitted 'processing-complete' to frontend client 5cb5j9-4zZe86-QhAAAH
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Total frontend clients found: 2
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["message",{"type":"processing_complete_acknowledged","file_name":"AWS Business Foundations Syllabus.pdf","google_drive_id":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","message":"Processing complete for AWS Business Foundations Syllabus.pdf acknowledged by server","timestamp":"2025-08-29T10:45:44.657329","from_server":true}]
+rag-google-drive-dev-1   | Received event "message" [/]
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Received message: {'type': 'processing_complete_acknowledged', 'file_name': 'AWS Business Foundations Syllabus.pdf', 'google_drive_id': '1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx', 'message': 'Processing complete for AWS Business Foundations Syllabus.pdf acknowledged by server', 'timestamp': '2025-08-29T10:45:44.657329', 'from_server': True}
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA
+rag-local-files-dev-1    | [SUPABASE-STATUS] Heartbeat sent for local-files-pipeline
+rag-local-files-dev-1    | [SYNC_MANAGER-GET_DOCS] Found 0 unique file IDs in documents table for source: local_files
+rag-local-files-dev-1    | [SYNC_MANAGER-ORPHANED] No orphaned documents found
+rag-local-files-dev-1    | [SYNC_MANAGER-SAVE_STATE] Updated state for pipeline local-files-pipeline
+rag-google-drive-dev-1   | [SUPABASE-STATUS] Heartbeat sent for google-drive-pipeline
+rag-socket-server-dev-1  | INFO:     127.0.0.1:54186 - "GET /health HTTP/1.1" 200 OK
+agent-api-dev-1          | INFO:     127.0.0.1:40200 - "GET /health HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | 2cA4Mz0XT6H7ykupAAAG: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:2cA4Mz0XT6H7ykupAAAG: Sending packet PING data None
+rag-socket-server-dev-1  | 2cA4Mz0XT6H7ykupAAAG: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:2cA4Mz0XT6H7ykupAAAG: Received packet PONG data 
+rag-google-drive-dev-1   | Saved last check time: 2025-08-29 10:45:51.290965+00:00
+rag-google-drive-dev-1   | Found 1 changed files.
+rag-google-drive-dev-1   | Processing: AWS Business Foundations Syllabus.pdf
+rag-google-drive-dev-1   | [DRIVE_WATCHER-PROCESS] Sending processing-started notification for AWS Business Foundations Syllabus.pdf
+rag-google-drive-dev-1   | Emitting event "processing-started" [/]
+rag-google-drive-dev-1   | Sending packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","timestamp":"2025-08-29T10:45:51.699323","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | L9sKQDbAhGjHIxHJAAAA: Received packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","timestamp":"2025-08-29T10:45:51.699323","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | INFO:engineio.server:L9sKQDbAhGjHIxHJAAAA: Received packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","timestamp":"2025-08-29T10:45:51.699323","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | received event "processing-started" from aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "processing-started" from aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | INFO:     172.18.0.4:37430 - "POST /socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] PROCESSING STARTED! File: AWS Business Foundations Syllabus.pdf
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Google Drive ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Pipeline Type: google_drive
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Received from client: aFJ3YuemLae9WCiVAAAB
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-processing_started] Processing started - File: AWS Business Foundations Syllabus.pdf, Drive ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx, Pipeline: google_drive
+rag-socket-server-dev-1  | emitting event "message" to aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to aFJ3YuemLae9WCiVAAAB [/]
+rag-socket-server-dev-1  | L9sKQDbAhGjHIxHJAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"AWS Business Foundations Syllabus.pdf","google_drive_id":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","message":"Processing started for AWS Business Foundations Syllabus.pdf acknowledged by server","timestamp":"2025-08-29T10:45:51.701721","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:L9sKQDbAhGjHIxHJAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"AWS Business Foundations Syllabus.pdf","google_drive_id":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","message":"Processing started for AWS Business Foundations Syllabus.pdf acknowledged by server","timestamp":"2025-08-29T10:45:51.701721","from_server":true}]
+rag-socket-server-dev-1  | emitting event "processing-started" to NqZUiOuy62sOCF4hAAAD [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "processing-started" to NqZUiOuy62sOCF4hAAAD [/]
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Routing processing started to frontend clients only
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Looking for frontend clients among 3 connected clients
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client aFJ3YuemLae9WCiVAAAB: type='google-drive-watcher', name='google-drive-watcher'
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client NqZUiOuy62sOCF4hAAAD: type='frontend', name='frontend'
+rag-socket-server-dev-1  | INFO:     172.18.0.4:50444 - "GET /socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA&t=1756464344.659185 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | 2Sy28XMQK6bsxavcAAAC: Sending packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:51.701805","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:2Sy28XMQK6bsxavcAAAC: Sending packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:51.701805","from_server":true}]
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Emitted 'processing-started' to frontend client NqZUiOuy62sOCF4hAAAD
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client 5cb5j9-4zZe86-QhAAAH: type='frontend', name='frontend'
+rag-socket-server-dev-1  | emitting event "processing-started" to 5cb5j9-4zZe86-QhAAAH [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "processing-started" to 5cb5j9-4zZe86-QhAAAH [/]
+rag-socket-server-dev-1  | 2cA4Mz0XT6H7ykupAAAG: Sending packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:51.701805","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:2cA4Mz0XT6H7ykupAAAG: Sending packet MESSAGE data 2["processing-started",{"fileName":"AWS Business Foundations Syllabus.pdf","googleDriveId":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","pipelineType":"google_drive","timestamp":"2025-08-29T10:45:51.701805","from_server":true}]
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"AWS Business Foundations Syllabus.pdf","google_drive_id":"1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx","message":"Processing started for AWS Business Foundations Syllabus.pdf acknowledged by server","timestamp":"2025-08-29T10:45:51.701721","from_server":true}]
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-routing] Emitted 'processing-started' to 2 frontend clients: ['NqZUiOuy62sOCF4hAAAD', '5cb5j9-4zZe86-QhAAAH']
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Emitted 'processing-started' to frontend client 5cb5j9-4zZe86-QhAAAH
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Total frontend clients found: 2
+rag-google-drive-dev-1   | Received event "message" [/]
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Received message: {'type': 'processing_started_acknowledged', 'file_name': 'AWS Business Foundations Syllabus.pdf', 'google_drive_id': '1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx', 'message': 'Processing started for AWS Business Foundations Syllabus.pdf acknowledged by server', 'timestamp': '2025-08-29T10:45:51.701721', 'from_server': True}
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA
+rag-google-drive-dev-1   | Deleted 48 document chunks for file ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx
+rag-google-drive-dev-1   | Deleted 0 document rows for file ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx
+rag-google-drive-dev-1   | Deleted metadata for file ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx
+rag-google-drive-dev-1   | Inserted metadata for file 'AWS Business Foundations Syllabus.pdf' (ID: 1at0oA2BCmCy2LpGDbyQD7UagdEuQNwFx)
+rag-socket-server-dev-1  | L9sKQDbAhGjHIxHJAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:L9sKQDbAhGjHIxHJAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:     172.18.0.4:50444 - "GET /socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA&t=1756464351.702806 HTTP/1.1" 200 OK
+rag-google-drive-dev-1   | Received packet PING data 
+rag-google-drive-dev-1   | Sending packet PONG data 
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA
+rag-socket-server-dev-1  | L9sKQDbAhGjHIxHJAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:L9sKQDbAhGjHIxHJAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     172.18.0.4:37430 - "POST /socket.io/?transport=polling&EIO=4&sid=L9sKQDbAhGjHIxHJAAAA HTTP/1.1" 200 OK
+frontend-dev-1           | [RAG-STATUS-API] Debug: {
+frontend-dev-1           |   totalPipelines: 2,
+frontend-dev-1           |   onlinePipelines: 2,
+frontend-dev-1           |   activeOnlinePipelines: 2,
+frontend-dev-1           |   pipelineStatuses: [
+frontend-dev-1           |     {
+frontend-dev-1           |       id: 'local-files-pipeline',
+frontend-dev-1           |       status: 'online',
+frontend-dev-1           |       heartbeat: '2025-08-29T10:45:44.863504'
+frontend-dev-1           |     },
+frontend-dev-1           |     {
+frontend-dev-1           |       id: 'google-drive-pipeline',
+frontend-dev-1           |       status: 'online',
+frontend-dev-1           |       heartbeat: '2025-08-29T10:45:45.177577'
+frontend-dev-1           |     }
+frontend-dev-1           |   ]
+frontend-dev-1           | }
+frontend-dev-1           |  GET /api/rag-status 200 in 107ms
+rag-socket-server-dev-1  | 2Sy28XMQK6bsxavcAAAC: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:2Sy28XMQK6bsxavcAAAC: Sending packet PING data None
+rag-socket-server-dev-1  | 2Sy28XMQK6bsxavcAAAC: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:2Sy28XMQK6bsxavcAAAC: Received packet PONG data 
+rag-google-drive-dev-1   | [DRIVE_WATCHER-PROCESS] Sending processing-complete notification for AWS Business Foundations S
