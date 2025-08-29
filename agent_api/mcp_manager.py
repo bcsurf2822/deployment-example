@@ -205,20 +205,18 @@ class MCPManager:
             "servers": [
                 {
                     "name": "python-executor",
-                    "transport": "sse",
+                    "transport": "stdio",
                     "enabled": True,
                     "auto_start": True,
-                    "url": "http://localhost:3001/sse",
-                    "process_command": "deno",
-                    "process_args": [
+                    "command": "deno",
+                    "args": [
                         "run",
                         "-N", "-R=node_modules", "-W=node_modules",
                         "--node-modules-dir=auto",
                         "jsr:@pydantic/mcp-run-python",
-                        "sse",
-                        "--port", "3001"
+                        "stdio"
                     ],
-                    "retry_attempts": 5,
+                    "retry_attempts": 3,
                     "retry_delay": 3,
                     "health_check_interval": 30
                 }
@@ -457,11 +455,14 @@ class MCPManager:
             )
             
             # Wait for process to stabilize
-            await asyncio.sleep(2)
+            await asyncio.sleep(5)
             
             if config._process.poll() is not None:
+                stdout = config._process.stdout.read() if config._process.stdout else b""
                 stderr = config._process.stderr.read() if config._process.stderr else b""
-                raise Exception(f"Process exited immediately: {stderr.decode()}")
+                print(f"[MCP-MANAGER-_start_subprocess] Process stdout: {stdout.decode()}")
+                print(f"[MCP-MANAGER-_start_subprocess] Process stderr: {stderr.decode()}")
+                raise Exception(f"Process exited immediately with code {config._process.returncode}: {stderr.decode()}")
             
             print(f"[MCP-MANAGER-_start_subprocess] Process started for {config.name}")
             

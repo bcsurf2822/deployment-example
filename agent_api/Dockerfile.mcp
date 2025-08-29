@@ -1,12 +1,15 @@
 # MCP-enabled Dockerfile without supervisord
 FROM python:3.11-slim
 
-# Install system dependencies including Deno and clean up in same layer
+# Install system dependencies including Deno, Node.js and clean up in same layer
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
         curl \
         unzip && \
+    # Install Node.js 20.x
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
     # Install Deno with explicit environment variable
     curl -fsSL https://deno.land/install.sh | DENO_INSTALL=/usr/local sh && \
     # Clean up
