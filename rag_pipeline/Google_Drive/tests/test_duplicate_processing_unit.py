@@ -234,7 +234,6 @@ class TestDuplicateProcessingUnit:
         print(f"✓ Timeout modified to: {new_timeout}")
 
 if __name__ == "__main__":
-    # Run the tests manually if executed directly
     import tempfile
     
     config = {

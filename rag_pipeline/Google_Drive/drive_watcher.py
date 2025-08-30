@@ -70,7 +70,6 @@ class GoogleDriveWatcher:
             check_interval=60
         )
         
-        # Load configuration
         self.config = {}
         if config_path:
             self.config_path = config_path
@@ -290,9 +289,8 @@ class GoogleDriveWatcher:
             with self.processing_lock:
                 if google_drive_id in self.processing_files:
                     print(f"[DRIVE_WATCHER-IMMEDIATE] File {file_name} (ID: {google_drive_id}) is already being processed, skipping")
-                    return True  # Not an error, just already being handled
-                
-                # Mark as processing
+                    return True 
+      
                 self.processing_files.add(google_drive_id)
             
             # Track this file as being processed via socket
@@ -312,7 +310,7 @@ class GoogleDriveWatcher:
                     fields="id, name, mimeType, webViewLink, modifiedTime, createdTime, trashed"
                 ).execute()
                 
-                # Check if file was recently processed (within last 5 minutes to avoid race conditions)
+                # Check if file was recently processed
                 current_modified_time = file_metadata.get('modifiedTime')
                 if google_drive_id in self.known_files:
                     known_modified_time = self.known_files[google_drive_id]
@@ -345,7 +343,6 @@ class GoogleDriveWatcher:
                 return True
                 
             finally:
-                # Always remove from processing set
                 with self.processing_lock:
                     self.processing_files.discard(google_drive_id)
                     
@@ -360,14 +357,12 @@ class GoogleDriveWatcher:
         """
         creds = None
         
-        # Priority 1: Check for service account credentials in environment variable
         service_account_json = os.getenv('GOOGLE_DRIVE_CREDENTIALS_JSON')
         print(f"[DRIVE_WATCHER-AUTHENTICATE] GOOGLE_DRIVE_CREDENTIALS_JSON environment variable: {service_account_json}")
         
         if service_account_json:
             print(f"[DRIVE_WATCHER-AUTHENTICATE] Found service account JSON path: {service_account_json}")
-            
-            # Check if it's a file path or JSON content
+
             if service_account_json.startswith('{'):
                 # It's JSON content directly
                 print("[DRIVE_WATCHER-AUTHENTICATE] Environment variable contains JSON content directly")
@@ -406,11 +401,10 @@ class GoogleDriveWatcher:
                     print(f"[DRIVE_WATCHER-AUTHENTICATE] Service account file does not exist: {service_account_json}")
                     raise RuntimeError(f"Service account file not found: {service_account_json}")
             
-            # Test the credentials
             try:
                 print("[DRIVE_WATCHER-AUTHENTICATE] Testing service account credentials...")
                 test_service = build('drive', 'v3', credentials=creds)
-                # Make a simple API call to validate credentials
+            
                 user_info = test_service.about().get(fields='user').execute()
                 print(f"[DRIVE_WATCHER-AUTHENTICATE] Service account credentials validated successfully for user: {user_info.get('user', {}).get('emailAddress', 'unknown')}")
                 print("[DRIVE_WATCHER-AUTHENTICATE] Using service account authentication for Google Drive")
@@ -420,7 +414,7 @@ class GoogleDriveWatcher:
                 print(f"[DRIVE_WATCHER-AUTHENTICATE] Error type: {type(e).__name__}")
                 raise RuntimeError(f"Service account authentication failed: {e}")
         
-        # Priority 2: Check for existing OAuth2 token (backward compatibility)
+        # Check for existing OAuth2 token
         if not creds and os.path.exists(self.token_path):
             try:
                 creds = Credentials.from_authorized_user_info(
@@ -429,7 +423,7 @@ class GoogleDriveWatcher:
             except Exception as e:
                 print(f"Error loading OAuth2 token: {e}")
         
-        # Priority 3: OAuth2 flow for interactive authentication (local development)
+        # OAuth2 flow for interactive authentication (local development)
         if not creds or (hasattr(creds, 'valid') and not creds.valid):
             if creds and hasattr(creds, 'expired') and creds.expired and hasattr(creds, 'refresh_token') and creds.refresh_token:
                 try:
@@ -583,13 +577,11 @@ class GoogleDriveWatcher:
                 # For regular files, download directly
                 request = self.service.files().get_media(fileId=file_id)
             
-            # Download the file
             downloader = MediaIoBaseDownload(file_content, request)
             done = False
             while not done:
                 status, done = downloader.next_chunk()
-            
-            # Reset the pointer to the beginning of the file
+
             file_content.seek(0)
             return file_content.read()
         
@@ -624,7 +616,7 @@ class GoogleDriveWatcher:
             # Notify status server that we're starting to process this file
             pipeline_status.add_processing_file(file_name, file_id)
             
-            # Send socket notification that processing has started (only for socket-triggered processing)
+            # Send socket notification that processing has started
             if send_socket_notifications and self.socket_client and self.socket_connected:
                 print(f"[DRIVE_WATCHER-PROCESS] Sending processing-started notification for {file_name} (socket-triggered)")
                 self.socket_client.emit("processing-started", {
@@ -634,7 +626,7 @@ class GoogleDriveWatcher:
                     "pipelineType": "google_drive"
                 })
             
-            # Also update Supabase status
+            # Update Supabase status
             if status_tracker:
                 file_info = {
                     "name": file_name,
@@ -649,7 +641,6 @@ class GoogleDriveWatcher:
                 delete_document_by_file_id(file_id)
                 if file_id in self.known_files:
                     del self.known_files[file_id]
-                # Don't notify processing since we're just cleaning up
                 return
             
             # Skip unsupported file types
@@ -659,7 +650,7 @@ class GoogleDriveWatcher:
                 # Remove from processing since we're skipping it
                 pipeline_status.complete_file(file_name, False)
                 
-                # Send socket notification for unsupported file type (only for socket-triggered processing)
+                # Send socket notification for unsupported file type
                 if send_socket_notifications and self.socket_client and self.socket_connected:
                     print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (unsupported type, socket-triggered)")
                     self.socket_client.emit("processing-failed", {
@@ -678,7 +669,7 @@ class GoogleDriveWatcher:
                 # Mark as failed in status
                 pipeline_status.complete_file(file_name, False)
                 
-                # Send socket notification for download failure (only for socket-triggered processing)
+                # Send socket notification for download failure
                 if send_socket_notifications and self.socket_client and self.socket_connected:
                     print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (download failed, socket-triggered)")
                     self.socket_client.emit("processing-failed", {
@@ -805,12 +796,10 @@ class GoogleDriveWatcher:
                     fields="trashed,name"
                 ).execute()
                 
-                # If the file is in the trash, consider it deleted
                 if file.get('trashed', False):
                     print(f"File '{file.get('name', 'Unknown')}' (ID: {file_id}) is in trash")
                     deleted_files.append(file_id)
             except Exception as e:
-                # If we get an error (like file not found), the file is deleted
                 if 'File not found' in str(e) or '404' in str(e):
                     deleted_files.append(file_id)
                 else:
@@ -1022,7 +1011,6 @@ class GoogleDriveWatcher:
             print(f"Error in watcher: {e}")
             raise
         finally:
-            # Disconnect socket client on shutdown
             self.disconnect_socket_client()
             
     def disconnect_socket_client(self) -> None:

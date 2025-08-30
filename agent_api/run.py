@@ -8,8 +8,6 @@ import asyncio
 import sys
 from pathlib import Path
 
-# Add the current directory to Python path
-# This is necessary to import local modules when running the script directly
 sys.path.insert(0, str(Path(__file__).parent))
 
 from agent import main

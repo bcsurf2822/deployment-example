@@ -15,12 +15,9 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import pypdf
 
-# Load environment variables from the rag_pipeline .env file
-# Get the path to the rag_pipeline directory
 rag_pipeline_root = Path(__file__).resolve().parent.parent
 dotenv_path = rag_pipeline_root / '.env'
 
-# Force override of existing environment variables
 load_dotenv(dotenv_path, override=True)
 
 # Initialize OpenAI client
