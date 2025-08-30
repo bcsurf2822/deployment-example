@@ -55,12 +55,11 @@ class MCPServerConfig:
     command: Optional[str] = None  # For stdio transport
     args: Optional[List[str]] = None  # For stdio transport
     
-    # Advanced options
     tool_prefix: Optional[str] = None
     retry_attempts: int = 3
-    retry_delay: int = 5  # seconds
-    health_check_interval: int = 30  # seconds
-    timeout: int = 10  # seconds
+    retry_delay: int = 5  
+    health_check_interval: int = 30  
+    timeout: int = 10 
     
     # Process management (for subprocess-based servers)
     process_command: Optional[str] = None
@@ -533,14 +532,12 @@ class MCPManager:
             try:
                 await asyncio.sleep(config.health_check_interval)
                 
-                # Check subprocess if applicable
                 if config._process and config._process.poll() is not None:
                     print(f"[MCP-MANAGER-_health_check_loop] Process died for {server_name}, restarting...")
                     config._status = ServerStatus.UNHEALTHY
                     await self.restart_server(server_name)
                     continue
                 
-                # Check connection health
                 if config.transport == TransportType.SSE and config.url and self._http_client:
                     try:
                         response = await self._http_client.get(
@@ -559,7 +556,6 @@ class MCPManager:
                 
                 config._last_health_check = datetime.now()
                 
-                # Auto-restart if too many errors
                 if config._error_count >= 3:
                     print(f"[MCP-MANAGER-_health_check_loop] Too many errors for {server_name}, restarting...")
                     await self.restart_server(server_name)

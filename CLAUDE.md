@@ -255,3 +255,4 @@ curl -X POST http://localhost:8001/api/mcp/servers/python-executor/restart
 - `agent_api/mcp_config.json` - Server configuration
 - `agent_api/Dockerfile.mcp` - MCP-enabled Docker setup
 - `MCP_INTEGRATION.md` - Detailed integration guide
+- Do not run python deploy.py --mode dev --with-rag unless told to directly by the user. Instead tell the user restart the server to see the updates

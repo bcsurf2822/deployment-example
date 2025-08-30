@@ -1,0 +1,221 @@
+socket-server-dev-1  | INFO:     172.19.0.4:54178 - "POST /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA HTTP/1.1" 200 OK
+frontend-dev-1           | [GOOGLE-DRIVE-SERVICE] Successfully uploaded file with ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+frontend-dev-1           | [API-UPLOAD] Successfully uploaded to Google Drive with ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+frontend-dev-1           |  POST /api/google-drive/upload 200 in 2071ms
+rag-socket-server-dev-1  | 3KtDz6sgGt5rWSqAAAAE: Received packet MESSAGE data 2["upload-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","fileSize":93074}]
+rag-socket-server-dev-1  | INFO:engineio.server:3KtDz6sgGt5rWSqAAAAE: Received packet MESSAGE data 2["upload-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","fileSize":93074}]
+rag-socket-server-dev-1  | received event "upload-complete" from U1dl59szMAxHqgPvAAAF [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "upload-complete" from U1dl59szMAxHqgPvAAAF [/]
+rag-socket-server-dev-1  | [SOCKET-SERVER-upload_complete] UPLOAD COMPLETED! File: KLST USA Employee Referral Program.pdf
+rag-socket-server-dev-1  | [SOCKET-SERVER-upload_complete] Google Drive ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+rag-socket-server-dev-1  | [SOCKET-SERVER-upload_complete] File Size: 93074 bytes
+rag-socket-server-dev-1  | [SOCKET-SERVER-upload_complete] Received from client: U1dl59szMAxHqgPvAAAF
+rag-socket-server-dev-1  | [SOCKET-SERVER-upload_complete] Connected clients: ['52y7rq3CphnVLP8gAAAB', 'U1dl59szMAxHqgPvAAAF']
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-upload_complete] Upload completed - File: KLST USA Employee Referral Program.pdf, Drive ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL, Size: 93074
+rag-socket-server-dev-1  | [SOCKET-SERVER-upload_complete] Upload acknowledged from U1dl59szMAxHqgPvAAAF - not sending acknowledgment back
+rag-socket-server-dev-1  | [SOCKET-SERVER-upload_complete] Routing upload completion to pipeline clients only (not back to frontend)
+rag-socket-server-dev-1  | emitting event "upload-complete" to 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "upload-complete" to 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Sending packet MESSAGE data 2["upload-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","fileSize":93074,"timestamp":"2025-08-30T17:29:45.713409","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Sending packet MESSAGE data 2["upload-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","fileSize":93074,"timestamp":"2025-08-30T17:29:45.713409","from_server":true}]
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-routing] Emitted 'upload-complete' to 1 pipeline clients: ['52y7rq3CphnVLP8gAAAB']
+rag-socket-server-dev-1  | INFO:     172.19.0.4:51082 - "GET /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA&t=1756574985.2794921 HTTP/1.1" 200 OK
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["upload-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","fileSize":93074,"timestamp":"2025-08-30T17:29:45.713409","from_server":true}]
+rag-google-drive-dev-1   | Received event "upload-complete" [/]
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] ===== RECEIVED UPLOAD-COMPLETE EVENT =====
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Data: {'fileName': 'KLST USA Employee Referral Program.pdf', 'googleDriveId': '1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL', 'fileSize': 93074, 'timestamp': '2025-08-30T17:29:45.713409', 'from_server': True}
+rag-google-drive-dev-1   | [DRIVE_WATCHER-UPLOAD_COMPLETE] Processing immediate upload: KLST USA Employee Referral Program.pdf (ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL)
+rag-google-drive-dev-1   | [DRIVE_WATCHER-IMMEDIATE] Fetching metadata for KLST USA Employee Referral Program.pdf (ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL)
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA
+rag-google-drive-dev-1   | [DRIVE_WATCHER-IMMEDIATE] Processing KLST USA Employee Referral Program.pdf immediately
+rag-google-drive-dev-1   | [DRIVE_WATCHER-PROCESS] Sending processing-started notification for KLST USA Employee Referral Program.pdf
+rag-google-drive-dev-1   | Emitting event "processing-started" [/]
+rag-google-drive-dev-1   | Sending packet MESSAGE data 2["processing-started",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:46.059888","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Received packet MESSAGE data 2["processing-started",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:46.059888","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Received packet MESSAGE data 2["processing-started",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:46.059888","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | received event "processing-started" from 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "processing-started" from 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:     172.19.0.4:54178 - "POST /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] PROCESSING STARTED! File: KLST USA Employee Referral Program.pdf
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Google Drive ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Pipeline Type: google_drive
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Received from client: 52y7rq3CphnVLP8gAAAB
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-processing_started] Processing started - File: KLST USA Employee Referral Program.pdf, Drive ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL, Pipeline: google_drive
+rag-socket-server-dev-1  | emitting event "message" to 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing started for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:46.067804","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing started for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:46.067804","from_server":true}]
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Routing processing started to frontend clients only
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Looking for frontend clients among 2 connected clients
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client 52y7rq3CphnVLP8gAAAB: type='google-drive-watcher', name='google-drive-watcher'
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client U1dl59szMAxHqgPvAAAF: type='frontend', name='frontend'
+rag-socket-server-dev-1  | emitting event "processing-started" to U1dl59szMAxHqgPvAAAF [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "processing-started" to U1dl59szMAxHqgPvAAAF [/]
+rag-socket-server-dev-1  | INFO:     172.19.0.4:51082 - "GET /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA&t=1756574985.721722 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | 3KtDz6sgGt5rWSqAAAAE: Sending packet MESSAGE data 2["processing-started",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","pipelineType":"google_drive","timestamp":"2025-08-30T17:29:46.068853","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:3KtDz6sgGt5rWSqAAAAE: Sending packet MESSAGE data 2["processing-started",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","pipelineType":"google_drive","timestamp":"2025-08-30T17:29:46.068853","from_server":true}]
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Emitted 'processing-started' to frontend client U1dl59szMAxHqgPvAAAF
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Total frontend clients found: 1
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-routing] Emitted 'processing-started' to 1 frontend clients: ['U1dl59szMAxHqgPvAAAF']
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing started for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:46.067804","from_server":true}]
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Received message: {'type': 'processing_started_acknowledged', 'file_name': 'KLST USA Employee Referral Program.pdf', 'google_drive_id': '1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL', 'message': 'Processing started for KLST USA Employee Referral Program.pdf acknowledged by server', 'timestamp': '2025-08-30T17:29:46.067804', 'from_server': True}
+rag-google-drive-dev-1   | Received event "message" [/]
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA
+rag-google-drive-dev-1   | Deleted 0 document chunks for file ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+rag-google-drive-dev-1   | Deleted 0 document rows for file ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+rag-google-drive-dev-1   | Deleted metadata for file ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+rag-google-drive-dev-1   | Inserted metadata for file 'KLST USA Employee Referral Program.pdf' (ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL)
+rag-google-drive-dev-1   | [DRIVE_WATCHER-PROCESS] Sending processing-complete notification for KLST USA Employee Referral Program.pdf
+rag-google-drive-dev-1   | Emitting event "processing-complete" [/]
+rag-google-drive-dev-1   | Sending packet MESSAGE data 2["processing-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:49.186246","pipelineType":"google_drive"}]
+rag-google-drive-dev-1   | Successfully processed file 'KLST USA Employee Referral Program.pdf' (ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL)
+rag-google-drive-dev-1   | [DRIVE_WATCHER-UPLOAD_COMPLETE] Successfully processed KLST USA Employee Referral Program.pdf immediately
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Received packet MESSAGE data 2["processing-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:49.186246","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Received packet MESSAGE data 2["processing-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:49.186246","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | received event "processing-complete" from 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "processing-complete" from 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:     172.19.0.4:54178 - "POST /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] PROCESSING COMPLETE! File: KLST USA Employee Referral Program.pdf
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Google Drive ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Pipeline Type: google_drive
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Received from client: 52y7rq3CphnVLP8gAAAB
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-processing_complete] Processing complete - File: KLST USA Employee Referral Program.pdf, Drive ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL, Pipeline: google_drive
+rag-socket-server-dev-1  | emitting event "message" to 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Routing processing complete to frontend clients only
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Looking for frontend clients among 2 connected clients
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client 52y7rq3CphnVLP8gAAAB: type='google-drive-watcher', name='google-drive-watcher'
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client U1dl59szMAxHqgPvAAAF: type='frontend', name='frontend'
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_complete_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing complete for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:49.189645","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_complete_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing complete for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:49.189645","from_server":true}]
+rag-socket-server-dev-1  | emitting event "processing-complete" to U1dl59szMAxHqgPvAAAF [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "processing-complete" to U1dl59szMAxHqgPvAAAF [/]
+rag-socket-server-dev-1  | INFO:     172.19.0.4:51082 - "GET /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA&t=1756574986.0718892 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | 3KtDz6sgGt5rWSqAAAAE: Sending packet MESSAGE data 2["processing-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","pipelineType":"google_drive","timestamp":"2025-08-30T17:29:49.190001","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:3KtDz6sgGt5rWSqAAAAE: Sending packet MESSAGE data 2["processing-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","pipelineType":"google_drive","timestamp":"2025-08-30T17:29:49.190001","from_server":true}]
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Emitted 'processing-complete' to frontend client U1dl59szMAxHqgPvAAAF
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Total frontend clients found: 1
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-routing] Emitted 'processing-complete' to 1 frontend clients: ['U1dl59szMAxHqgPvAAAF']
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["message",{"type":"processing_complete_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing complete for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:49.189645","from_server":true}]
+rag-google-drive-dev-1   | Received event "message" [/]
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Received message: {'type': 'processing_complete_acknowledged', 'file_name': 'KLST USA Employee Referral Program.pdf', 'google_drive_id': '1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL', 'message': 'Processing complete for KLST USA Employee Referral Program.pdf acknowledged by server', 'timestamp': '2025-08-30T17:29:49.189645', 'from_server': True}
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA
+rag-socket-server-dev-1  | 3KtDz6sgGt5rWSqAAAAE: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:3KtDz6sgGt5rWSqAAAAE: Sending packet PING data None
+rag-socket-server-dev-1  | 3KtDz6sgGt5rWSqAAAAE: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:3KtDz6sgGt5rWSqAAAAE: Received packet PONG data 
+rag-google-drive-dev-1   | Saved last check time: 2025-08-30 17:29:51.243289+00:00
+rag-google-drive-dev-1   | Found 1 changed files.
+rag-google-drive-dev-1   | Processing: KLST USA Employee Referral Program.pdf
+rag-google-drive-dev-1   | [DRIVE_WATCHER-PROCESS] Sending processing-started notification for KLST USA Employee Referral Program.pdf
+rag-google-drive-dev-1   | Emitting event "processing-started" [/]
+rag-google-drive-dev-1   | Sending packet MESSAGE data 2["processing-started",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:51.424722","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Received packet MESSAGE data 2["processing-started",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:51.424722","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Received packet MESSAGE data 2["processing-started",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:51.424722","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | received event "processing-started" from 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "processing-started" from 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:     172.19.0.4:54178 - "POST /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] PROCESSING STARTED! File: KLST USA Employee Referral Program.pdf
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Google Drive ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Pipeline Type: google_drive
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Received from client: 52y7rq3CphnVLP8gAAAB
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-processing_started] Processing started - File: KLST USA Employee Referral Program.pdf, Drive ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL, Pipeline: google_drive
+rag-socket-server-dev-1  | emitting event "message" to 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing started for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:51.432291","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing started for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:51.432291","from_server":true}]
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_started] Routing processing started to frontend clients only
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Looking for frontend clients among 2 connected clients
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client 52y7rq3CphnVLP8gAAAB: type='google-drive-watcher', name='google-drive-watcher'
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client U1dl59szMAxHqgPvAAAF: type='frontend', name='frontend'
+rag-socket-server-dev-1  | INFO:     172.19.0.4:51082 - "GET /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA&t=1756574989.1923485 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | emitting event "processing-started" to U1dl59szMAxHqgPvAAAF [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "processing-started" to U1dl59szMAxHqgPvAAAF [/]
+rag-socket-server-dev-1  | 3KtDz6sgGt5rWSqAAAAE: Sending packet MESSAGE data 2["processing-started",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","pipelineType":"google_drive","timestamp":"2025-08-30T17:29:51.432604","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:3KtDz6sgGt5rWSqAAAAE: Sending packet MESSAGE data 2["processing-started",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","pipelineType":"google_drive","timestamp":"2025-08-30T17:29:51.432604","from_server":true}]
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Emitted 'processing-started' to frontend client U1dl59szMAxHqgPvAAAF
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Total frontend clients found: 1
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-routing] Emitted 'processing-started' to 1 frontend clients: ['U1dl59szMAxHqgPvAAAF']
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["message",{"type":"processing_started_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing started for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:51.432291","from_server":true}]
+rag-google-drive-dev-1   | Received event "message" [/]
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Received message: {'type': 'processing_started_acknowledged', 'file_name': 'KLST USA Employee Referral Program.pdf', 'google_drive_id': '1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL', 'message': 'Processing started for KLST USA Employee Referral Program.pdf acknowledged by server', 'timestamp': '2025-08-30T17:29:51.432291', 'from_server': True}
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA
+rag-google-drive-dev-1   | Deleted 10 document chunks for file ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+rag-google-drive-dev-1   | Deleted 0 document rows for file ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+rag-google-drive-dev-1   | Deleted metadata for file ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+rag-google-drive-dev-1   | Inserted metadata for file 'KLST USA Employee Referral Program.pdf' (ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL)
+rag-google-drive-dev-1   | [DRIVE_WATCHER-PROCESS] Sending processing-complete notification for KLST USA Employee Referral Program.pdf
+rag-google-drive-dev-1   | Emitting event "processing-complete" [/]
+rag-google-drive-dev-1   | Sending packet MESSAGE data 2["processing-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:54.529122","pipelineType":"google_drive"}]
+rag-google-drive-dev-1   | Successfully processed file 'KLST USA Employee Referral Program.pdf' (ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL)
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Received packet MESSAGE data 2["processing-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:54.529122","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Received packet MESSAGE data 2["processing-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","timestamp":"2025-08-30T17:29:54.529122","pipelineType":"google_drive"}]
+rag-socket-server-dev-1  | received event "processing-complete" from 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "processing-complete" from 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:     172.19.0.4:54178 - "POST /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] PROCESSING COMPLETE! File: KLST USA Employee Referral Program.pdf
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Google Drive ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Pipeline Type: google_drive
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Received from client: 52y7rq3CphnVLP8gAAAB
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-processing_complete] Processing complete - File: KLST USA Employee Referral Program.pdf, Drive ID: 1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL, Pipeline: google_drive
+rag-socket-server-dev-1  | emitting event "message" to 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to 52y7rq3CphnVLP8gAAAB [/]
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_complete_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing complete for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:54.535044","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Sending packet MESSAGE data 2["message",{"type":"processing_complete_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing complete for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:54.535044","from_server":true}]
+rag-socket-server-dev-1  | emitting event "processing-complete" to U1dl59szMAxHqgPvAAAF [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "processing-complete" to U1dl59szMAxHqgPvAAAF [/]
+rag-socket-server-dev-1  | [SOCKET-SERVER-processing_complete] Routing processing complete to frontend clients only
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Looking for frontend clients among 2 connected clients
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client 52y7rq3CphnVLP8gAAAB: type='google-drive-watcher', name='google-drive-watcher'
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Client U1dl59szMAxHqgPvAAAF: type='frontend', name='frontend'
+rag-socket-server-dev-1  | INFO:     172.19.0.4:51082 - "GET /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA&t=1756574991.4357486 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | 3KtDz6sgGt5rWSqAAAAE: Sending packet MESSAGE data 2["processing-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","pipelineType":"google_drive","timestamp":"2025-08-30T17:29:54.535502","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:3KtDz6sgGt5rWSqAAAAE: Sending packet MESSAGE data 2["processing-complete",{"fileName":"KLST USA Employee Referral Program.pdf","googleDriveId":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","pipelineType":"google_drive","timestamp":"2025-08-30T17:29:54.535502","from_server":true}]
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-routing] Emitted 'processing-complete' to 1 frontend clients: ['U1dl59szMAxHqgPvAAAF']
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Emitted 'processing-complete' to frontend client U1dl59szMAxHqgPvAAAF
+rag-socket-server-dev-1  | [SOCKET-SERVER-routing] Total frontend clients found: 1
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["message",{"type":"processing_complete_acknowledged","file_name":"KLST USA Employee Referral Program.pdf","google_drive_id":"1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL","message":"Processing complete for KLST USA Employee Referral Program.pdf acknowledged by server","timestamp":"2025-08-30T17:29:54.535044","from_server":true}]
+rag-google-drive-dev-1   | Received event "message" [/]
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Received message: {'type': 'processing_complete_acknowledged', 'file_name': 'KLST USA Employee Referral Program.pdf', 'google_drive_id': '1FuOzrr98bNVKyG9eDBgJ0cWHyuV6WldL', 'message': 'Processing complete for KLST USA Employee Referral Program.pdf acknowledged by server', 'timestamp': '2025-08-30T17:29:54.535044', 'from_server': True}
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA
+rag-google-drive-dev-1   | [SYNC_MANAGER-GET_DOCS] Found 1 unique file IDs in documents table for source: google_drive
+rag-google-drive-dev-1   | [SYNC_MANAGER-ORPHANED] No orphaned documents found
+rag-google-drive-dev-1   | [SYNC_MANAGER-SAVE_STATE] Updated state for pipeline google-drive-pipeline
+rag-google-drive-dev-1   | Change check completed: 1 files processed, 0 files deleted, 0 errors, duration: 3.98s
+rag-google-drive-dev-1   | Waiting 60 seconds until next check...
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:     172.19.0.4:51082 - "GET /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA&t=1756574994.5420353 HTTP/1.1" 200 OK
+rag-google-drive-dev-1   | Received packet PING data 
+rag-google-drive-dev-1   | Sending packet PONG data 
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     172.19.0.4:51082 - "POST /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA HTTP/1.1" 200 OK
+rag-local-files-dev-1    | [SUPABASE-STATUS] Heartbeat sent for local-files-pipeline
+rag-google-drive-dev-1   | [SUPABASE-STATUS] Heartbeat sent for google-drive-pipeline
+rag-socket-server-dev-1  | INFO:     127.0.0.1:60024 - "GET /health HTTP/1.1" 200 OK
+agent-api-dev-1          | INFO:     127.0.0.1:57242 - "GET /health HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | 3KtDz6sgGt5rWSqAAAAE: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:3KtDz6sgGt5rWSqAAAAE: Sending packet PING data None
+rag-socket-server-dev-1  | 3KtDz6sgGt5rWSqAAAAE: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:3KtDz6sgGt5rWSqAAAAE: Received packet PONG data 
+api/rag-status 200 in 131ms
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:     172.19.0.4:41752 - "GET /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA&t=1756575010.2886858 HTTP/1.1" 200 OK
+rag-google-drive-dev-1   | Received packet PING data 
+rag-google-drive-dev-1   | Sending packet PONG data 
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA
+rag-socket-server-dev-1  | eGkR5MpL8pdASYUeAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:eGkR5MpL8pdASYUeAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     172.19.0.4:41752 - "POST /socket.io/?transport=polling&EIO=4&sid=eGkR5MpL8pdASYUeAAAA HTTP/1.1" 200 OK
+rag-local-files-dev-1    | [SUPABASE-STATUS] Heartbeat sent for local-files-pipeline
+rag-local-files-dev-1    | [SYNC_MANAGER-GET_DOCS] Found 0 unique file IDs in documents table for source: local_files
+rag-local-files-dev-1    | [SYNC_MANAGER-ORPHANED] No orphaned documents found
+rag-local-files-dev-1    | [SYNC_MANAGER-SAVE_STATE] Updated state for pipeline local-files-pipeline
+rag-google-drive-dev-1   | [SUPABASE-STATUS] Heartbeat sent for google-drive-pipeline
+rag-socket-server-dev-1  | 3KtDz6sgGt5rWSqAAAAE: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:3KtDz6sgGt5rWSqAAAAE: Sending packet PING data None
+rag-socket-server-dev-1  | 3KtDz6sgGt5rWSqAAAAE: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:3KtDz6sgGt5rWSqAAAAE: Received packet PONG data 

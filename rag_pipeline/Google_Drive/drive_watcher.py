@@ -50,6 +50,11 @@ class GoogleDriveWatcher:
         self.processing_files = set()  # Track files currently being processed
         self.processing_lock = Lock()  # Thread safety for processing_files
         
+        # Track files processed via socket to prevent timer-based reprocessing
+        self.recently_socket_processed = {}  # {file_id: timestamp} for socket-processed files
+        self.socket_processed_lock = Lock()  # Thread safety for recently_socket_processed
+        self.socket_processed_timeout = timedelta(minutes=10)  # Time to skip timer processing after socket processing
+        
         # Socket client for immediate processing notifications
         self.socket_client = None
         self.socket_connected = False
@@ -250,6 +255,25 @@ class GoogleDriveWatcher:
         except Exception as e:
             print(f"[DRIVE_WATCHER-UPLOAD_COMPLETE] Error handling upload complete: {e}")
     
+    def cleanup_old_socket_processed_entries(self) -> None:
+        """
+        Clean up old entries from recently_socket_processed to prevent memory buildup.
+        Removes entries older than socket_processed_timeout.
+        """
+        with self.socket_processed_lock:
+            current_time = datetime.now(timezone.utc)
+            expired_files = []
+            
+            for file_id, processed_time in self.recently_socket_processed.items():
+                if current_time - processed_time > self.socket_processed_timeout:
+                    expired_files.append(file_id)
+            
+            for file_id in expired_files:
+                del self.recently_socket_processed[file_id]
+            
+            if expired_files:
+                print(f"[DRIVE_WATCHER-CLEANUP] Removed {len(expired_files)} expired socket-processed entries")
+
     def process_file_immediately(self, google_drive_id: str, file_name: str) -> bool:
         """
         Process a specific file immediately by its Google Drive ID.
@@ -270,6 +294,11 @@ class GoogleDriveWatcher:
                 
                 # Mark as processing
                 self.processing_files.add(google_drive_id)
+            
+            # Track this file as being processed via socket
+            with self.socket_processed_lock:
+                self.recently_socket_processed[google_drive_id] = datetime.now(timezone.utc)
+                print(f"[DRIVE_WATCHER-IMMEDIATE] Marking {file_name} as socket-processed to prevent timer reprocessing")
                 
             try:
                 # Authenticate if needed
@@ -309,9 +338,9 @@ class GoogleDriveWatcher:
                 with self.processing_lock:
                     self.processing_files.discard(google_drive_id)
                 
-                # Process the file using existing process_file method
+                # Process the file using existing process_file method (with socket notifications)
                 print(f"[DRIVE_WATCHER-IMMEDIATE] Processing {file_name} immediately")
-                self.process_file(file_metadata)
+                self.process_file(file_metadata, send_socket_notifications=True)
                 
                 return True
                 
@@ -568,12 +597,13 @@ class GoogleDriveWatcher:
             print(f"Error downloading file {file_id}: {e}")
             return None
     
-    def process_file(self, file: Dict[str, Any]) -> None:
+    def process_file(self, file: Dict[str, Any], send_socket_notifications: bool = False) -> None:
         """
         Process a file for the RAG pipeline.
         
         Args:
             file: The file metadata from Google Drive
+            send_socket_notifications: Whether to send socket notifications (True for socket-triggered, False for timer-based)
         """
         file_id = file['id']
         file_name = file['name']
@@ -594,9 +624,9 @@ class GoogleDriveWatcher:
             # Notify status server that we're starting to process this file
             pipeline_status.add_processing_file(file_name, file_id)
             
-            # Send socket notification that processing has started
-            if self.socket_client and self.socket_connected:
-                print(f"[DRIVE_WATCHER-PROCESS] Sending processing-started notification for {file_name}")
+            # Send socket notification that processing has started (only for socket-triggered processing)
+            if send_socket_notifications and self.socket_client and self.socket_connected:
+                print(f"[DRIVE_WATCHER-PROCESS] Sending processing-started notification for {file_name} (socket-triggered)")
                 self.socket_client.emit("processing-started", {
                     "fileName": file_name,
                     "googleDriveId": file_id,
@@ -629,9 +659,9 @@ class GoogleDriveWatcher:
                 # Remove from processing since we're skipping it
                 pipeline_status.complete_file(file_name, False)
                 
-                # Send socket notification for unsupported file type
-                if self.socket_client and self.socket_connected:
-                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (unsupported type)")
+                # Send socket notification for unsupported file type (only for socket-triggered processing)
+                if send_socket_notifications and self.socket_client and self.socket_connected:
+                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (unsupported type, socket-triggered)")
                     self.socket_client.emit("processing-failed", {
                         "fileName": file_name,
                         "googleDriveId": file_id,
@@ -648,9 +678,9 @@ class GoogleDriveWatcher:
                 # Mark as failed in status
                 pipeline_status.complete_file(file_name, False)
                 
-                # Send socket notification for download failure
-                if self.socket_client and self.socket_connected:
-                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (download failed)")
+                # Send socket notification for download failure (only for socket-triggered processing)
+                if send_socket_notifications and self.socket_client and self.socket_connected:
+                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (download failed, socket-triggered)")
                     self.socket_client.emit("processing-failed", {
                         "fileName": file_name,
                         "googleDriveId": file_id,
@@ -667,9 +697,9 @@ class GoogleDriveWatcher:
                 # Mark as failed in status
                 pipeline_status.complete_file(file_name, False)
                 
-                # Send socket notification for text extraction failure
-                if self.socket_client and self.socket_connected:
-                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (text extraction failed)")
+                # Send socket notification for text extraction failure (only for socket-triggered processing)
+                if send_socket_notifications and self.socket_client and self.socket_connected:
+                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (text extraction failed, socket-triggered)")
                     self.socket_client.emit("processing-failed", {
                         "fileName": file_name,
                         "googleDriveId": file_id,
@@ -700,10 +730,10 @@ class GoogleDriveWatcher:
             # Notify status server of completion
             pipeline_status.complete_file(file_name, success)
             
-            # Send socket notification based on success/failure
-            if self.socket_client and self.socket_connected:
+            # Send socket notification based on success/failure (only for socket-triggered processing)
+            if send_socket_notifications and self.socket_client and self.socket_connected:
                 if success:
-                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-complete notification for {file_name}")
+                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-complete notification for {file_name} (socket-triggered)")
                     self.socket_client.emit("processing-complete", {
                         "fileName": file_name,
                         "googleDriveId": file_id,
@@ -711,7 +741,7 @@ class GoogleDriveWatcher:
                         "pipelineType": "google_drive"
                     })
                 else:
-                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name}")
+                    print(f"[DRIVE_WATCHER-PROCESS] Sending processing-failed notification for {file_name} (socket-triggered)")
                     self.socket_client.emit("processing-failed", {
                         "fileName": file_name,
                         "googleDriveId": file_id,
@@ -812,6 +842,9 @@ class GoogleDriveWatcher:
         # Update status to indicate we're checking for changes
         pipeline_status.update(is_checking=True, status="running")
         
+        # Clean up old socket-processed entries before processing
+        self.cleanup_old_socket_processed_entries()
+        
         try:
             # Authenticate if needed
             if not self.service:
@@ -837,8 +870,21 @@ class GoogleDriveWatcher:
                                 print(f"[DRIVE_WATCHER-TIMER] Skipping {file_name} - already being processed immediately")
                                 continue
                         
-                        print(f"Processing: {file_name}")
-                        self.process_file(file)
+                        # Skip files that were recently processed via socket
+                        with self.socket_processed_lock:
+                            if file_id in self.recently_socket_processed:
+                                processed_time = self.recently_socket_processed[file_id]
+                                time_since_processing = datetime.now(timezone.utc) - processed_time
+                                if time_since_processing < self.socket_processed_timeout:
+                                    print(f"[DRIVE_WATCHER-TIMER] Skipping {file_name} - recently processed via socket ({time_since_processing.total_seconds():.1f}s ago)")
+                                    continue
+                                else:
+                                    # File is old enough, remove from tracking and allow processing
+                                    print(f"[DRIVE_WATCHER-TIMER] Socket processing timeout expired for {file_name}, allowing timer processing")
+                                    del self.recently_socket_processed[file_id]
+                        
+                        print(f"[DRIVE_WATCHER-TIMER] Processing: {file_name} (timer-based, no socket notifications)")
+                        self.process_file(file)  # send_socket_notifications defaults to False
                         # Update known_files with just the modifiedTime
                         self.known_files[file['id']] = file.get('modifiedTime')
                         stats['files_processed'] += 1

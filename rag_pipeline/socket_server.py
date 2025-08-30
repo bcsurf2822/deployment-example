@@ -208,19 +208,13 @@ async def upload_complete(sid, data):
     
     logger.info(f"[SOCKET-SERVER-upload_complete] Upload completed - File: {file_name}, Drive ID: {google_drive_id}, Size: {file_size}")
     
-    # Acknowledge to the original sender
-    await sio.emit('message', {
-        'type': 'upload_acknowledged',
-        'file_name': file_name,
-        'google_drive_id': google_drive_id,
-        'message': f'Upload of {file_name} acknowledged by server',
-        'timestamp': datetime.now().isoformat(),
-        'from_server': True
-    }, room=sid)
+    # Log the acknowledgment but don't send it back to frontend since they already know
+    print(f"[SOCKET-SERVER-upload_complete] Upload acknowledged from {sid} - not sending acknowledgment back")
     
-    # Broadcast upload completion to all connected clients (triggers processing pipelines)
-    print(f"[SOCKET-SERVER-upload_complete] Broadcasting upload completion to {len(connected_clients)} connected clients")
-    await emit_to_all_clients('upload-complete', {
+    # Send upload completion ONLY to pipeline clients (Google Drive, Local Files)
+    # This prevents the frontend from receiving its own upload event back
+    print(f"[SOCKET-SERVER-upload_complete] Routing upload completion to pipeline clients only (not back to frontend)")
+    await emit_to_pipeline_clients('upload-complete', {
         'fileName': file_name,
         'googleDriveId': google_drive_id,
         'fileSize': file_size,
