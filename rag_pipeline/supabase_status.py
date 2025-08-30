@@ -95,7 +95,7 @@ class SupabaseStatusTracker:
         """Background thread to send heartbeats."""
         while not self.stop_heartbeat:
             try:
-                time.sleep(30)
+                time.sleep(120)  # Reduced from 30s to 120s (2 minutes)
                 
                 if not self.stop_heartbeat:
                     self.supabase.table("rag_pipeline_state").update({
@@ -112,25 +112,36 @@ class SupabaseStatusTracker:
                                 files_completed: list = None,
                                 files_failed: list = None,
                                 is_checking: bool = None,
-                                next_check_time: str = None):
-        """Update detailed processing status."""
+                                next_check_time: str = None,
+                                force_update: bool = False):
+        """Update detailed processing status only when significant changes occur."""
         try:
+    
+            significant_change = (
+                force_update or
+                is_checking is not None or 
+                (files_completed and len(files_completed) > 0) or 
+                (files_failed and len(files_failed) > 0) 
+            )
+            
+            if not significant_change:
+                return True
+            
             status_details = {}
             
             if files_processing is not None:
                 status_details["files_processing"] = files_processing
             if files_completed is not None:
-                status_details["files_completed"] = files_completed[-10:]  # Keep last 10
+                status_details["files_completed"] = files_completed[-10:] 
             if files_failed is not None:
-                status_details["files_failed"] = files_failed[-5:]  # Keep last 5
+                status_details["files_failed"] = files_failed[-5:]
             if is_checking is not None:
                 status_details["is_checking"] = is_checking
             if next_check_time is not None:
                 status_details["next_check_time"] = next_check_time
             
             status_details["last_activity"] = datetime.now().isoformat()
-            
-            # Merge with existing status_details
+
             current = self.supabase.table("rag_pipeline_state").select("status_details").eq(
                 "pipeline_id", self.pipeline_id
             ).execute()

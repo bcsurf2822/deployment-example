@@ -6,6 +6,8 @@ Handles persistence and synchronization of file tracking across pipeline restart
 from typing import Dict, List, Any, Optional, Set
 from datetime import datetime, timezone
 import traceback
+import hashlib
+import json
 from supabase import Client
 
 
@@ -24,6 +26,14 @@ class PipelineSyncManager:
         self.supabase = supabase_client
         self.pipeline_id = pipeline_id
         self.pipeline_type = pipeline_type
+        
+        # Cache for document file IDs to reduce DB queries
+        self._document_ids_cache = None
+        self._cache_timestamp = None
+        self._cache_ttl = 300  # 5 minutes TTL
+        
+        # Track last saved state to avoid unnecessary saves
+        self._last_saved_state_hash = None
         
     def load_pipeline_state(self) -> Dict[str, Any]:
         """
@@ -58,9 +68,18 @@ class PipelineSyncManager:
                 'last_run': None
             }
     
+    def _get_state_hash(self, known_files: Dict[str, Any], last_check_time: Optional[datetime] = None) -> str:
+        """Generate a hash of the current state to detect changes."""
+        state_for_hash = {
+            "known_files": known_files,
+            "last_check_time": last_check_time.isoformat() if isinstance(last_check_time, datetime) else last_check_time
+        }
+        state_json = json.dumps(state_for_hash, sort_keys=True)
+        return hashlib.md5(state_json.encode()).hexdigest()
+    
     def save_pipeline_state(self, known_files: Dict[str, Any], last_check_time: Optional[datetime] = None) -> bool:
         """
-        Save the pipeline state to the database.
+        Save the pipeline state to the database only if it has changed.
         
         Args:
             known_files: Dictionary of known files and their metadata
@@ -70,6 +89,12 @@ class PipelineSyncManager:
             True if successful, False otherwise
         """
         try:
+            # Check if state has actually changed
+            current_hash = self._get_state_hash(known_files, last_check_time)
+            if current_hash == self._last_saved_state_hash:
+                print(f"[SYNC_MANAGER-SAVE_STATE] State unchanged for {self.pipeline_id}, skipping save")
+                return True
+            
             # Check if state exists
             response = self.supabase.table("rag_pipeline_state").select("pipeline_id").eq("pipeline_id", self.pipeline_id).execute()
             
@@ -92,6 +117,9 @@ class PipelineSyncManager:
                 self.supabase.table("rag_pipeline_state").insert(state_data).execute()
                 print(f"[SYNC_MANAGER-SAVE_STATE] Created new state for pipeline {self.pipeline_id}")
             
+            # Update the hash of the last saved state
+            self._last_saved_state_hash = current_hash
+            
             return True
         except Exception as e:
             print(f"[SYNC_MANAGER-SAVE_STATE] Error saving pipeline state: {e}")
@@ -101,11 +129,20 @@ class PipelineSyncManager:
     def get_all_document_file_ids(self) -> Set[str]:
         """
         Get all file IDs currently stored in the documents table for this pipeline type.
+        Uses caching to reduce database queries.
         
         Returns:
             Set of file IDs from the documents table for this pipeline's source
         """
         try:
+            # Check cache validity
+            current_time = datetime.now(timezone.utc)
+            if (self._document_ids_cache is not None and 
+                self._cache_timestamp is not None and
+                (current_time - self._cache_timestamp).total_seconds() < self._cache_ttl):
+                print(f"[SYNC_MANAGER-GET_DOCS] Using cached document IDs for {self.pipeline_type} ({len(self._document_ids_cache)} files)")
+                return self._document_ids_cache
+            
             # Query documents table and filter by source in metadata
             response = self.supabase.table("documents").select("metadata").execute()
             
@@ -118,7 +155,11 @@ class PipelineSyncManager:
                     if file_id:
                         file_ids.add(file_id)
             
-            print(f"[SYNC_MANAGER-GET_DOCS] Found {len(file_ids)} unique file IDs in documents table for source: {self.pipeline_type}")
+            # Update cache
+            self._document_ids_cache = file_ids
+            self._cache_timestamp = current_time
+            
+            print(f"[SYNC_MANAGER-GET_DOCS] Found {len(file_ids)} unique file IDs in documents table for source: {self.pipeline_type} (cache refreshed)")
             return file_ids
         except Exception as e:
             print(f"[SYNC_MANAGER-GET_DOCS] Error getting document file IDs: {e}")
