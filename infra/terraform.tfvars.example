@@ -1,0 +1,82 @@
+project_id      = "your-project-id"
+region          = "us-central1-or-your-region"
+
+frontend_domain = "chat.yourdomain.com"
+api_domain      = "agent.yourdomain.com"
+
+agent_env = {
+  # OpenAI Configuration
+  OPENAI_API_KEY              = "sk-REPLACE"
+  OPENAI_BASE_URL             = "https://api.openai.com/v1"
+  OPENAI_MODEL                = "gpt-4o-mini"
+  EMBEDDING_MODEL             = "text-embedding-3-small"
+  VISION_MODEL                = "gpt-4o-mini"
+
+  # Alternative LLM Provider Configuration (if not using OpenAI)
+  LLM_PROVIDER                = "openai"
+  LLM_API_KEY                 = "sk-REPLACE"
+  LLM_MODEL                   = "gpt-4o-mini"
+  EMBEDDING_PROVIDER          = "openai"
+  EMBEDDING_API_KEY           = "sk-REPLACE"
+
+  # Search Configuration
+  BRAVE_API_KEY               = "brave-REPLACE"
+  BRAVE_SEARCH_URL            = "https://api.search.brave.com/res/v1/web/search"
+  SEARXNG_BASE_URL            = ""
+
+  # Database Configuration
+  SUPABASE_URL                = "https://YOUR.supabase.co"
+  SUPABASE_ANON_KEY           = "anon-key-REPLACE"
+  SUPABASE_SERVICE_ROLE_KEY   = "service-role-REPLACE"
+  DATABASE_URL                = "postgresql://postgres:YOUR-SUPABASE-PASSWORD@db.YOUR.supabase.co:6543/postgres?pgbouncer=true"
+
+  # Memory Configuration
+  MEM0_API_KEY                = "mem0-REPLACE"
+
+  # Observability Configuration
+  LANGFUSE_PUBLIC_KEY         = ""
+  LANGFUSE_SECRET_KEY         = ""
+  LANGFUSE_HOST               = "https://cloud.langfuse.com"
+
+  # Application Configuration
+  DEBUG_MODE                  = "false"
+  REQUEST_TIMEOUT             = "30"
+  PYTHONPATH                  = "/app"
+}
+
+rag_env = {
+  # Pipeline Configuration
+  RAG_PIPELINE_TYPE           = "google_drive"
+  RUN_MODE                    = "single"
+  RAG_PIPELINE_ID             = "prod-drive-pipeline"
+  RAG_SERVICE                 = "google_drive"
+
+  # OpenAI Configuration
+  OPENAI_API_KEY              = "sk-REPLACE"
+  OPENAI_BASE_URL             = "https://api.openai.com/v1"
+  EMBEDDING_MODEL             = "text-embedding-3-small"
+
+  # Database Configuration
+  SUPABASE_URL                = "https://YOUR.supabase.co"
+  SUPABASE_ANON_KEY           = "anon-key-REPLACE"
+  SUPABASE_SERVICE_ROLE_KEY   = "service-role-REPLACE"
+  DATABASE_URL                = "postgresql://postgres:YOUR-SUPABASE-PASSWORD@db.YOUR.supabase.co:6543/postgres?pgbouncer=true"
+
+  # Google Drive Configuration
+  GOOGLE_DRIVE_CREDENTIALS_JSON = <<EOF
+  { ...service-account JSON... }
+  EOF
+  RAG_WATCH_FOLDER_ID         = "drive-folder-id"
+  GOOGLE_DRIVE_IMPERSONATE_USER = ""
+
+  # Local Files Configuration (for local files pipeline)
+  RAG_WATCH_DIRECTORY         = "/app/mounted_data"
+
+  # Socket Configuration
+  RAG_SOCKET_URL              = "http://rag-socket-server:8002"
+  SOCKET_PORT                 = "8002"
+  SOCKET_HOST                 = "0.0.0.0"
+
+  # Application Configuration
+  DEBUG_MODE                  = "false"
+}

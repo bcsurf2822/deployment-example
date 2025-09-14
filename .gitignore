@@ -300,3 +300,6 @@ reference/
 
 # MCP configuration files
 .mcp*
+
+# Terraform configuration files with sensitive data
+infra/terraform.tfvars
