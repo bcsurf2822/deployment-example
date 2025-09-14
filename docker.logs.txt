@@ -1,0 +1,460 @@
+WARN[0000] The "NEXT_PUBLIC_RAG_SOCKET_URL" variable is not set. Defaulting to a blank string. 
+frontend-dev-1           | 
+frontend-dev-1           | > pydantic-demo@0.1.0 dev
+frontend-dev-1           | > next dev --turbopack
+frontend-dev-1           | 
+frontend-dev-1           |    ▲ Next.js 15.4.2 (Turbopack)
+rag-socket-server-dev-1  | Server initialized for asgi.
+rag-socket-server-dev-1  | INFO:engineio.server:Server initialized for asgi.
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-main] Starting Socket.IO server on 0.0.0.0:8002
+rag-socket-server-dev-1  | INFO:     Started server process [1]
+rag-socket-server-dev-1  | INFO:     Waiting for application startup.
+rag-socket-server-dev-1  | INFO:     Application startup complete.
+rag-socket-server-dev-1  | INFO:     Uvicorn running on http://0.0.0.0:8002 (Press CTRL+C to quit)
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet OPEN data {'sid': 'DD8Eo96-jGonCjvVAAAA', 'upgrades': ['websocket'], 'pingTimeout': 20000, 'pingInterval': 25000, 'maxPayload': 1000000}
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Sending packet OPEN data {'sid': 'DD8Eo96-jGonCjvVAAAA', 'upgrades': ['websocket'], 'pingTimeout': 20000, 'pingInterval': 25000, 'maxPayload': 1000000}
+frontend-dev-1           |    - Local:        http://localhost:3000
+frontend-dev-1           |    - Network:      http://172.18.0.6:3000
+frontend-dev-1           |    - Experiments (use with caution):
+frontend-dev-1           |      · serverComponentsExternalPackages
+frontend-dev-1           | 
+frontend-dev-1           |  ✓ Starting...
+rag-socket-server-dev-1  | INFO:     172.18.0.4:43432 - "GET /socket.io/?transport=polling&EIO=4&t=1757882725.1357918 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Received packet MESSAGE data 0{}
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Received packet MESSAGE data 0{}
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-connect] Client PomkpYrqmGwyfKsVAAAB connected
+rag-socket-server-dev-1  | emitting event "message" to PomkpYrqmGwyfKsVAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to PomkpYrqmGwyfKsVAAAB [/]
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] ===== NEW CLIENT CONNECTED: PomkpYrqmGwyfKsVAAAB =====
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] Total connected clients: 1
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] Connected client IDs: ['PomkpYrqmGwyfKsVAAAB']
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet MESSAGE data 2["message",{"type":"connection_status","status":"connected","message":"Connected to RAG pipeline server","timestamp":"2025-09-14T20:45:25.138517","server":"rag_pipeline"}]
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Sending packet MESSAGE data 2["message",{"type":"connection_status","status":"connected","message":"Connected to RAG pipeline server","timestamp":"2025-09-14T20:45:25.138517","server":"rag_pipeline"}]
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet MESSAGE data 0{"sid":"PomkpYrqmGwyfKsVAAAB"}
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Sending packet MESSAGE data 0{"sid":"PomkpYrqmGwyfKsVAAAB"}
+rag-socket-server-dev-1  | INFO:     172.18.0.4:43432 - "POST /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | INFO:     172.18.0.4:43440 - "GET /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA&t=1757882725.1382508 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Received packet MESSAGE data 2["message",{"type":"identify","client":"google-drive-watcher","message":"Google Drive watcher connected and ready"}]
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Received packet MESSAGE data 2["message",{"type":"identify","client":"google-drive-watcher","message":"Google Drive watcher connected and ready"}]
+rag-socket-server-dev-1  | received event "message" from PomkpYrqmGwyfKsVAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "message" from PomkpYrqmGwyfKsVAAAB [/]
+rag-socket-server-dev-1  | INFO:     172.18.0.4:43440 - "POST /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-message] Received from PomkpYrqmGwyfKsVAAAB: {'type': 'identify', 'client': 'google-drive-watcher', 'message': 'Google Drive watcher connected and ready'}
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-identify] Client PomkpYrqmGwyfKsVAAAB identified as 'google-drive-watcher' for message routing
+rag-socket-server-dev-1  | emitting event "message" to PomkpYrqmGwyfKsVAAAB [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to PomkpYrqmGwyfKsVAAAB [/]
+rag-socket-server-dev-1  | [SOCKET-SERVER-message] Received from PomkpYrqmGwyfKsVAAAB: {'type': 'identify', 'client': 'google-drive-watcher', 'message': 'Google Drive watcher connected and ready'}
+rag-socket-server-dev-1  | [SOCKET-SERVER-message] ===== CLIENT IDENTIFIED: google-drive-watcher (SID: PomkpYrqmGwyfKsVAAAB) =====
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet MESSAGE data 2["message",{"type":"echo","original_data":{"type":"identify","client":"google-drive-watcher","message":"Google Drive watcher connected and ready"},"message":"Server received your message: {'type': 'identify', 'client': 'google-drive-watcher', 'message': 'Google Drive watcher connected and ready'}","timestamp":"2025-09-14T20:45:25.140727","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Sending packet MESSAGE data 2["message",{"type":"echo","original_data":{"type":"identify","client":"google-drive-watcher","message":"Google Drive watcher connected and ready"},"message":"Server received your message: {'type': 'identify', 'client': 'google-drive-watcher', 'message': 'Google Drive watcher connected and ready'}","timestamp":"2025-09-14T20:45:25.140727","from_server":true}]
+rag-socket-server-dev-1  | INFO:     172.18.0.4:43432 - "GET /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA&t=1757882725.1400802 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | INFO:     127.0.0.1:41746 - "GET /health HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:     172.18.0.4:43432 - "GET /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA&t=1757882725.1411815 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     172.18.0.4:43432 - "POST /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | INFO:     127.0.0.1:48544 - "GET /health HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | PBkOV_PdO7kynoIfAAAC: Sending packet OPEN data {'sid': 'PBkOV_PdO7kynoIfAAAC', 'upgrades': ['websocket'], 'pingTimeout': 20000, 'pingInterval': 25000, 'maxPayload': 1000000}
+rag-socket-server-dev-1  | INFO:engineio.server:PBkOV_PdO7kynoIfAAAC: Sending packet OPEN data {'sid': 'PBkOV_PdO7kynoIfAAAC', 'upgrades': ['websocket'], 'pingTimeout': 20000, 'pingInterval': 25000, 'maxPayload': 1000000}
+rag-socket-server-dev-1  | INFO:     172.64.149.246:53294 - "GET /socket.io/?EIO=4&transport=polling&t=60logh98 HTTP/1.1" 200 OK
+rag-local-files-dev-1    | [RAG-PIPELINE-CONTAINER] Starting RAG Pipeline service: local_files
+rag-local-files-dev-1    | [RAG-PIPELINE-CONTAINER] Starting Local Files pipeline
+rag-local-files-dev-1    | [SUPABASE-STATUS] Error starting pipeline: {'message': "Could not find the 'last_heartbeat' column of 'rag_pipeline_state' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+frontend-dev-1           |  ⚠ Invalid next.config.ts options detected: 
+frontend-dev-1           |  ⚠     Unrecognized key(s) in object: 'serverComponentsExternalPackages' at "experimental"
+frontend-dev-1           |  ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+rag-socket-server-dev-1  | PBkOV_PdO7kynoIfAAAC: Received packet MESSAGE data 0
+rag-socket-server-dev-1  | INFO:engineio.server:PBkOV_PdO7kynoIfAAAC: Received packet MESSAGE data 0
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] ===== NEW CLIENT CONNECTED: Bleb-xGMKsKezetsAAAD =====
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] Total connected clients: 2
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] Connected client IDs: ['PomkpYrqmGwyfKsVAAAB', 'Bleb-xGMKsKezetsAAAD']
+agent-api-dev-1          | INFO:     Will watch for changes in these directories: ['/app']
+agent-api-dev-1          | INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-connect] Client Bleb-xGMKsKezetsAAAD connected
+agent-api-dev-1          | INFO:     Started reloader process [1] using WatchFiles
+frontend-dev-1           |  ⚠ `experimental.serverComponentsExternalPackages` has been moved to `serverExternalPackages`. Please update your next.config.ts file accordingly.
+rag-google-drive-dev-1   | [RAG-PIPELINE-CONTAINER] Starting RAG Pipeline service: google_drive
+frontend-dev-1           |  ✓ Compiled middleware in 170ms
+frontend-dev-1           |  ✓ Ready in 878ms
+rag-socket-server-dev-1  | emitting event "message" to Bleb-xGMKsKezetsAAAD [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to Bleb-xGMKsKezetsAAAD [/]
+rag-socket-server-dev-1  | PBkOV_PdO7kynoIfAAAC: Sending packet MESSAGE data 2["message",{"type":"connection_status","status":"connected","message":"Connected to RAG pipeline server","timestamp":"2025-09-14T20:46:14.472144","server":"rag_pipeline"}]
+rag-socket-server-dev-1  | INFO:engineio.server:PBkOV_PdO7kynoIfAAAC: Sending packet MESSAGE data 2["message",{"type":"connection_status","status":"connected","message":"Connected to RAG pipeline server","timestamp":"2025-09-14T20:46:14.472144","server":"rag_pipeline"}]
+rag-socket-server-dev-1  | PBkOV_PdO7kynoIfAAAC: Sending packet MESSAGE data 0{"sid":"Bleb-xGMKsKezetsAAAD"}
+frontend-dev-1           |  ⚠ Webpack is configured while Turbopack is not, which may cause problems.
+frontend-dev-1           |  ⚠ See instructions if you need to configure Turbopack:
+frontend-dev-1           |   https://nextjs.org/docs/app/api-reference/next-config-js/turbopack
+frontend-dev-1           | 
+frontend-dev-1           |  ○ Compiling / ...
+frontend-dev-1           |  ✓ Compiled / in 1947ms
+frontend-dev-1           |  GET / 200 in 2177ms
+frontend-dev-1           |  ✓ Compiled /auth/signout in 200ms
+frontend-dev-1           |  POST /auth/signout 307 in 382ms
+frontend-dev-1           |  ✓ Compiled /auth/login in 302ms
+frontend-dev-1           |  POST /auth/login 200 in 377ms
+frontend-dev-1           |  GET /auth/login 200 in 62ms
+frontend-dev-1           |  ✓ Compiled /favicon.ico in 96ms
+frontend-dev-1           |  GET /favicon.ico?favicon.45db1c09.ico 200 in 355ms
+frontend-dev-1           |  GET /auth/login 200 in 66ms
+agent-api-dev-1          | INFO:     Started server process [8]
+agent-api-dev-1          | INFO:     Waiting for application startup.
+agent-api-dev-1          | INFO:mem0.vector_stores.supabase:Creating new collection: mem0_memories
+frontend-dev-1           |  GET /favicon.ico?favicon.45db1c09.ico 200 in 233ms
+agent-api-dev-1          | INFO:mem0.vector_stores.supabase:Successfully created collection mem0_memories with dimension 1536
+frontend-dev-1           | [login-action] Login successful
+frontend-dev-1           |  GET / 200 in 35ms
+agent-api-dev-1          | INFO:mem0.vector_stores.supabase:Creating new collection: mem0migrations
+agent-api-dev-1          | INFO:mem0.vector_stores.supabase:Successfully created collection mem0migrations with dimension 1536
+agent-api-dev-1          | INFO:mem0.vector_stores.supabase:Inserting 1 vectors into collection mem0migrations
+rag-socket-server-dev-1  | INFO:engineio.server:PBkOV_PdO7kynoIfAAAC: Sending packet MESSAGE data 0{"sid":"Bleb-xGMKsKezetsAAAD"}
+rag-local-files-dev-1    | Loaded configuration from /app/Local_Files/config.json
+frontend-dev-1           |  POST /auth/login 303 in 408ms
+rag-socket-server-dev-1  | INFO:     172.64.149.246:53294 - "POST /socket.io/?EIO=4&transport=polling&t=60lom0ye&sid=PBkOV_PdO7kynoIfAAAC HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | PBkOV_PdO7kynoIfAAAC: Received request to upgrade to websocket
+rag-socket-server-dev-1  | INFO:engineio.server:PBkOV_PdO7kynoIfAAAC: Received request to upgrade to websocket
+rag-socket-server-dev-1  | INFO:     172.64.149.246:60236 - "WebSocket /socket.io/?EIO=4&transport=websocket&sid=PBkOV_PdO7kynoIfAAAC" [accepted]
+frontend-dev-1           |  ○ Compiling /chat ...
+frontend-dev-1           |  ✓ Compiled /chat in 514ms
+frontend-dev-1           |  GET /chat 200 in 547ms
+frontend-dev-1           |  GET /chat 200 in 40ms
+frontend-dev-1           |  ✓ Compiled /api/chat in 97ms
+frontend-dev-1           | [API-CHAT] Starting chat request
+rag-google-drive-dev-1   | [RAG-PIPELINE-CONTAINER] Starting Google Drive pipeline
+rag-google-drive-dev-1   | Status server started on port 8003
+frontend-dev-1           | [API-CHAT] Auth user result: { user: 'b1394eef-5195-4aa5-887c-483ecc68b082', error: null }
+frontend-dev-1           | [API-CHAT] Request body: {
+frontend-dev-1           |   query: 'Hello',
+frontend-dev-1           |   user_id: 'b1394eef-5195-4aa5-887c-483ecc68b082',
+frontend-dev-1           |   session_id: 'b1394eef-5195-4aa5-887c-483ecc68b082~e0jey5p1g4'
+frontend-dev-1           | }
+frontend-dev-1           | [API-CHAT] Error creating conversation: {
+rag-local-files-dev-1    | Resuming from last check time: 2025-09-14 20:40:13+00:00
+rag-local-files-dev-1    | [SYNC_MANAGER-LOAD_STATE] No existing state for pipeline local-files-pipeline
+rag-local-files-dev-1    | Using watch directory from environment: /app/mounted_data
+rag-local-files-dev-1    | Starting Local Files watcher for directory: /app/mounted_data
+rag-local-files-dev-1    | Checking for changes every 60 seconds...
+rag-local-files-dev-1    | Performing initial scan of files...
+rag-local-files-dev-1    | Found 0 files in initial scan.
+rag-local-files-dev-1    | [SYNC_MANAGER-GET_DOCS] Found 0 unique file IDs in documents table for source: local_files (cache refreshed)
+rag-local-files-dev-1    | [SYNC_MANAGER-ORPHANED] No orphaned documents found
+rag-local-files-dev-1    | [SYNC_MANAGER-SAVE_STATE] Created new state for pipeline local-files-pipeline
+rag-local-files-dev-1    | [SYNC_MANAGER-GET_DOCS] Using cached document IDs for local_files (0 files)
+rag-google-drive-dev-1   | [SUPABASE-STATUS] Error starting pipeline: {'message': "Could not find the 'last_heartbeat' column of 'rag_pipeline_state' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+rag-google-drive-dev-1   | Loaded configuration from /app/Google_Drive/config.json
+rag-google-drive-dev-1   | Resuming from last check time: 2025-09-14 20:39:22.808396
+rag-google-drive-dev-1   | [SYNC_MANAGER-LOAD_STATE] No existing state for pipeline google-drive-pipeline
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] ===== STARTING SOCKET CLIENT SETUP =====
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Socket URL from environment: http://rag-socket-server-dev:8002
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Attempting to connect to socket server at http://rag-socket-server-dev:8002
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Starting connection attempt to http://rag-socket-server-dev:8002
+rag-google-drive-dev-1   | Attempting polling connection to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4
+rag-google-drive-dev-1   | Polling connection accepted with {'sid': 'DD8Eo96-jGonCjvVAAAA', 'upgrades': ['websocket'], 'pingTimeout': 20000, 'pingInterval': 25000, 'maxPayload': 1000000}
+rag-google-drive-dev-1   | Engine.IO connection established
+rag-google-drive-dev-1   | Sending packet MESSAGE data 0{}
+rag-google-drive-dev-1   | websocket-client package not installed, only polling transport is available
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA
+agent-api-dev-1          | INFO:     Application startup complete.
+frontend-dev-1           |   code: '23503',
+agent-api-dev-1          | [SETTINGS-INIT] Creating Settings instance...
+frontend-dev-1           |   details: 'Key is not present in table "user_profiles".',
+frontend-dev-1           |   hint: null,
+frontend-dev-1           |   message: 'insert or update on table "conversations" violates foreign key constraint "conversations_user_id_fkey"'
+frontend-dev-1           | }
+agent-api-dev-1          | [SETTINGS-INIT] Environment variables:
+rag-socket-server-dev-1  | INFO:     172.64.149.246:61692 - "GET /socket.io/?EIO=4&transport=polling&t=60lonbfd&sid=PBkOV_PdO7kynoIfAAAC HTTP/1.1" 200 OK
+agent-api-dev-1          | [SETTINGS-INIT] SUPABASE_URL: https://twmblugjwlcndyjozuwd.supabase.co
+rag-local-files-dev-1    | [SYNC_MANAGER-ORPHANED] No orphaned documents found
+rag-local-files-dev-1    | [SYNC_MANAGER-SAVE_STATE] Updated state for pipeline local-files-pipeline
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["message",{"type":"connection_status","status":"connected","message":"Connected to RAG pipeline server","timestamp":"2025-09-14T20:45:25.138517","server":"rag_pipeline"}]
+rag-google-drive-dev-1   | Received event "message" [/]
+frontend-dev-1           |  POST /api/chat 500 in 324ms
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Received message: {'type': 'connection_status', 'status': 'connected', 'message': 'Connected to RAG pipeline server', 'timestamp': '2025-09-14T20:45:25.138517', 'server': 'rag_pipeline'}
+rag-socket-server-dev-1  | INFO:     connection open
+rag-socket-server-dev-1  | INFO:     172.64.149.246:61692 - "GET /socket.io/?EIO=4&transport=polling&t=60loyjch&sid=PBkOV_PdO7kynoIfAAAC HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | INFO:     172.64.149.246:53294 - "POST /socket.io/?EIO=4&transport=polling&t=60lozhgw&sid=PBkOV_PdO7kynoIfAAAC HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | PBkOV_PdO7kynoIfAAAC: Received packet MESSAGE data 2["message",{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"}]
+rag-socket-server-dev-1  | INFO:engineio.server:PBkOV_PdO7kynoIfAAAC: Received packet MESSAGE data 2["message",{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"}]
+rag-socket-server-dev-1  | received event "message" from Bleb-xGMKsKezetsAAAD [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "message" from Bleb-xGMKsKezetsAAAD [/]
+rag-socket-server-dev-1  | [SOCKET-SERVER-message] Received from Bleb-xGMKsKezetsAAAD: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}
+rag-socket-server-dev-1  | [SOCKET-SERVER-message] ===== CLIENT IDENTIFIED: frontend (SID: Bleb-xGMKsKezetsAAAD) =====
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-message] Received from Bleb-xGMKsKezetsAAAD: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-identify] Client Bleb-xGMKsKezetsAAAD identified as 'frontend' for message routing
+rag-socket-server-dev-1  | emitting event "message" to Bleb-xGMKsKezetsAAAD [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to Bleb-xGMKsKezetsAAAD [/]
+agent-api-dev-1          | [SETTINGS-INIT] SUPABASE_ANON_KEY: SET
+agent-api-dev-1          | [SETTINGS-INIT] SUPABASE_SERVICE_ROLE_KEY: SET
+agent-api-dev-1          | [SETTINGS-INIT] DATABASE_URL: SET
+rag-socket-server-dev-1  | PBkOV_PdO7kynoIfAAAC: Sending packet MESSAGE data 2["message",{"type":"echo","original_data":{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"},"message":"Server received your message: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}","timestamp":"2025-09-14T20:46:14.485130","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:PBkOV_PdO7kynoIfAAAC: Sending packet MESSAGE data 2["message",{"type":"echo","original_data":{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"},"message":"Server received your message: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}","timestamp":"2025-09-14T20:46:14.485130","from_server":true}]
+rag-socket-server-dev-1  | PBkOV_PdO7kynoIfAAAC: Upgrade to websocket successful
+rag-socket-server-dev-1  | INFO:engineio.server:PBkOV_PdO7kynoIfAAAC: Upgrade to websocket successful
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+agent-api-dev-1          | [SETTINGS-INIT] EMBEDDING_MODEL env: text-embedding-3-small
+agent-api-dev-1          | [SETTINGS-INIT] Loaded embedding model: text-embedding-3-small
+agent-api-dev-1          | Langfuse configured successfully with host: https://us.cloud.langfuse.com
+rag-google-drive-dev-1   | Received packet MESSAGE data 0{"sid":"PomkpYrqmGwyfKsVAAAB"}
+rag-socket-server-dev-1  | INFO:     172.18.0.4:47400 - "GET /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA&t=1757882750.1404796 HTTP/1.1" 200 OK
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] ===== SUCCESSFULLY CONNECTED TO SOCKET SERVER =====
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+agent-api-dev-1          | [SUPABASE-CLIENT] Creating service_role client with URL: https://twmblugjwlcndyjozuwd.s...
+agent-api-dev-1          | [SUPABASE-CLIENT] Key present: Yes (length: 219)
+agent-api-dev-1          | [MEM0-CONFIG] Using embedding model: text-embedding-3-small
+agent-api-dev-1          | [MEM0-CONFIG] Settings embedding model: text-embedding-3-small
+agent-api-dev-1          | [MEM0-CONFIG] Environment EMBEDDING_MODEL: text-embedding-3-small
+agent-api-dev-1          | [MEM0-CONFIG] Final config embedder: {'provider': 'openai', 'config': {'model': 'text-embedding-3-small'}}
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     172.18.0.4:47400 - "POST /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | INFO:     connection closed
+rag-socket-server-dev-1  | [SOCKET-SERVER-disconnect] ===== CLIENT DISCONNECTED: Bleb-xGMKsKezetsAAAD =====
+rag-socket-server-dev-1  | [SOCKET-SERVER-disconnect] Remaining clients: 1
+rag-google-drive-dev-1   | Namespace / is connected
+rag-google-drive-dev-1   | Emitting event "message" [/]
+rag-google-drive-dev-1   | Sending packet MESSAGE data 2["message",{"type":"identify","client":"google-drive-watcher","message":"Google Drive watcher connected and ready"}]
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-disconnect] Client Bleb-xGMKsKezetsAAAD disconnected
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Connection thread: socket client connected
+rag-google-drive-dev-1   | Received packet MESSAGE data 2["message",{"type":"echo","original_data":{"type":"identify","client":"google-drive-watcher","message":"Google Drive watcher connected and ready"},"message":"Server received your message: {'type': 'identify', 'client': 'google-drive-watcher', 'message': 'Google Drive watcher connected and ready'}","timestamp":"2025-09-14T20:45:25.140727","from_server":true}]
+rag-google-drive-dev-1   | Received event "message" [/]
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Received message: {'type': 'echo', 'original_data': {'type': 'identify', 'client': 'google-drive-watcher', 'message': 'Google Drive watcher connected and ready'}, 'message': "Server received your message: {'type': 'identify', 'client': 'google-drive-watcher', 'message': 'Google Drive watcher connected and ready'}", 'timestamp': '2025-09-14T20:45:25.140727', 'from_server': True}
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA
+rag-google-drive-dev-1   | [DRIVE_WATCHER-SOCKET] Socket connected status: True
+rag-google-drive-dev-1   | [DRIVE_WATCHER-AUTHENTICATE] GOOGLE_DRIVE_CREDENTIALS_JSON environment variable: /app/service-account.json
+rag-google-drive-dev-1   | [DRIVE_WATCHER-AUTHENTICATE] Found service account JSON path: /app/service-account.json
+rag-google-drive-dev-1   | [DRIVE_WATCHER-AUTHENTICATE] Environment variable contains file path: /app/service-account.json
+rag-google-drive-dev-1   | [DRIVE_WATCHER-AUTHENTICATE] File exists: True
+rag-google-drive-dev-1   | [DRIVE_WATCHER-AUTHENTICATE] Loaded JSON from file, keys: ['type', 'project_id', 'private_key_id', 'private_key', 'client_email', 'client_id', 'auth_uri', 'token_uri', 'auth_provider_x509_cert_url', 'client_x509_cert_url', 'universe_domain']
+rag-google-drive-dev-1   | [DRIVE_WATCHER-AUTHENTICATE] Service account email: pydantic-example-deployment@pydantic-agent-464810.iam.gserviceaccount.com
+rag-google-drive-dev-1   | [DRIVE_WATCHER-AUTHENTICATE] Service account credentials created from file
+rag-google-drive-dev-1   | [DRIVE_WATCHER-AUTHENTICATE] Testing service account credentials...
+rag-google-drive-dev-1   | [DRIVE_WATCHER-AUTHENTICATE] Service account credentials validated successfully for user: pydantic-example-deployment@pydantic-agent-464810.iam.gserviceaccount.com
+rag-google-drive-dev-1   | [DRIVE_WATCHER-AUTHENTICATE] Using service account authentication for Google Drive
+rag-google-drive-dev-1   | Google Drive API service initialized successfully
+rag-google-drive-dev-1   | Saved last check time: 2025-09-14 20:45:28.349654+00:00
+rag-google-drive-dev-1   | [SYNC_MANAGER-GET_DOCS] Found 0 unique file IDs in documents table for source: google_drive (cache refreshed)
+rag-google-drive-dev-1   | [SYNC_MANAGER-ORPHANED] No orphaned documents found
+rag-google-drive-dev-1   | [SYNC_MANAGER-SAVE_STATE] Created new state for pipeline google-drive-pipeline
+agent-api-dev-1          | INFO:     127.0.0.1:59060 - "GET /health HTTP/1.1" 200 OK
+agent-api-dev-1          | INFO:     127.0.0.1:58750 - "GET /health HTTP/1.1" 200 OK
+agent-api-dev-1          | INFO:     127.0.0.1:43074 - "GET /health HTTP/1.1" 200 OK
+agent-api-dev-1          | INFO:     127.0.0.1:38376 - "GET /health HTTP/1.1" 200 OK
+agent-api-dev-1          | INFO:     127.0.0.1:34490 - "GET /health HTTP/1.1" 200 OK
+rag-google-drive-dev-1   | Waiting 60 seconds until next check...
+rag-google-drive-dev-1   | Received packet PING data 
+rag-google-drive-dev-1   | Sending packet PONG data 
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA
+rag-google-drive-dev-1   | Received packet PING data 
+rag-google-drive-dev-1   | Sending packet PONG data 
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA
+rag-google-drive-dev-1   | Saved last check time: 2025-09-14 20:46:29.092664+00:00
+rag-google-drive-dev-1   | [SYNC_MANAGER-GET_DOCS] Using cached document IDs for google_drive (0 files)
+rag-google-drive-dev-1   | [SYNC_MANAGER-ORPHANED] No orphaned documents found
+rag-google-drive-dev-1   | [SYNC_MANAGER-SAVE_STATE] Updated state for pipeline google-drive-pipeline
+rag-google-drive-dev-1   | Waiting 60 seconds until next check...
+rag-google-drive-dev-1   | Received packet PING data 
+rag-google-drive-dev-1   | Sending packet PONG data 
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA
+rag-google-drive-dev-1   | Received packet PING data 
+rag-google-drive-dev-1   | Sending packet PONG data 
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA
+rag-socket-server-dev-1  | 0xTlwr1JxJEeAehYAAAE: Sending packet OPEN data {'sid': '0xTlwr1JxJEeAehYAAAE', 'upgrades': ['websocket'], 'pingTimeout': 20000, 'pingInterval': 25000, 'maxPayload': 1000000}
+rag-socket-server-dev-1  | INFO:engineio.server:0xTlwr1JxJEeAehYAAAE: Sending packet OPEN data {'sid': '0xTlwr1JxJEeAehYAAAE', 'upgrades': ['websocket'], 'pingTimeout': 20000, 'pingInterval': 25000, 'maxPayload': 1000000}
+rag-socket-server-dev-1  | INFO:     172.64.149.246:53294 - "GET /socket.io/?EIO=4&transport=polling&t=60odujds HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | 0xTlwr1JxJEeAehYAAAE: Received packet MESSAGE data 0
+rag-socket-server-dev-1  | INFO:engineio.server:0xTlwr1JxJEeAehYAAAE: Received packet MESSAGE data 0
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] ===== NEW CLIENT CONNECTED: Y5-OpVxAiBW0f0dTAAAF =====
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-connect] Client Y5-OpVxAiBW0f0dTAAAF connected
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] Total connected clients: 2
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] Connected client IDs: ['PomkpYrqmGwyfKsVAAAB', 'Y5-OpVxAiBW0f0dTAAAF']
+rag-socket-server-dev-1  | emitting event "message" to Y5-OpVxAiBW0f0dTAAAF [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to Y5-OpVxAiBW0f0dTAAAF [/]
+rag-socket-server-dev-1  | 0xTlwr1JxJEeAehYAAAE: Sending packet MESSAGE data 2["message",{"type":"connection_status","status":"connected","message":"Connected to RAG pipeline server","timestamp":"2025-09-14T20:46:17.976393","server":"rag_pipeline"}]
+rag-socket-server-dev-1  | INFO:engineio.server:0xTlwr1JxJEeAehYAAAE: Sending packet MESSAGE data 2["message",{"type":"connection_status","status":"connected","message":"Connected to RAG pipeline server","timestamp":"2025-09-14T20:46:17.976393","server":"rag_pipeline"}]
+rag-socket-server-dev-1  | 0xTlwr1JxJEeAehYAAAE: Sending packet MESSAGE data 0{"sid":"Y5-OpVxAiBW0f0dTAAAF"}
+rag-socket-server-dev-1  | INFO:engineio.server:0xTlwr1JxJEeAehYAAAE: Sending packet MESSAGE data 0{"sid":"Y5-OpVxAiBW0f0dTAAAF"}
+rag-socket-server-dev-1  | INFO:     172.64.149.246:53294 - "POST /socket.io/?EIO=4&transport=polling&t=60odyel7&sid=0xTlwr1JxJEeAehYAAAE HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | 0xTlwr1JxJEeAehYAAAE: Received request to upgrade to websocket
+rag-google-drive-dev-1   | Saved last check time: 2025-09-14 20:47:29.899229+00:00
+rag-google-drive-dev-1   | [SYNC_MANAGER-GET_DOCS] Using cached document IDs for google_drive (0 files)
+rag-google-drive-dev-1   | [SYNC_MANAGER-ORPHANED] No orphaned documents found
+rag-google-drive-dev-1   | Received packet PING data 
+rag-google-drive-dev-1   | Sending packet PONG data 
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA
+rag-socket-server-dev-1  | INFO:engineio.server:0xTlwr1JxJEeAehYAAAE: Received request to upgrade to websocket
+rag-socket-server-dev-1  | INFO:     172.64.149.246:44597 - "WebSocket /socket.io/?EIO=4&transport=websocket&sid=0xTlwr1JxJEeAehYAAAE" [accepted]
+rag-socket-server-dev-1  | INFO:     172.64.149.246:61692 - "GET /socket.io/?EIO=4&transport=polling&t=60odzhlk&sid=0xTlwr1JxJEeAehYAAAE HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | INFO:     connection open
+rag-socket-server-dev-1  | INFO:     172.64.149.246:61692 - "GET /socket.io/?EIO=4&transport=polling&t=60oe3pq3&sid=0xTlwr1JxJEeAehYAAAE HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | INFO:     172.64.149.246:53294 - "POST /socket.io/?EIO=4&transport=polling&t=60oe4m3m&sid=0xTlwr1JxJEeAehYAAAE HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | [SOCKET-SERVER-message] Received from Y5-OpVxAiBW0f0dTAAAF: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}
+rag-socket-server-dev-1  | [SOCKET-SERVER-message] ===== CLIENT IDENTIFIED: frontend (SID: Y5-OpVxAiBW0f0dTAAAF) =====
+rag-socket-server-dev-1  | 0xTlwr1JxJEeAehYAAAE: Received packet MESSAGE data 2["message",{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"}]
+rag-socket-server-dev-1  | INFO:engineio.server:0xTlwr1JxJEeAehYAAAE: Received packet MESSAGE data 2["message",{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"}]
+rag-socket-server-dev-1  | received event "message" from Y5-OpVxAiBW0f0dTAAAF [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "message" from Y5-OpVxAiBW0f0dTAAAF [/]
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-message] Received from Y5-OpVxAiBW0f0dTAAAF: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-identify] Client Y5-OpVxAiBW0f0dTAAAF identified as 'frontend' for message routing
+rag-socket-server-dev-1  | emitting event "message" to Y5-OpVxAiBW0f0dTAAAF [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to Y5-OpVxAiBW0f0dTAAAF [/]
+rag-socket-server-dev-1  | 0xTlwr1JxJEeAehYAAAE: Sending packet MESSAGE data 2["message",{"type":"echo","original_data":{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"},"message":"Server received your message: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}","timestamp":"2025-09-14T20:46:17.980810","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:0xTlwr1JxJEeAehYAAAE: Sending packet MESSAGE data 2["message",{"type":"echo","original_data":{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"},"message":"Server received your message: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}","timestamp":"2025-09-14T20:46:17.980810","from_server":true}]
+rag-socket-server-dev-1  | 0xTlwr1JxJEeAehYAAAE: Upgrade to websocket successful
+rag-socket-server-dev-1  | INFO:engineio.server:0xTlwr1JxJEeAehYAAAE: Upgrade to websocket successful
+rag-socket-server-dev-1  | [SOCKET-SERVER-disconnect] ===== CLIENT DISCONNECTED: Y5-OpVxAiBW0f0dTAAAF =====
+rag-socket-server-dev-1  | INFO:     connection closed
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-disconnect] Client Y5-OpVxAiBW0f0dTAAAF disconnected
+rag-socket-server-dev-1  | [SOCKET-SERVER-disconnect] Remaining clients: 1
+rag-socket-server-dev-1  | AkUNxdos-llcVTtQAAAG: Sending packet OPEN data {'sid': 'AkUNxdos-llcVTtQAAAG', 'upgrades': ['websocket'], 'pingTimeout': 20000, 'pingInterval': 25000, 'maxPayload': 1000000}
+rag-socket-server-dev-1  | INFO:engineio.server:AkUNxdos-llcVTtQAAAG: Sending packet OPEN data {'sid': 'AkUNxdos-llcVTtQAAAG', 'upgrades': ['websocket'], 'pingTimeout': 20000, 'pingInterval': 25000, 'maxPayload': 1000000}
+rag-socket-server-dev-1  | INFO:     172.64.149.246:53294 - "GET /socket.io/?EIO=4&transport=polling&t=60pw81h5 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | AkUNxdos-llcVTtQAAAG: Received packet MESSAGE data 0
+rag-socket-server-dev-1  | INFO:engineio.server:AkUNxdos-llcVTtQAAAG: Received packet MESSAGE data 0
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-connect] Client YZ_yH-uE7WjHDL0cAAAH connected
+rag-google-drive-dev-1   | [SYNC_MANAGER-SAVE_STATE] Updated state for pipeline google-drive-pipeline
+rag-google-drive-dev-1   | Waiting 60 seconds until next check...
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] ===== NEW CLIENT CONNECTED: YZ_yH-uE7WjHDL0cAAAH =====
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] Total connected clients: 2
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] Connected client IDs: ['PomkpYrqmGwyfKsVAAAB', 'YZ_yH-uE7WjHDL0cAAAH']
+rag-socket-server-dev-1  | emitting event "message" to YZ_yH-uE7WjHDL0cAAAH [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to YZ_yH-uE7WjHDL0cAAAH [/]
+rag-socket-server-dev-1  | AkUNxdos-llcVTtQAAAG: Sending packet MESSAGE data 2["message",{"type":"connection_status","status":"connected","message":"Connected to RAG pipeline server","timestamp":"2025-09-14T20:46:19.933067","server":"rag_pipeline"}]
+rag-socket-server-dev-1  | INFO:engineio.server:AkUNxdos-llcVTtQAAAG: Sending packet MESSAGE data 2["message",{"type":"connection_status","status":"connected","message":"Connected to RAG pipeline server","timestamp":"2025-09-14T20:46:19.933067","server":"rag_pipeline"}]
+rag-socket-server-dev-1  | AkUNxdos-llcVTtQAAAG: Sending packet MESSAGE data 0{"sid":"YZ_yH-uE7WjHDL0cAAAH"}
+rag-socket-server-dev-1  | INFO:engineio.server:AkUNxdos-llcVTtQAAAG: Sending packet MESSAGE data 0{"sid":"YZ_yH-uE7WjHDL0cAAAH"}
+rag-socket-server-dev-1  | INFO:     172.64.149.246:53294 - "POST /socket.io/?EIO=4&transport=polling&t=60pwb1rw&sid=AkUNxdos-llcVTtQAAAG HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | AkUNxdos-llcVTtQAAAG: Received request to upgrade to websocket
+rag-socket-server-dev-1  | INFO:engineio.server:AkUNxdos-llcVTtQAAAG: Received request to upgrade to websocket
+rag-socket-server-dev-1  | INFO:     172.64.149.246:36907 - "WebSocket /socket.io/?EIO=4&transport=websocket&sid=AkUNxdos-llcVTtQAAAG" [accepted]
+rag-socket-server-dev-1  | INFO:     172.64.149.246:61692 - "GET /socket.io/?EIO=4&transport=polling&t=60pwcgkp&sid=AkUNxdos-llcVTtQAAAG HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | INFO:     connection open
+rag-socket-server-dev-1  | INFO:     172.64.149.246:61692 - "GET /socket.io/?EIO=4&transport=polling&t=60pwhww6&sid=AkUNxdos-llcVTtQAAAG HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | AkUNxdos-llcVTtQAAAG: Received packet MESSAGE data 2["message",{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"}]
+rag-socket-server-dev-1  | INFO:engineio.server:AkUNxdos-llcVTtQAAAG: Received packet MESSAGE data 2["message",{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"}]
+rag-socket-server-dev-1  | received event "message" from YZ_yH-uE7WjHDL0cAAAH [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "message" from YZ_yH-uE7WjHDL0cAAAH [/]
+rag-socket-server-dev-1  | INFO:     172.64.149.246:53294 - "POST /socket.io/?EIO=4&transport=polling&t=60pwhrlz&sid=AkUNxdos-llcVTtQAAAG HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | [SOCKET-SERVER-message] Received from YZ_yH-uE7WjHDL0cAAAH: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}
+rag-socket-server-dev-1  | [SOCKET-SERVER-message] ===== CLIENT IDENTIFIED: frontend (SID: YZ_yH-uE7WjHDL0cAAAH) =====
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-message] Received from YZ_yH-uE7WjHDL0cAAAH: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-identify] Client YZ_yH-uE7WjHDL0cAAAH identified as 'frontend' for message routing
+rag-socket-server-dev-1  | emitting event "message" to YZ_yH-uE7WjHDL0cAAAH [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to YZ_yH-uE7WjHDL0cAAAH [/]
+rag-socket-server-dev-1  | AkUNxdos-llcVTtQAAAG: Sending packet MESSAGE data 2["message",{"type":"echo","original_data":{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"},"message":"Server received your message: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}","timestamp":"2025-09-14T20:46:19.938343","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:AkUNxdos-llcVTtQAAAG: Sending packet MESSAGE data 2["message",{"type":"echo","original_data":{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"},"message":"Server received your message: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}","timestamp":"2025-09-14T20:46:19.938343","from_server":true}]
+rag-socket-server-dev-1  | AkUNxdos-llcVTtQAAAG: Upgrade to websocket successful
+rag-socket-server-dev-1  | INFO:engineio.server:AkUNxdos-llcVTtQAAAG: Upgrade to websocket successful
+rag-socket-server-dev-1  | INFO:     127.0.0.1:40332 - "GET /health HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:     172.18.0.4:42282 - "GET /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA&t=1757882775.1506767 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     172.18.0.4:42282 - "POST /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | AkUNxdos-llcVTtQAAAG: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:AkUNxdos-llcVTtQAAAG: Sending packet PING data None
+rag-socket-server-dev-1  | AkUNxdos-llcVTtQAAAG: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:AkUNxdos-llcVTtQAAAG: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     connection closed
+rag-socket-server-dev-1  | [SOCKET-SERVER-disconnect] ===== CLIENT DISCONNECTED: YZ_yH-uE7WjHDL0cAAAH =====
+rag-socket-server-dev-1  | [SOCKET-SERVER-disconnect] Remaining clients: 1
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-disconnect] Client YZ_yH-uE7WjHDL0cAAAH disconnected
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Sending packet OPEN data {'sid': 'FHVTWaB7LxII4ML8AAAI', 'upgrades': ['websocket'], 'pingTimeout': 20000, 'pingInterval': 25000, 'maxPayload': 1000000}
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Sending packet OPEN data {'sid': 'FHVTWaB7LxII4ML8AAAI', 'upgrades': ['websocket'], 'pingTimeout': 20000, 'pingInterval': 25000, 'maxPayload': 1000000}
+rag-socket-server-dev-1  | INFO:     172.64.149.246:58444 - "GET /socket.io/?EIO=4&transport=polling&t=61an6753 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Received packet MESSAGE data 0
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Received packet MESSAGE data 0
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-connect] Client Emd9O1KOLP-J-NDUAAAJ connected
+rag-socket-server-dev-1  | emitting event "message" to Emd9O1KOLP-J-NDUAAAJ [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to Emd9O1KOLP-J-NDUAAAJ [/]
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] ===== NEW CLIENT CONNECTED: Emd9O1KOLP-J-NDUAAAJ =====
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] Total connected clients: 2
+rag-socket-server-dev-1  | [SOCKET-SERVER-connect] Connected client IDs: ['PomkpYrqmGwyfKsVAAAB', 'Emd9O1KOLP-J-NDUAAAJ']
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Sending packet MESSAGE data 2["message",{"type":"connection_status","status":"connected","message":"Connected to RAG pipeline server","timestamp":"2025-09-14T20:46:46.824124","server":"rag_pipeline"}]
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Sending packet MESSAGE data 2["message",{"type":"connection_status","status":"connected","message":"Connected to RAG pipeline server","timestamp":"2025-09-14T20:46:46.824124","server":"rag_pipeline"}]
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Sending packet MESSAGE data 0{"sid":"Emd9O1KOLP-J-NDUAAAJ"}
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Sending packet MESSAGE data 0{"sid":"Emd9O1KOLP-J-NDUAAAJ"}
+rag-socket-server-dev-1  | INFO:     172.64.149.246:58444 - "POST /socket.io/?EIO=4&transport=polling&t=61anaib2&sid=FHVTWaB7LxII4ML8AAAI HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Received request to upgrade to websocket
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Received request to upgrade to websocket
+rag-socket-server-dev-1  | INFO:     172.64.149.246:37502 - "WebSocket /socket.io/?EIO=4&transport=websocket&sid=FHVTWaB7LxII4ML8AAAI" [accepted]
+rag-socket-server-dev-1  | INFO:     172.64.149.246:24006 - "GET /socket.io/?EIO=4&transport=polling&t=61anadv0&sid=FHVTWaB7LxII4ML8AAAI HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | INFO:     connection open
+rag-socket-server-dev-1  | INFO:     172.64.149.246:58444 - "GET /socket.io/?EIO=4&transport=polling&t=61ang9zz&sid=FHVTWaB7LxII4ML8AAAI HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Upgrade to websocket successful
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Upgrade to websocket successful
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Received packet MESSAGE data 2["message",{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"}]
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Received packet MESSAGE data 2["message",{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"}]
+rag-socket-server-dev-1  | received event "message" from Emd9O1KOLP-J-NDUAAAJ [/]
+rag-socket-server-dev-1  | INFO:socketio.server:received event "message" from Emd9O1KOLP-J-NDUAAAJ [/]
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-message] Received from Emd9O1KOLP-J-NDUAAAJ: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}
+rag-socket-server-dev-1  | [SOCKET-SERVER-message] Received from Emd9O1KOLP-J-NDUAAAJ: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}
+rag-socket-server-dev-1  | [SOCKET-SERVER-message] ===== CLIENT IDENTIFIED: frontend (SID: Emd9O1KOLP-J-NDUAAAJ) =====
+rag-socket-server-dev-1  | INFO:__main__:[SOCKET-SERVER-identify] Client Emd9O1KOLP-J-NDUAAAJ identified as 'frontend' for message routing
+rag-socket-server-dev-1  | emitting event "message" to Emd9O1KOLP-J-NDUAAAJ [/]
+rag-socket-server-dev-1  | INFO:socketio.server:emitting event "message" to Emd9O1KOLP-J-NDUAAAJ [/]
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Sending packet MESSAGE data 2["message",{"type":"echo","original_data":{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"},"message":"Server received your message: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}","timestamp":"2025-09-14T20:46:46.831606","from_server":true}]
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Sending packet MESSAGE data 2["message",{"type":"echo","original_data":{"type":"identify","client":"frontend","message":"Frontend client connected and ready for processing notifications"},"message":"Server received your message: {'type': 'identify', 'client': 'frontend', 'message': 'Frontend client connected and ready for processing notifications'}","timestamp":"2025-09-14T20:46:46.831606","from_server":true}]
+rag-socket-server-dev-1  | INFO:     127.0.0.1:48088 - "GET /health HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:     172.18.0.4:41360 - "GET /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA&t=1757882800.1583078 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     172.18.0.4:41360 - "POST /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Sending packet PING data None
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     127.0.0.1:48402 - "GET /health HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:     172.18.0.4:53434 - "GET /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA&t=1757882825.1650138 HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     172.18.0.4:53434 - "POST /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Sending packet PING data None
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Received packet PONG data 
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:     172.18.0.4:34906 - "GET /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA&t=1757882850.1703157 HTTP/1.1" 200 OK
+rag-google-drive-dev-1   | Received packet PING data 
+rag-google-drive-dev-1   | Sending packet PONG data 
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     172.18.0.4:34906 - "POST /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | INFO:     127.0.0.1:56786 - "GET /health HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Sending packet PING data None
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Received packet PONG data 
+agent-api-dev-1          | INFO:     127.0.0.1:45078 - "GET /health HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:     172.18.0.4:36330 - "GET /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA&t=1757882875.1761148 HTTP/1.1" 200 OK
+rag-google-drive-dev-1   | Received packet PING data 
+rag-google-drive-dev-1   | Sending packet PONG data 
+rag-google-drive-dev-1   | Sending polling GET request to http://rag-socket-server-dev:8002/socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:DD8Eo96-jGonCjvVAAAA: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     172.18.0.4:43158 - "POST /socket.io/?transport=polling&EIO=4&sid=DD8Eo96-jGonCjvVAAAA HTTP/1.1" 200 OK
+rag-local-files-dev-1    | [SYNC_MANAGER-GET_DOCS] Using cached document IDs for local_files (0 files)
+rag-local-files-dev-1    | [SYNC_MANAGER-ORPHANED] No orphaned documents found
+rag-local-files-dev-1    | [SYNC_MANAGER-SAVE_STATE] Updated state for pipeline local-files-pipeline
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Sending packet PING data None
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Sending packet PING data None
+rag-socket-server-dev-1  | FHVTWaB7LxII4ML8AAAI: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:engineio.server:FHVTWaB7LxII4ML8AAAI: Received packet PONG data 
+rag-socket-server-dev-1  | INFO:     127.0.0.1:54268 - "GET /health HTTP/1.1" 200 OK
+rag-google-drive-dev-1   | Saved last check time: 2025-09-14 20:48:30.849468+00:00
+rag-google-drive-dev-1   | [SYNC_MANAGER-GET_DOCS] Using cached document IDs for google_drive (0 files)
+rag-google-drive-dev-1   | [SYNC_MANAGER-ORPHANED] No orphaned documents found
+rag-google-drive-dev-1   | [SYNC_MANAGER-SAVE_STATE] Updated state for pipeline google-drive-pipeline
+rag-google-drive-dev-1   | Waiting 60 seconds until next check...
+agent-api-dev-1          | INFO:     127.0.0.1:35810 - "GET /health HTTP/1.1" 200 OK
+rag-socket-server-dev-1  | DD8Eo96-jGonCjvVAAAA: Sending packet PING data None

@@ -297,3 +297,6 @@ pnpm-lock.yaml
 
 # Reference materials (documentation, examples, notes)
 reference/
+
+# MCP configuration files
+.mcp*
